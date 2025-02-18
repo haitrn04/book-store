@@ -3,9 +3,14 @@ import { Link } from "react-router-dom";
 import { Navbar } from "../components";
 
 const PageNotFound = () => {
+  const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
+
+
+
   return (
     <>
-      <Navbar />
+    
+      <Navbar user={storedUser} />
       <div className="container my-3 py-3">
         <div className="container">
           <div className="row">

@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 const Cart = () => {
   const state = useSelector((state) => state.handleCart);
   const dispatch = useDispatch();
-
+  const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
   const EmptyCart = () => {
     return (
       <div className="container">
@@ -163,7 +163,7 @@ const Cart = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar user={storedUser} />
       <div className="container my-3 py-3">
         <h1 className="text-center">Cart</h1>
         <hr />

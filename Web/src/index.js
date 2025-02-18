@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import AuthWrapper from "./components/AuthWrapper"; // Import AuthWrapper
-
+import IsAdmin from "./components/IsAdmin";
 import {
   Home,
   Product,
@@ -19,7 +19,7 @@ import {
   Checkout,
   PageNotFound,
   Dashboard,
-  Products_Ad,
+  ProductsAd,
   OrderList,
   ProductStock,
   AddProducts,
@@ -54,14 +54,15 @@ root.render(
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="*" element={<PageNotFound />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/products_ad" element={<Products_Ad />} />
-                  <Route path="/orderlist" element={<OrderList />} />
-                  <Route path="/productstock" element={<ProductStock />} />
-                  <Route path="/addproduct" element={<AddProducts />} />
-                  <Route path="/editproducts" element={<EditProducts />} />
-                  <Route path="/customer" element={<Customer />} />
-                  <Route path="/purchaseshistory" element={<PurchasesHistory />} />
+                  <Route path="/dashboard" element={<IsAdmin><Dashboard /></IsAdmin>} />
+                  <Route path="/productsAd" element={<IsAdmin><ProductsAd /></IsAdmin>} />
+                  <Route path="/orderlist" element={<IsAdmin><OrderList /></IsAdmin>} />
+                  <Route path="/productstock" element={<IsAdmin><ProductStock /></IsAdmin>} />
+                  <Route path="/addproduct" element={<IsAdmin><AddProducts /></IsAdmin>} />
+                  <Route path="/editproducts" element={<IsAdmin><EditProducts /></IsAdmin>} />
+                  <Route path="/customer" element={<IsAdmin><Customer /></IsAdmin>} />
+                  <Route path="/purchaseshistory" element={<IsAdmin><PurchasesHistory /></IsAdmin>} />
+
                 </Routes>
               </AuthWrapper>
             }

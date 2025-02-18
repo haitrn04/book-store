@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 const Checkout = () => {
   const state = useSelector((state) => state.handleCart);
-
+  const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
   const EmptyCart = () => {
     return (
       <div className="container">
@@ -284,7 +284,7 @@ const Checkout = () => {
   };
   return (
     <>
-      <Navbar />
+      <Navbar user={storedUser} />
       <div className="container my-3 py-3">
         <h1 className="text-center">Checkout</h1>
         <hr />

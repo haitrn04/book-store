@@ -8,6 +8,7 @@ import { addCart } from "../redux/action";
 import { Footer, Navbar } from "../components";
 
 const Product = () => {
+  const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
   const { id } = useParams();
   const [product, setProduct] = useState([]);
   const [similarProducts, setSimilarProducts] = useState([]);
@@ -170,7 +171,7 @@ const Product = () => {
   };
   return (
     <>
-      <Navbar />
+      <Navbar user={storedUser} />
       <div className="container">
         <div className="row">{loading ? <Loading /> : <ShowProduct />}</div>
         <div className="row my-5 py-5">

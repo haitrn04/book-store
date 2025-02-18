@@ -59,7 +59,7 @@ const Sidebar = () => {
   );
 };
 
-const Products_Ad = () => {
+const ProductsAd = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -111,4 +111,4 @@ const Products_Ad = () => {
   );
 };
 
-export default Products_Ad;
+export default ProductsAd;
