@@ -1,7 +1,7 @@
 // import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from "react-router-dom";
 import { useSelector } from 'react-redux';
-import avt from '../assets/images/avt_default.jpg'; 
+import avt from '../assets/images/avt_default.jpg';
 
 
 const Navbar = ({ user }) => {
@@ -18,24 +18,30 @@ const Navbar = ({ user }) => {
 
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav m-auto my-2 text-center">
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to="/">Home</NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to="/product">Products</NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to="/about">About</NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to="/contact">Contact</NavLink>
-                        </li>
+                        {user &&
+                            <>
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/">Home</NavLink>
+                                </li>
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/product">Products</NavLink>
+                                </li>
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/about">About</NavLink>
+                                </li>
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/contact">Contact</NavLink>
+                                </li>
+                            </>
+                        }
                     </ul>
+
+
                     <div className="buttons text-center flex">
                         {
                             user ? (
                                 user.image_data ? (
-                                    <img src={user.image_data} alt="User Image" className="avt rounded-circle" style={{ width: '30px', height: '30px' }}  />
+                                    <img src={user.image_data} alt="User Image" className="avt rounded-circle" style={{ width: '30px', height: '30px' }} />
                                 ) : (
                                     <img src={avt} alt="User Image" className="avt rounded-circle" style={{ width: '30px', height: '30px' }} />
                                 )
@@ -48,7 +54,7 @@ const Navbar = ({ user }) => {
                         }
                         {user && user.id_account > 0 ? (
                             <>
-                                {user.role == 1 && (
+                                {user.role === "1" && (
                                     <NavLink to="/dashboard" className="btn btn-outline-dark m-1">
                                         <i className="fa fa-store mr-1"></i> Seller
                                     </NavLink>
@@ -75,7 +81,7 @@ const Navbar = ({ user }) => {
                     </div>
                 </div>
             </div>
-        </nav>
+        </nav >
     );
 }
 

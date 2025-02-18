@@ -46,6 +46,19 @@ app.post('/insert/accounts', async (req, res) => {
     }
 })
 
+app.post('/register', async (req, res) => {
+    const { full_name, email, password } = req.body
+    try {
+        let sql = ` INSERT INTO accounts (full_name, email, password, role)
+                        VALUES ($1, $2, $3, 2);`;
+        await pool.query(sql, [full_name, email, password ]);
+        res.status(200).send({ message: "Register account successfully" });
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+})
+
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {

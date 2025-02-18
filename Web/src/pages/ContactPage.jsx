@@ -1,9 +1,14 @@
 import React from "react";
 import { Footer, Navbar } from "../components";
 const ContactPage = () => {
+  const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
+
+
+
   return (
     <>
-      <Navbar />
+    
+      <Navbar user={storedUser} />
       <div className="container my-3 py-3">
         <h1 className="text-center">Contact Us</h1>
         <hr />
