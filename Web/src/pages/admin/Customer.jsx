@@ -31,7 +31,7 @@ const Sidebar = () => {
           </Link>
         </li>
         <li className="nav-item">
-          <Link to="/products_ad" className="nav-link text-dark">
+          <Link to="/productsad" className="nav-link text-dark">
             <FaBox className="me-2" /> Products
           </Link>
         </li>

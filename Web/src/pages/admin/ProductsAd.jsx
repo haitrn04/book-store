@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { FaUsers, FaBox, FaList,FaUber , FaChartBar, FaSignOutAlt, FaBars } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { getProducts } from "../../services/apiService";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -31,7 +33,7 @@ const Sidebar = () => {
           </Link>
         </li>
         <li className="nav-item">
-          <Link to="/products_ad" className="nav-link text-white fw-bold bg-primary p-2 rounded">
+          <Link to="/productsad" className="nav-link text-white fw-bold bg-primary p-2 rounded">
             <FaBox className="me-2" /> Products
           </Link>
         </li>
@@ -62,16 +64,20 @@ const Sidebar = () => {
 const ProductsAd = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchProducts = async () => {
-      const response = await fetch("https://fakestoreapi.com/products");
-      const data = await response.json();
+      const response = getProducts();
+      const data = (await response).data;
       setProducts(data);
       setLoading(false);
     };
     fetchProducts();
   }, []);
+  const handleEdit = (book_id) => {
+    navigate(`/editproducts/?id=${book_id}`);
+  };
+
 
   return (
     <div className="d-flex">
@@ -88,17 +94,17 @@ const ProductsAd = () => {
               <Skeleton height={300} count={6} />
             ) : (
               products.map((product) => (
-                <div key={product.id} className="col-md-4 mb-4">
+                <div key={product.book_id} className="col-md-4 mb-4">
                   <div className="card shadow-sm border-0 p-3 text-center">
-                    <img src={product.image} className="card-img-top mx-auto" alt={product.title} style={{ height: "200px", objectFit: "contain" }} />
+                    <img src={product.image} className="card-img-top mx-auto" alt={product.book_name} style={{ height: "200px", objectFit: "contain" }} />
                     <div className="card-body">
-                      <h5 className="card-title text-truncate">{product.title}</h5>
+                      <h5 className="card-title text-truncate">{product.book_name}</h5>
                       <p className="text-primary fw-bold">${product.price}</p>
                       <div className="d-flex justify-content-center align-items-center">
                         <span className="text-warning me-2">★★★★☆</span>
-                        <small className="text-muted">(131)</small>
+                        <small className="text-muted">(131)</small> 
                       </div>
-                      <Link to="/editproducts" className="btn btn-outline-primary mt-2">Edit Product</Link>
+                      <button className="btn btn-outline-primary mt-2" onClick={() => handleEdit(product.book_id)} >Edit Product</button>
                     </div>
                   </div>
                 </div>

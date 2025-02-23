@@ -1,7 +1,8 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState,useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars, FaUber } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { getProductbyID, postEditProduct } from "../../services/apiService";
 
 const Sidebar = () => {
   return (
@@ -14,7 +15,7 @@ const Sidebar = () => {
           </Link>
         </li>
         <li className="nav-item">
-          <Link to="/products_ad" className="nav-link text-white fw-bold bg-primary p-2 rounded">
+          <Link to="/productsad" className="nav-link text-white fw-bold bg-primary p-2 rounded">
             <FaBox className="me-2" /> Products
           </Link>
         </li>
@@ -58,24 +59,50 @@ const Header = () => {
   );
 };
 
-const AddProductForm = () => {
+const AddProductForm = () => {  
+  const navigate  = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const book_id = searchParams.get('id');
+  const [product, setProduct] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const response = getProductbyID(book_id);
+      const data = (await response).data;
+      setProduct(data[0]);
+      setLoading(false);
+    };
+    fetchProduct();
+  }, [book_id]);
+  const handleEdit = async (e) =>{
+    e.preventDefault();
+      const res = await postEditProduct(product.book_id, product.book_name, product.genres, product.author, product.publisher, product.yopublication, product.price, product.discount, product.stock, product.description);
+      alert(res.data.message);
+      navigate("/productsad");
+  };
+  const handleChange = (e) =>{ 
+    const { name, value } = e.target;
+    setProduct({...product, [name]: value});
+  };
+
     return (
       <div className="container mt-5 pt-5">
         <h2 className="fw-bold">Edit Product</h2>
         <div className="bg-light p-4 rounded shadow-sm">
-          <form>
+          <form onSubmit={handleEdit}>
             <div className="row">
               <div className="col-md-4 mb-3">
                 <label className="form-label">Book ID</label>
-                <input type="text" className="form-control" />
+                <input type="text" className="form-control" name="book_id" value={product.book_id} onChange={(e) => handleChange(e)}/>
               </div>
               <div className="col-md-4 mb-3">
                 <label className="form-label">Book Name</label>
-                <input type="text" className="form-control" />
+                <input type="text" className="form-control" name="book_name" value={product.book_name} onChange={(e) => handleChange(e)} />
               </div>
               <div className="col-md-4 mb-3">
                 <label className="form-label">Genres</label>
-                <select className="form-select">
+                <select className="form-select" name="genres" value={product.genres} onChange={(e) => handleChange(e)}>
                   <option>Select Genre</option>
                   <option>Novel</option>
                   <option>Adventure</option>
@@ -86,29 +113,29 @@ const AddProductForm = () => {
             <div className="row">
               <div className="col-md-4 mb-3">
                 <label className="form-label">Author</label>
-                <input type="text" className="form-control" />
+                <input type="text" className="form-control" name="author" value={product.author} onChange={(e) => handleChange(e)}/>
               </div>
               <div className="col-md-4 mb-3">
                 <label className="form-label">Publisher</label>
-                <input type="text" className="form-control" />
+                <input type="text" className="form-control" name="publisher" value={product.publisher} onChange={(e) => handleChange(e)} />
               </div>
               <div className="col-md-4 mb-3">
                 <label className="form-label">Year of Publication</label>
-                <input type="text" className="form-control" />
+                <input type="text" className="form-control" name="yopublication" value={product.yopublication} onChange={(e) => handleChange(e)}/>
               </div>
             </div>
             <div className="row">
               <div className="col-md-4 mb-3">
                 <label className="form-label">Price</label>
-                <input type="text" className="form-control" />
+                <input type="text" className="form-control" name="price" value={product.price} onChange={(e) => handleChange(e)} />
               </div>
               <div className="col-md-4 mb-3">
                 <label className="form-label">Discount %</label>
-                <input type="text" className="form-control" />
+                <input type="text" className="form-control" name="discount" value={product.discount} onChange={(e) => handleChange(e)} />
               </div>
               <div className="col-md-4 mb-3">
                 <label className="form-label">Stock</label>
-                <input type="text" className="form-control" />
+                <input type="text" className="form-control" name="stock" value={product.stock} onChange={(e) => handleChange(e)}/>
               </div>
             </div>
             <div className="mb-3">
@@ -117,10 +144,10 @@ const AddProductForm = () => {
             </div>
             <div className="mb-3">
               <label className="form-label">Content</label>
-              <textarea className="form-control" rows="5"></textarea>
+              <textarea className="form-control" name="description" rows="5" value={product.description} onChange={(e) => handleChange(e)}></textarea>
             </div>
             <div className="d-flex justify-content-center gap-3">
-              <Link to="/products_ad">
+              <Link to="/productsad">
                 <button type="button" className="btn btn-secondary btn-lg">Cancel</button>
               </Link>
               <button type="submit" className="btn btn-danger btn-lg">Delete</button>

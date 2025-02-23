@@ -1,7 +1,9 @@
-import React from "react";
+import React,{useState} from "react";
 import { Link } from "react-router-dom";
 import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars, FaUber } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from "react-router-dom";
+import { postAddProduct } from "../../services/apiService";
 
 const Sidebar = () => {
   return (
@@ -59,23 +61,54 @@ const Header = () => {
 };
 
 const AddProductForm = () => {
+  const navigate = useNavigate();
+  const [bookId, setBookId] = useState("");
+  const [bookName, setBookName] = useState("");
+  const [genres, setGenres] = useState("");
+  const [author, setAuthor] = useState("");
+  const [publisher, setPublisher] = useState("");
+  const [yearOfPublication, setYearOfPublication] = useState("");
+  const [price, setPrice] = useState("");
+  const [discount, setDiscount] = useState("");
+  const [stock, setStock] = useState("");
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const upload = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    if (!bookId || !bookName || !genres || !author || !publisher || !yearOfPublication || !price || !discount || !stock || !content) {
+      setError("Please fill all the fields!");
+      setLoading(false);
+      return;
+    }
+    try {
+      const res = await postAddProduct(bookId, bookName, genres, author, publisher, yearOfPublication, price, discount, stock, content);
+      console.log(res);
+      navigate("/productsad");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="container mt-5 pt-5">
       <h2 className="fw-bold">Add New Product</h2>
       <div className="bg-light p-4 rounded shadow-sm">
-        <form>
+        <form onSubmit={upload}>
           <div className="row">
             <div className="col-md-4 mb-3">
               <label className="form-label">Book ID</label>
-              <input type="text" className="form-control" />
+              <input type="text" className="form-control" value={bookId} onChange={(e) => setBookId(e.target.value)} />
             </div>
             <div className="col-md-4 mb-3">
               <label className="form-label">Book Name</label>
-              <input type="text" className="form-control" />
+              <input type="text" className="form-control" value={bookName} onChange={(e) => setBookName(e.target.value)}/>
             </div>
             <div className="col-md-4 mb-3">
               <label className="form-label">Genres</label>
-              <select className="form-select">
+              <select className="form-select" value={genres} onChange={(e) => setGenres(e.target.value)}>
                 <option>Select Genre</option>
                 <option>Novel</option>
                 <option>Adventure</option>
@@ -86,29 +119,29 @@ const AddProductForm = () => {
           <div className="row">
             <div className="col-md-4 mb-3">
               <label className="form-label">Author</label>
-              <input type="text" className="form-control" />
+              <input type="text" className="form-control" value={author} onChange={(e) => setAuthor(e.target.value)}/>
             </div>
             <div className="col-md-4 mb-3">
               <label className="form-label">Publisher</label>
-              <input type="text" className="form-control" />
+              <input type="text" className="form-control" value={publisher} onChange={(e) => setPublisher(e.target.value)}/>
             </div>
             <div className="col-md-4 mb-3">
               <label className="form-label">Year of Publication</label>
-              <input type="text" className="form-control" />
+              <input type="text" className="form-control" value={yearOfPublication} onChange={(e) => setYearOfPublication(e.target.value)}/>
             </div>
           </div>
           <div className="row">
             <div className="col-md-4 mb-3">
               <label className="form-label">Price</label>
-              <input type="text" className="form-control" />
+              <input type="text" className="form-control" value={price} onChange={(e) => setPrice(e.target.value)}/>
             </div>
             <div className="col-md-4 mb-3">
               <label className="form-label">Discount %</label>
-              <input type="text" className="form-control" />
+              <input type="text" className="form-control" value={discount} onChange={(e) => setDiscount(e.target.value)}/>
             </div>
             <div className="col-md-4 mb-3">
               <label className="form-label">Stock</label>
-              <input type="text" className="form-control" />
+              <input type="text" className="form-control" value={stock} onChange={(e) => setStock(e.target.value)}/>
             </div>
           </div>
           <div className="mb-3">
@@ -117,7 +150,7 @@ const AddProductForm = () => {
           </div>
           <div className="mb-3">
             <label className="form-label">Content</label>
-            <textarea className="form-control" rows="5"></textarea>
+            <textarea className="form-control" rows="5" value={content} onChange={(e) => setContent(e.target.value)}></textarea>
           </div>
           <div className="d-flex justify-content-between">
             <Link to="/products_ad"><button type="button" className="btn btn-secondary">Cancel</button></Link>
