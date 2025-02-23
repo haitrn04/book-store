@@ -16,6 +16,10 @@ export { default as AddProducts } from './admin/AddProducts';
 export { default as EditProducts } from './admin/EditProducts';
 export { default as Customer } from './admin/Customer';
 export { default as PurchasesHistory } from './admin/PurchasesHistory';
+export { default as ManageMyAccount } from './user/ManageMyAccount';
+export { default as MyProfile } from './user/MyProfile';
+export { default as AddressBook } from './user/AddressBook';
+export { default as MyOrder } from './user/MyOrder';
 
 
 

@@ -26,6 +26,10 @@ import {
   EditProducts,
   Customer,
   PurchasesHistory,
+  ManageMyAccount,
+  MyProfile,
+  AddressBook,
+  MyOrder,
 } from "./pages";
 import ScrollToTop from "./components/ScrollToTop";
 import { Toaster } from "react-hot-toast";
@@ -62,6 +66,10 @@ root.render(
                   <Route path="/editproducts" element={<IsAdmin><EditProducts /></IsAdmin>} />
                   <Route path="/customer" element={<IsAdmin><Customer /></IsAdmin>} />
                   <Route path="/purchaseshistory" element={<IsAdmin><PurchasesHistory /></IsAdmin>} />
+                  <Route path="/ManageMyAccount" element={<ManageMyAccount />} />
+                  <Route path="/MyProfile" element={<MyProfile />} />
+                  <Route path="/AddressBook" element={<AddressBook />} />
+                  <Route path="/MyOrder" element={<MyOrder />} />
 
                 </Routes>
               </AuthWrapper>
