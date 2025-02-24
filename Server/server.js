@@ -77,22 +77,23 @@ app.post('/login', async (req, res) => {
     }
 });
 app.post('/addproduct', async (req, res) => {
-    const { book_id, book_name, genre, author, publisher, yopublication, price, discount, stock, image, description } = req.body;
+    const { id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name } = req.body;
     try {
-        let sql = `INSERT INTO book (book_id, book_name, genre, author, publisher, yopublication, price, discount, stock, image, description)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);`;
-        await pool.query(sql, [book_id, book_name, genre, author, publisher, yopublication, price, discount, stock, image, description]);
-        res.status(200).send({ message: "Insert data into table products successfully" });
+        let sql = `INSERT INTO books (id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);`;
+        await pool.query(sql, [id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name]);
+        res.status(200).send({ message: "Insert data into table books successfully" });
     } catch (err) {
         console.error(err);
         res.sendStatus(500);
     }
 });
 
+// thieu anh
 app.post('/editproduct', async (req, res) => {
     const { book_id, book_name, genre, author, publisher, yopublication, price, discount, stock,  description } = req.body;
     try {
-        let sql = `UPDATE book
+        let sql = `UPDATE books
                     SET book_name=$2, genre=$3, author=$4, publisher=$5, yopublication=$6, price=$7, discount=$8, stock=$9,  description=$10
                     WHERE book_id=$1;`;
         await pool.query(sql, [book_id, book_name, genre, author, publisher, yopublication, price, discount, stock,  description]);
@@ -104,7 +105,7 @@ app.post('/editproduct', async (req, res) => {
 });
 app.get('/products', async (req, res) => {
     try {
-        let sql = `SELECT * FROM book;`;
+        let sql = `SELECT * FROM books;`;
         const data = await pool.query(sql);
         res.status(200).json(data.rows);
     } catch (err) {
@@ -114,10 +115,10 @@ app.get('/products', async (req, res) => {
 });
 
 app.get('/product', async (req, res) => {
-    const { book_id } = req.query;
+    const { id_book } = req.query;
     try {
-        let sql = `SELECT * FROM book WHERE book_id=$1;`;
-        const data = await pool.query(sql, [parseInt(book_id)]);
+        let sql = `SELECT * FROM books WHERE id_book=$1;`;
+        const data = await pool.query(sql, [parseInt(id_book)]);
         res.status(200).json(data.rows);
     } catch (err) {
         console.error(err);

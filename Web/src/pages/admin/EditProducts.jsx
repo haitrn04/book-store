@@ -63,21 +63,21 @@ const AddProductForm = () => {
   const navigate  = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const book_id = searchParams.get('id');
+  const id_book = searchParams.get('id');
   const [product, setProduct] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchProduct = async () => {
-      const response = getProductbyID(book_id);
+      const response = getProductbyID(id_book);
       const data = (await response).data;
       setProduct(data[0]);
       setLoading(false);
     };
     fetchProduct();
-  }, [book_id]);
+  }, [id_book]);
   const handleEdit = async (e) =>{
     e.preventDefault();
-      const res = await postEditProduct(product.book_id, product.book_name, product.genres, product.author, product.publisher, product.yopublication, product.price, product.discount, product.stock, product.description);
+      const res = await postEditProduct(product.id_book, product.book_name, product.genres, product.author, product.publisher, product.yopublication, product.price, product.discount, product.stock, product.description);
       alert(res.data.message);
       navigate("/productsad");
   };
@@ -94,7 +94,7 @@ const AddProductForm = () => {
             <div className="row">
               <div className="col-md-4 mb-3">
                 <label className="form-label">Book ID</label>
-                <input type="text" className="form-control" name="book_id" value={product.book_id} onChange={(e) => handleChange(e)}/>
+                <input type="text" className="form-control" name="id_book" value={product.id_book} onChange={(e) => handleChange(e)}/>
               </div>
               <div className="col-md-4 mb-3">
                 <label className="form-label">Book Name</label>

@@ -12,19 +12,19 @@ const getImage = (idImage) => {
     return axios.get(`http://localhost:3005/image/${idImage}`);
 };
 
-const postAddProduct = (book_id, book_name, genre, author, publisher, yopublication, price, discount, stock, image, description) => {
-    return axios.post('http://localhost:3005/addproduct', { book_id, book_name, genre, author, publisher, yopublication, price, discount, stock, image, description });
+const postAddProduct = (id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name) => {
+    return axios.post('http://localhost:3005/addproduct', { id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name });
 };
 // thieu anh
-const postEditProduct = (book_id, book_name, genre, author, publisher, yopublication, price, discount, stock,  description) => {
-    return axios.post('http://localhost:3005/editproduct', { book_id, book_name, genre, author, publisher, yopublication, price, discount, stock, description });
+const postEditProduct = (id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name) => {
+    return axios.post('http://localhost:3005/editproduct', { id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name });
 };
 
 const getProducts = () => {
     return axios.get('http://localhost:3005/products');
 };
 
-const getProductbyID = (book_id) => {
-    return axios.get(`http://localhost:3005/product/?book_id=${book_id}`);
+const getProductbyID = (id_book) => {
+    return axios.get(`http://localhost:3005/product/?id_book=${id_book}`);
 }
 export { postLogin, getImage, postRegister, postAddProduct,postEditProduct, getProducts, getProductbyID }; 

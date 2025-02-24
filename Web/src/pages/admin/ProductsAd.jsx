@@ -74,8 +74,8 @@ const ProductsAd = () => {
     };
     fetchProducts();
   }, []);
-  const handleEdit = (book_id) => {
-    navigate(`/editproducts/?id=${book_id}`);
+  const handleEdit = (id_book) => {
+    navigate(`/editproducts/?id=${id_book}`);
   };
 
 
@@ -94,9 +94,9 @@ const ProductsAd = () => {
               <Skeleton height={300} count={6} />
             ) : (
               products.map((product) => (
-                <div key={product.book_id} className="col-md-4 mb-4">
+                <div key={product.id_book} className="col-md-4 mb-4">
                   <div className="card shadow-sm border-0 p-3 text-center">
-                    <img src={product.image} className="card-img-top mx-auto" alt={product.book_name} style={{ height: "200px", objectFit: "contain" }} />
+                    <img src={product.image_data} id="prodimg" className="card-img-top mx-auto" alt={product.book_name} style={{ height: "200px", objectFit: "contain" }} />
                     <div className="card-body">
                       <h5 className="card-title text-truncate">{product.book_name}</h5>
                       <p className="text-primary fw-bold">${product.price}</p>
@@ -104,7 +104,7 @@ const ProductsAd = () => {
                         <span className="text-warning me-2">★★★★☆</span>
                         <small className="text-muted">(131)</small> 
                       </div>
-                      <button className="btn btn-outline-primary mt-2" onClick={() => handleEdit(product.book_id)} >Edit Product</button>
+                      <button className="btn btn-outline-primary mt-2" onClick={() => handleEdit(product.id_book)} >Edit Product</button>
                     </div>
                   </div>
                 </div>
