@@ -7,9 +7,9 @@ import { Link } from "react-router-dom";
 
 const ManageMyAccount = () => {
 const [user, setUser] = useState([]);
-const storeuser = JSON.parse(sessionStorage.getItem('user'))?.data;
+const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
 useEffect(() => {
-  setUser(storeuser);
+  setUser(storedUser);
 });
 
   return (
