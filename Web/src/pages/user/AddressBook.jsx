@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 
 /** Sidebar cho menu bên trái */
 const Sidebar = () => {
+  
   return (
     <div
       className="d-flex flex-column p-3 bg-white shadow position-fixed"
@@ -138,10 +139,10 @@ const AddressBook = () => {
     setEditedAddress(null);
   };
   
-
+  const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
   return (
     <>
-      <Navbar />
+      <Navbar user={storedUser} />
       <div className="container">
         <Sidebar />
         <div className="flex-grow-1" style={{ marginLeft: "250px" }}>

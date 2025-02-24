@@ -32,6 +32,17 @@ app.get('/accounts', async (req, res) => {
     }
 })
 
+app.get('/genre', async (req, res) => {
+    try {
+        let sql = `SELECT * FROM genre;`;
+        const data = await pool.query(sql);
+        res.status(200).json(data.rows);
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+})
+
 /////////////////////// POST
 
 app.post('/insert/accounts', async (req, res) => {
@@ -78,11 +89,11 @@ app.post('/login', async (req, res) => {
 });
 // admin
 app.post('/addproduct', async (req, res) => {
-    const { id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description } = req.body;
+    const {  book_name, id_genre, author, publisher, yopublication, price, discount, stock,image_data, description } = req.body;
     try {
-        let sql = `INSERT INTO books (id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);`;
-        await pool.query(sql, [id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description]);
+        let sql = `INSERT INTO books ( book_name, id_genre, author, publisher, yopublication, price, discount, stock,image_data, description)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`;
+        await pool.query(sql, [book_name, id_genre, author, publisher, yopublication, price, discount, stock,image_data, description]);
         res.status(200).send({ message: "Insert data into table books successfully" });
     } catch (err) {
         console.error(err);

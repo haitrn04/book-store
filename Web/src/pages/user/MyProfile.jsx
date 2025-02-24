@@ -100,10 +100,10 @@ const MyProfile = () => {
     setUser(editedUser);
     setEditing(false);
   };
-
+  const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
   return (
     <>
-      <Navbar />
+      <Navbar user={storedUser} />
       <div className="container">
         <Sidebar />
         <div className="flex-grow-1" style={{ marginLeft: "250px" }}>

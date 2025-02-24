@@ -1,9 +1,9 @@
-import React,{useState} from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars, FaUber } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
-import { postAddProduct } from "../../services/apiService";
+import { postAddProduct, getGenre } from "../../services/apiService";
 
 const Sidebar = () => {
   return (
@@ -47,10 +47,10 @@ const Sidebar = () => {
 const Header = () => {
   return (
     <div className="d-flex justify-content-between align-items-center p-3 shadow-sm bg-white position-fixed"
-         style={{ top: "0", left: "250px", right: "0", height: "60px", zIndex: "1000", width: "calc(100% - 250px)" }}>
+      style={{ top: "0", left: "250px", right: "0", height: "60px", zIndex: "1000", width: "calc(100% - 250px)" }}>
       <FaBars className="text-secondary" size={24} />
       <div className="d-flex align-items-center">
-        <img src="./assets/main.png.jpg" className="rounded-circle border" alt="User" height="45px" width="50px"/>
+        <img src="./assets/main.png.jpg" className="rounded-circle border" alt="User" height="45px" width="50px" />
         <div className="text-end ms-2">
           <span className="d-block fw-bold">Moni Roy</span>
           <span className="text-muted">Admin</span>
@@ -75,14 +75,31 @@ const AddProductForm = () => {
   const [description, setdescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+  const [genre, setGenre] = useState("")
+
+
+
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const response = await getGenre();
+        setGenre(response.data);
+      } catch (error) {
+        console.error("Error fetching genres:", error);
+        setError("Failed to fetch genres");
+      }
+    };
+
+    fetchGenres();
+  }, []);
+
   const upload = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    console.log(id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description);
+    console.log(book_name,"genre : " ,id_genre, author, publisher, yopublication, price, discount, stock, image_data, description);
     try {
-      const res = await postAddProduct(id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description);
+      const res = await postAddProduct(book_name, id_genre, author, publisher, yopublication, price, discount, stock,image_data, description);
       console.log(res);
       navigate("/productsad");
     } catch (error) {
@@ -90,13 +107,13 @@ const AddProductForm = () => {
     }
   };
 
-  const previewFile= (data) => {
+  const previewFile = (data) => {
     const reader = new FileReader();
     reader.addEventListener("load", function () {
       setimage_data(reader.result);
       console.log(image_data);
     }, false);
-  
+
     if (data) {
       reader.readAsDataURL(data);
     }
@@ -109,56 +126,53 @@ const AddProductForm = () => {
         <form onSubmit={upload}>
           <div className="row">
             <div className="col-md-4 mb-3">
-              <label className="form-label">Book ID</label>
-              <input type="text" className="form-control" value={id_book} onChange={(e) => setid_book(e.target.value)} />
-            </div>
-            <div className="col-md-4 mb-3">
               <label className="form-label">Book Name</label>
-              <input type="text" className="form-control" value={book_name} onChange={(e) => setbook_name(e.target.value)}/>
+              <input type="text" className="form-control" value={book_name} onChange={(e) => setbook_name(e.target.value)} />
             </div>
             <div className="col-md-4 mb-3">
               <label className="form-label">Genres</label>
-              <select className="form-select" value={id_genre} onChange={(e) => setid_genre(e.target.value)}>
-                <option>5</option>
-                <option>2</option>
-                <option>3</option>
-                <option>5</option>
+              <select className="form-select" onChange={(e) => setid_genre(e.target.value)}>
+                {genre && genre.map((e, index) => (
+                  <option key={index} value={e.id_genre}>
+                    {e.genre}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
           <div className="row">
             <div className="col-md-4 mb-3">
               <label className="form-label">Author</label>
-              <input type="text" className="form-control" value={author} onChange={(e) => setAuthor(e.target.value)}/>
+              <input type="text" className="form-control" value={author} onChange={(e) => setAuthor(e.target.value)} />
             </div>
             <div className="col-md-4 mb-3">
               <label className="form-label">Publisher</label>
-              <input type="text" className="form-control" value={publisher} onChange={(e) => setPublisher(e.target.value)}/>
+              <input type="text" className="form-control" value={publisher} onChange={(e) => setPublisher(e.target.value)} />
             </div>
             <div className="col-md-4 mb-3">
               <label className="form-label">Year of Publication</label>
-              <input type="text" className="form-control" value={yopublication} onChange={(e) => setyopublication(e.target.value)}/>
+              <input type="date" className="form-control" value={yopublication} onChange={(e) => setyopublication(e.target.value)} />
             </div>
           </div>
           <div className="row">
             <div className="col-md-4 mb-3">
               <label className="form-label">Price</label>
-              <input type="text" className="form-control" value={price} onChange={(e) => setPrice(e.target.value)}/>
+              <input type="number" className="form-control" value={price} onChange={(e) => setPrice(e.target.value)} />
             </div>
             <div className="col-md-4 mb-3">
               <label className="form-label">Discount %</label>
-              <input type="text" className="form-control" value={discount} onChange={(e) => setDiscount(e.target.value)}/>
+              <input type="number" className="form-control" value={discount} onChange={(e) => setDiscount(e.target.value)} />
             </div>
             <div className="col-md-4 mb-3">
               <label className="form-label">Stock</label>
-              <input type="text" className="form-control" value={stock} onChange={(e) => setStock(e.target.value)}/>
+              <input type="number" className="form-control" value={stock} onChange={(e) => setStock(e.target.value)} />
             </div>
           </div>
           <div className="mb-3">
             <label className="form-label">Select Pictures</label>
             <input type="file" className="form-control" id="prod" onChange={(e) => {
               previewFile(e.target.files[0]);
-            }}/>
+            }} />
           </div>
           <div className="mb-3">
             <label className="form-label">description</label>
