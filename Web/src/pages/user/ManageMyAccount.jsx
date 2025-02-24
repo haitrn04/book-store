@@ -16,10 +16,10 @@ const [user, setUser] = useState({
   district: "",
   ward: "",
   gender: "Female",});
-
+  const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
   return (
     <>
-      <Navbar />
+      <Navbar user={storedUser} />
       <div className = "container">
         <Sidebar/>
         <div className = "flex-grow-1" style = {{marginLeft: "250px" }}>
