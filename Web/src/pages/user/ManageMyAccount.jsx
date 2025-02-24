@@ -1,21 +1,16 @@
-import React, {useState, addressState} from "react";
+import React, {useState, addressState, useEffect} from "react";
 import { Footer, Navbar } from "../../components";
 import { FaUsers,FaUber, FaShoppingCart, FaDollarSign, FaClock, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
+
+
 const ManageMyAccount = () => {
-const [user, setUser] = useState({
-  fullName: "Hieu Nguyen",
-  email: "HieuNguyen@gmail.com",
-  mobile: "0123456789",
-  birthday: "01/01/2000", 
-  phoneNumber: "0123456789",
-  address: "ABC Street",
-  postcode: "100000",
-  province: "Hanoi",
-  district: "",
-  ward: "",
-  gender: "Female",});
+const [user, setUser] = useState([]);
+const storeuser = JSON.parse(sessionStorage.getItem('user'))?.data;
+useEffect(() => {
+  setUser(storeuser);
+});
 
   return (
     <>
@@ -28,10 +23,10 @@ const [user, setUser] = useState({
           <div style={{display: "flex"}}>
             <div className = "card shadow-sm p-3" style = {{width: "35%"}}>  
               <p style={{fontSize: "23px"}}>Personal Profile</p>
-              <div><p><strong>Name: </strong> {user.fullName}</p></div>
+              <div><p><strong>Name: </strong> {user.full_name}</p></div>
               <div><p><strong>Email: </strong> {user.email}</p></div>
-              <div><p><strong>Mobile: </strong> {user.mobile}</p></div>
-              <div><p><strong>Birthday: </strong> {user.birthday}</p></div>
+              <div><p><strong>Mobile: </strong> </p></div>
+              <div><p><strong>Birthday: </strong></p></div>
             </div>
             <div className = "card shadow-sm p-3" style = {{left: "50px" ,  width: "60%"}}>  
               <div className = "s0" style={{display: "flex"}}>

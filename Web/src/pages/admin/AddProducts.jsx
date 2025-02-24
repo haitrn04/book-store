@@ -73,7 +73,6 @@ const AddProductForm = () => {
   const [stock, setStock] = useState("");
   const [image_data, setimage_data] = useState("");
   const [description, setdescription] = useState("");
-  const [image_name, setImageName] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
@@ -81,9 +80,9 @@ const AddProductForm = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    console.log(id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name);
+    console.log(id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description);
     try {
-      const res = await postAddProduct(id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name);
+      const res = await postAddProduct(id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description);
       console.log(res);
       navigate("/productsad");
     } catch (error) {

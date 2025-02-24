@@ -63,7 +63,7 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-        let sql = `SELECT id_account, full_name, email, role, image_data, image_name FROM accounts WHERE email=$1 AND password=$2;`;
+        let sql = `SELECT id_account, full_name, email, role, image_data FROM accounts WHERE email=$1 AND password=$2;`;
         const result = await pool.query(sql, [email, password]);
 
         if (result.rows.length > 0) {
@@ -76,12 +76,13 @@ app.post('/login', async (req, res) => {
         res.sendStatus(500);
     }
 });
+// admin
 app.post('/addproduct', async (req, res) => {
-    const { id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name } = req.body;
+    const { id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description } = req.body;
     try {
-        let sql = `INSERT INTO books (id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);`;
-        await pool.query(sql, [id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name]);
+        let sql = `INSERT INTO books (id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);`;
+        await pool.query(sql, [id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description]);
         res.status(200).send({ message: "Insert data into table books successfully" });
     } catch (err) {
         console.error(err);
@@ -126,6 +127,11 @@ app.get('/product', async (req, res) => {
     }
 });
 
+//user
+
+
+
+// 
 // API để tải ảnh lên
 // app.post('/upload', upload.single('image'), (req, res) => {
 //     if (!req.file) {

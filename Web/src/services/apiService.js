@@ -12,12 +12,12 @@ const getImage = (idImage) => {
     return axios.get(`http://localhost:3005/image/${idImage}`);
 };
 
-const postAddProduct = (id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name) => {
-    return axios.post('http://localhost:3005/addproduct', { id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name });
+const postAddProduct = (id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description ) => {
+    return axios.post('http://localhost:3005/addproduct', { id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description  });
 };
 // thieu anh
-const postEditProduct = (id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name) => {
-    return axios.post('http://localhost:3005/editproduct', { id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name });
+const postEditProduct = (id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description ) => {
+    return axios.post('http://localhost:3005/editproduct', { id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description  });
 };
 
 const getProducts = () => {
