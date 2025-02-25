@@ -12,7 +12,6 @@ import { Link } from "react-router-dom";
 
 /** Sidebar cho menu bên trái */
 const Sidebar = () => {
-  
   return (
     <div
       className="d-flex flex-column p-3 bg-white shadow position-fixed"
@@ -139,10 +138,10 @@ const AddressBook = () => {
     setEditedAddress(null);
   };
   
-  const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
+
   return (
     <>
-      <Navbar user={storedUser} />
+      <Navbar />
       <div className="container">
         <Sidebar />
         <div className="flex-grow-1" style={{ marginLeft: "250px" }}>
@@ -181,6 +180,22 @@ const AddressBook = () => {
                       className="form-control"
                       placeholder="Please enter your phone number"
                       value={editedAddress.phoneNumber}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label
+                      htmlFor="phoneNumber"
+                      style={{ fontWeight: "bold" }}
+                    >
+                     Detailed Address
+                    </label>
+                    <input
+                      id="detailedAddress"
+                      name="detailedAddress"
+                      className="form-control"
+                      placeholder="Enter your full address here..."
+                      rows="5" // Điều chỉnh số dòng hiển thị
                       onChange={handleChange}
                     />
                   </div>
