@@ -1,6 +1,9 @@
 const express = require('express')
 const pool = require('./db')
+const http = require('http');
 
+const userRouter = require('./routes/user')
+const productRouter = require('./routes/product')
 const port = process.env.PORT || 3005
 const fs = require('fs');
 const app = express()
@@ -9,6 +12,7 @@ app.use(cors());
 
 //routes
 app.use(express.json())
+const server = http.Server(app);
 
 pool.connect((err, connection) => {
     
@@ -21,56 +25,9 @@ pool.connect((err, connection) => {
 
 /////////////////////// GET
 
-app.get('/accounts', async (req, res) => {
-    try {
-        let sql = `SELECT * FROM accounts;`;
-        const data = await pool.query(sql);
-        res.status(200).json(data.rows);
-    } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
-    }
-})
-
-app.get('/genre', async (req, res) => {
-    try {
-        let sql = `SELECT * FROM genre;`;
-        const data = await pool.query(sql);
-        res.status(200).json(data.rows);
-    } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
-    }
-})
+app.use('/accounts',userRouter);
 
 /////////////////////// POST
-
-app.post('/insert/accounts', async (req, res) => {
-    const { full_name, email, password, role } = req.body
-    try {
-        let sql = ` INSERT INTO accounts (full_name, email, password, role)
-                        VALUES ($1, $2, $3, $4);`;
-        await pool.query(sql, [full_name, email, password, role]);
-        res.status(200).send({ message: "Insert data into table accounts successfully" });
-    } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
-    }
-})
-
-app.post('/register', async (req, res) => {
-    const { full_name, email, password } = req.body
-    try {
-        let sql = ` INSERT INTO accounts (full_name, email, password, role)
-                        VALUES ($1, $2, $3, 2);`;
-        await pool.query(sql, [full_name, email, password ]);
-        res.status(200).send({ message: "Register account successfully" });
-    } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
-    }
-})
-
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -88,60 +45,23 @@ app.post('/login', async (req, res) => {
     }
 });
 // admin
-app.post('/addproduct', async (req, res) => {
-    const {  book_name, id_genre, author, publisher, yopublication, price, discount, stock,image_data, description } = req.body;
+
+app.use('/products',productRouter);
+
+
+app.post('/editinfor', async (req, res) => {
+    const { id_account, full_name, image_data, gender, birthday } = req.body;
     try {
-        let sql = `INSERT INTO books ( book_name, id_genre, author, publisher, yopublication, price, discount, stock,image_data, description)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`;
-        await pool.query(sql, [book_name, id_genre, author, publisher, yopublication, price, discount, stock,image_data, description]);
-        res.status(200).send({ message: "Insert data into table books successfully" });
+        let sql = `UPDATE accounts
+                    SET full_name=$2, image_data=$3, gender=$4, birthday=$5 
+                    WHERE id_account=$1;`;
+        await pool.query(sql, [id_account, full_name, image_data, gender, birthday]);
+        res.status(200).send({ message: "Update data into table accounts successfully" });
     } catch (err) {
         console.error(err);
         res.sendStatus(500);
     }
 });
-
-// thieu anh
-app.post('/editproduct', async (req, res) => {
-    const { book_id, book_name, genre, author, publisher, yopublication, price, discount, stock,  description } = req.body;
-    try {
-        let sql = `UPDATE books
-                    SET book_name=$2, genre=$3, author=$4, publisher=$5, yopublication=$6, price=$7, discount=$8, stock=$9,  description=$10
-                    WHERE book_id=$1;`;
-        await pool.query(sql, [book_id, book_name, genre, author, publisher, yopublication, price, discount, stock,  description]);
-        res.status(200).send({ message: "Update data into table products successfully" });
-    } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
-    }
-});
-app.get('/products', async (req, res) => {
-    try {
-        let sql = `SELECT * FROM books;`;
-        const data = await pool.query(sql);
-        res.status(200).json(data.rows);
-    } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
-    }
-});
-
-app.get('/product', async (req, res) => {
-    const { id_book } = req.query;
-    try {
-        let sql = `SELECT * FROM books WHERE id_book=$1;`;
-        const data = await pool.query(sql, [parseInt(id_book)]);
-        res.status(200).json(data.rows);
-    } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
-    }
-});
-
-//user
-
-
-
 // 
 // API để tải ảnh lên
 // app.post('/upload', upload.single('image'), (req, res) => {
@@ -178,4 +98,4 @@ app.get('/product', async (req, res) => {
 //     });
 // });
 
-app.listen(port, () => console.log(`Server has started on port: ${port}`))
+server.listen(port, () => console.log(`Server has started on port: ${port}`))

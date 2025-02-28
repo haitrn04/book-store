@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Footer, Navbar } from "../../components";
 import {
   FaUsers,
@@ -14,6 +14,7 @@ import {
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
+import { getInfor } from "../../services/apiService";
 
 const Sidebar = () => {
   return (
@@ -58,20 +59,16 @@ const Sidebar = () => {
 
 const MyProfile = () => {
   // Tạo đối tượng user mặc định
-  const [user, setUser] = useState({
-    fullName: "Hieu Nguyen",
-    email: "HieuNguyen@gmail.com",
-    mobile: "0123456789",
-    birthday: "01/01/2000",
-    phoneNumber: "0123456789",
-    address: "ABC Street",
-    postcode: "100000",
-    province: "Hanoi",
-    district: "",
-    ward: "",
-    gender: "Female",
-    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaYEpc4B2qC8kSHxdMwncUf29mvhGps7RVhg&s", // Ảnh mặc định
-  });
+  const [user, setUser] = useState([]);
+  const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
+  useEffect(() => {
+    const getin4 = async () => {
+      const response = await(getInfor(storedUser.id_account));
+      setUser(response.data[0]);
+      }
+      getin4();
+  
+    }, [storedUser.id_account]);
   
   const [editing, setEditing] = useState(false);
 
@@ -263,7 +260,7 @@ const MyProfile = () => {
                       <p style={{ fontWeight: "bold" }}>Full Name</p>
                     </div>
                     <div className="item-s2">
-                      <p>{user.fullName}</p>
+                      <p>{user.full_name}</p>
                     </div>
                   </div>
                   <div className="item-s1">
@@ -279,7 +276,7 @@ const MyProfile = () => {
                       <p style={{ fontWeight: "bold" }}>Mobile</p>
                     </div>
                     <div className="item-s2">
-                      <p>{user.mobile}</p>
+                      <p>{user.phone_num}</p>
                     </div>
                   </div>
                 <div></div>
@@ -331,7 +328,7 @@ const MyProfile = () => {
                     <p style={{ fontWeight: "bold" }}>Ảnh đại điện</p>
                     <div className = "img" >
                     <img
-                      src={user.avatar || selectedImage}  // Ưu tiên ảnh đã lưu
+                      src={user.image_data || selectedImage}  // Ưu tiên ảnh đã lưu
                       alt="User Avatar"
                       style={{ width: "200px", height: "200px", objectFit: "cover", borderRadius: "10px" }}
                     />

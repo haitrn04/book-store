@@ -3,14 +3,19 @@ import { Footer, Navbar } from "../../components";
 import { FaUsers,FaUber, FaShoppingCart, FaDollarSign, FaClock, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
-
+import { getInfor } from "../../services/apiService";
 
 const ManageMyAccount = () => {
 const [user, setUser] = useState([]);
 const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
 useEffect(() => {
-  setUser(storedUser);
-});
+  const getin4 = async () => {
+    const response = await(getInfor(storedUser.id_account));
+    setUser(response.data[0]);
+    }
+    getin4();
+
+  }, [storedUser.id_account]);
 
   return (
     <>
@@ -25,8 +30,8 @@ useEffect(() => {
               <p style={{fontSize: "23px"}}>Personal Profile</p>
               <div><p><strong>Name: </strong> {user.full_name}</p></div>
               <div><p><strong>Email: </strong> {user.email}</p></div>
-              <div><p><strong>Mobile: </strong> </p></div>
-              <div><p><strong>Birthday: </strong></p></div>
+              <div><p><strong>Mobile: </strong> </p>{user.phone_num}</div>
+              <div><p><strong>Birthday: </strong></p>{user.birthday}</div>
             </div>
             <div className = "card shadow-sm p-3" style = {{left: "50px" ,  width: "60%"}}>  
               <div className = "s0" style={{display: "flex"}}>

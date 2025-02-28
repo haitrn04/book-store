@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Footer, Navbar } from "../../components";
 import {
   FaUsers,
@@ -54,18 +54,6 @@ const Sidebar = () => {
 
 /** Trang Address Book */
 const AddressBook = () => {
-  // Mảng chứa các địa chỉ của người dùng
-  // const [addresses, setAddresses] = useState([
-  //   {
-  //     fullName: "Hieu Nguyen",
-  //     phoneNumber: "093722837",
-  //     address: "ABC Street",
-  //     postcode: "100000",
-  //     province: "Hanoi",
-  //     district: "",
-  //     ward: "",
-  //   },
-  // ]);
   const [user, setUser] = useState([
     {
       fullName: "Hieu Nguyen",
@@ -82,8 +70,20 @@ const AddressBook = () => {
     }
   ]);
   
-  
+  const [province, setProvince] = useState([]);
+  const [district, setDistrict] = useState("");
+  const [ward, setWard] = useState("");
+  useEffect(() => {
+    fetch("https://open.oapi.vn/location/provinces?size=63&query=")
+      .then((res) => res.json())
+      .then((data) => {
+        setProvince(data.data);
+        
+      });
+  }, []);
 
+  
+  console.log(province);
   /* 
     editingIndex: nếu là số từ 0 đến addresses.length - 1, tức đang chỉnh sửa địa chỉ đó.
     Nếu editingIndex === addresses.length, nghĩa là đang thêm địa chỉ mới.
