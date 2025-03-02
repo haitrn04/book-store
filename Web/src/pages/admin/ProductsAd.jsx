@@ -78,7 +78,6 @@ const ProductsAd = () => {
   const handleEdit = (id_book) => {
     navigate(`/editproducts/?id=${id_book}`);
   };
-  console.log(products)
 
   return (
     <div className="d-flex">
@@ -106,8 +105,8 @@ const ProductsAd = () => {
                     />
 
                     <div className="card-body">
-                      <h5 className="card-title text-truncate">{product.book_name}</h5>
-                      <p className="text-primary fw-bold">${product.price}</p>
+                      <h5 className="card-title text-truncate">{product.book_name.substring(0, 40)}...</h5>
+                      <p className="text-primary fw-bold">{product.price} VNĐ</p>
                       <div className="d-flex justify-content-center align-items-center">
                         <span className="text-warning me-2">★★★★☆</span>
                         <small className="text-muted">(131)</small>

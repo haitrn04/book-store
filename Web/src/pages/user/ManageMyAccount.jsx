@@ -1,6 +1,6 @@
 import React, {useState, addressState, useEffect} from "react";
-import { Footer, Navbar } from "../../components";
-import { FaUsers,FaUber, FaShoppingCart, FaDollarSign, FaClock, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars } from "react-icons/fa";
+import {  Navbar } from "../../components";
+import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 import { getInfor } from "../../services/apiService";

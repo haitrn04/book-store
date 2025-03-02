@@ -24,7 +24,7 @@ const Sidebar = () => {
           </Link>
         </li>
         <li className="nav-item">
-          <Link to="/productstock" className="nav-link text-white fw-bold bg-primary p-2 rounded">
+          <Link to="" className="nav-link text-white fw-bold bg-primary p-2 rounded">
             <FaChartBar className="me-2" /> Product Stock
           </Link>
         </li>
