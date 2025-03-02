@@ -14,8 +14,12 @@ const getImage = (idImage) => {
 const getGenre = () => {
     return axios.get('http://localhost:3005/accounts/genre')
 }
-const postAddProduct = ( book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description) => {
-    return axios.post('http://localhost:3005/products/addproduct', {  book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description});
+const postAddProduct = (formData) => {
+    return axios.post('http://localhost:3005/products/addproduct', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
 };
 // co anh
 const postEditProduct = ( book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name) => {

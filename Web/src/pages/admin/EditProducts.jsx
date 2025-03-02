@@ -2,7 +2,7 @@ import React, { useState,useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars, FaUber } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { getProductbyID, postEditProduct, deleteProductbyID } from "../../services/apiService";
+import { getProductbyID, postEditProduct } from "../../services/apiService";
 
 const Sidebar = () => {
   return (
@@ -85,12 +85,6 @@ const AddProductForm = () => {
     const { name, value } = e.target;
     setProduct({...product, [name]: value});
   };
-  const delprd = async () => {
-    const response = await deleteProductbyID(id_book);
-    if (response.status == 200){
-      navigate("/productsad");
-    }
-  }
 
     return (
       <div className="container mt-5 pt-5">
@@ -156,7 +150,7 @@ const AddProductForm = () => {
               <Link to="/productsad">
                 <button type="button" className="btn btn-secondary btn-lg">Cancel</button>
               </Link>
-              <button type="submit" className="btn btn-danger btn-lg" onClick={delprd()}>Delete</button>
+              <button type="submit" className="btn btn-danger btn-lg">Delete</button>
               <button type="submit" className="btn btn-primary btn-lg">Edit</button>
             </div>
           </form>

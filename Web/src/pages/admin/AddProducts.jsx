@@ -4,6 +4,8 @@ import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars, FaUber } from
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 import { postAddProduct, getGenre } from "../../services/apiService";
+import { toast } from "react-toastify"; // Import react-toastify
+import 'react-toastify/dist/ReactToastify.css'; // Import the default styles for toast
 
 const Sidebar = () => {
   return (
@@ -62,7 +64,6 @@ const Header = () => {
 
 const AddProductForm = () => {
   const navigate = useNavigate();
-  const [id_book, setid_book] = useState("");
   const [book_name, setbook_name] = useState("");
   const [id_genre, setid_genre] = useState("");
   const [author, setAuthor] = useState("");
@@ -71,19 +72,22 @@ const AddProductForm = () => {
   const [price, setPrice] = useState("");
   const [discount, setDiscount] = useState("");
   const [stock, setStock] = useState("");
-  const [image_data, setimage_data] = useState("");
+  const [image_data, setimage_data] = useState(null);
   const [description, setdescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [genre, setGenre] = useState("")
+  const [genre, setGenre] = useState([]);
 
-
-
+  // Fetch genres
   useEffect(() => {
     const fetchGenres = async () => {
       try {
         const response = await getGenre();
         setGenre(response.data);
+        if (id_genre === "") {
+          setid_genre(response.data[0].id_genre);
+          
+        }
       } catch (error) {
         console.error("Error fetching genres:", error);
         setError("Failed to fetch genres");
@@ -91,39 +95,46 @@ const AddProductForm = () => {
     };
 
     fetchGenres();
-  }, []);
+  }, [id_genre]);
 
   const upload = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
-    console.log(book_name,"genre : " ,id_genre, author, publisher, yopublication, price, discount, stock, image_data, description);
+
+    const formData = new FormData();
+    formData.append("book_name", book_name);
+    formData.append("id_genre", id_genre);
+    formData.append("author", author);
+    formData.append("publisher", publisher);
+    formData.append("yopublication", yopublication);
+    formData.append("price", price);
+    formData.append("discount", discount);
+    formData.append("stock", stock);
+    formData.append("imageData", image_data);
+    formData.append("description", description);
+
     try {
-      const res = await postAddProduct(book_name, id_genre, author, publisher, yopublication, price, discount, stock,image_data, description);
+      const res = await postAddProduct(formData);
       console.log(res);
+      toast.success("Product added successfully!");
       navigate("/productsad");
     } catch (error) {
       console.log(error);
+      toast.error("Failed to insert product"); 
+    } finally {
+      setLoading(false);
     }
   };
 
   const previewFile = (data) => {
-    const reader = new FileReader();
-    reader.addEventListener("load", function () {
-      setimage_data(reader.result);
-      console.log(image_data);
-    }, false);
-
-    if (data) {
-      reader.readAsDataURL(data);
-    }
-  }
+    setimage_data(data);
+  };
 
   return (
     <div className="container mt-5 pt-5">
       <h2 className="fw-bold">Add New Product</h2>
       <div className="bg-light p-4 rounded shadow-sm">
-        <form onSubmit={upload}>
+        <form onSubmit={upload} encType="multipart/form-data">
           <div className="row">
             <div className="col-md-4 mb-3">
               <label className="form-label">Book Name</label>
@@ -131,7 +142,7 @@ const AddProductForm = () => {
             </div>
             <div className="col-md-4 mb-3">
               <label className="form-label">Genres</label>
-              <select className="form-select" onChange={(e) => setid_genre(e.target.value)}>
+              <select className="form-select" onChange={(e) => setid_genre(e.target.value)} value={id_genre}>
                 {genre && genre.map((e, index) => (
                   <option key={index} value={e.id_genre}>
                     {e.genre}
@@ -170,12 +181,10 @@ const AddProductForm = () => {
           </div>
           <div className="mb-3">
             <label className="form-label">Select Pictures</label>
-            <input type="file" className="form-control" id="prod" onChange={(e) => {
-              previewFile(e.target.files[0]);
-            }} />
+            <input type="file" className="form-control" id="prod" onChange={(e) => previewFile(e.target.files[0])} />
           </div>
           <div className="mb-3">
-            <label className="form-label">description</label>
+            <label className="form-label">Description</label>
             <textarea className="form-control" rows="5" value={description} onChange={(e) => setdescription(e.target.value)}></textarea>
           </div>
           <div className="d-flex justify-content-between">

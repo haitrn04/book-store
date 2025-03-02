@@ -98,11 +98,11 @@ const ProductsAd = () => {
                 <div key={product.id_book} className="col-md-4 mb-4">
                   <div className="card shadow-sm border-0 p-3 text-center">
                     <img
-                      src={product.image_data.data}
+                      src={`data:image/jpeg;base64,${product.image_data}`}
                       id="prodimg"
                       className="card-img-top mx-auto"
                       alt={product.book_name}
-                      style={{ height: "200px", objectFit: "contain" }}
+                      style={{ height: "300px", objectFit: "contain", maxWidth: "200px" }}
                     />
 
                     <div className="card-body">

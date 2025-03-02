@@ -1,31 +1,32 @@
-const express = require('express')
-const pool = require('./db')
+const express = require('express');
+const pool = require('./db');
 const http = require('http');
 
-const userRouter = require('./routes/user')
-const productRouter = require('./routes/product')
-const port = process.env.PORT || 3005
+const userRouter = require('./routes/user');
+const productRouter = require('./routes/product');
+const port = process.env.PORT || 3005;
 const fs = require('fs');
-const app = express()
+const app = express();
 const cors = require('cors');
-app.use(cors());
+app.use(cors({ origin: '*' }));
 
 //routes
-app.use(express.json())
+app.use(express.json());
 const server = http.Server(app);
 
 pool.connect((err, connection) => {
-    
-    console.log('connected db')
-})
-
-
+    if (err) {
+        console.error('Database connection error:', err);
+    } else {
+        console.log('connected db');
+    }
+});
 
 // api
 
 /////////////////////// GET
 
-app.use('/accounts',userRouter);
+app.use('/accounts', userRouter);
 
 /////////////////////// POST
 app.post('/login', async (req, res) => {
@@ -46,8 +47,7 @@ app.post('/login', async (req, res) => {
 });
 // admin
 
-app.use('/products',productRouter);
-
+app.use('/products', productRouter);
 
 app.post('/editinfor', async (req, res) => {
     const { id_account, full_name, image_data, gender, birthday } = req.body;
@@ -98,4 +98,4 @@ app.post('/editinfor', async (req, res) => {
 //     });
 // });
 
-server.listen(port, () => console.log(`Server has started on port: ${port}`))
+server.listen(port, () => console.log(`Server has started on port: ${port}`));
