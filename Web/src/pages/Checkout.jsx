@@ -31,6 +31,7 @@ const Checkout = () => {
     state.map((item) => {
       return (totalItems += item.qty);
     });
+
     return (
       <>
         <div className="container py-5">

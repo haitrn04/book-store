@@ -99,7 +99,7 @@ const productcon = {
     getProductbyID: async (req, res) => {
         const { id_book } = req.query;
         try {
-            const sql = `SELECT  id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, encode(image_data, 'base64') AS image_data, description FROM books WHERE id_book=$1;`;
+            const sql = `SELECT  id_book, book_name, b.id_genre, author, publisher, yopublication, price, discount, stock, genre, encode(image_data, 'base64') AS image_data, description FROM books as b join genre as g on b.id_genre = g.id_genre WHERE id_book=$1;`;
             const data = await pool.query(sql, [parseInt(id_book)]);
             res.status(200).json(data.rows);
 
@@ -109,6 +109,25 @@ const productcon = {
         }
     },
 
+    getProductByGenre: async (req, res) => {
+        const { id_genre } = req.query;  // Use req.query instead of req.body
+        try {
+            const sql = `
+                SELECT 
+                    id_book, book_name, author, publisher, yopublication, price, discount, stock, 
+                    encode(image_data, 'base64') AS image_data, description 
+                FROM books 
+                WHERE id_genre=$1;
+            `;
+            const data = await pool.query(sql, [parseInt(id_genre)]);
+            res.status(200).json(data.rows);
+    
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
+    
     deleteProductbyID: async (req, res) => {
         const { id_book } = req.query;
         try {

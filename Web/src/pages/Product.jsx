@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { addCart } from "../redux/action";
 
 import { Footer, Navbar } from "../components";
-import { getProductbyID } from "../services/apiService";
+import { getProductbyID, getProductbyGenre } from "../services/apiService";
 const Product = () => {
   const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
   const { id } = useParams();
@@ -27,18 +27,16 @@ const Product = () => {
       setLoading2(true);
       const response = getProductbyID(id);
       const data = (await response).data;
-      setProduct((await response).data);
+      setProduct(data[0]);
       setLoading(false);
-      const response2 = await fetch(
-        `https://fakestoreapi.com/products/category/${data.category}`
-      );
-      const data2 = await response2.json();
+      const response2 = getProductbyGenre(data[0].id_genre);
+      const data2 = (await response2).data;
       setSimilarProducts(data2);
       setLoading2(false);
     };
     getProduct();
   }, [id]);
-console.log(product)
+console.log("sp ", product, "id ", id)
   const Loading = () => {
     return (
       <>
@@ -68,19 +66,19 @@ console.log(product)
         <div className="container my-5 py-2">
           <div className="row">
             <div className="col-md-6 col-sm-12 py-3">
-              <img
-                className="img-fluid"
-                src={product.image}
-                alt={product.title}
-                width="400px"
-                height="400px"
-              />
+            <img
+                  src={`data:image/jpeg;base64,${product.image_data}`}
+                  id="prodimg"
+                  className="card-img-top mx-auto"
+                  alt={product.book_name}
+                  style={{ height: "450px", objectFit: "contain", maxWidth: "450px" }}
+                />
             </div>
             <div className="col-md-6 col-md-6 py-5">
-              <h4 className="text-uppercase text-muted">{product.category}</h4>
-              <h1 className="display-5">{product.title}</h1>
+              <h4 className="text-uppercase text-muted">{product.genre}</h4>
+              <h1 className="display-5">{product.book_name}</h1>
               <p className="lead">
-                {product.rating && product.rating.rate}{" "}
+                {product.rating && product.rating.rate}{" "} Chua set
                 <i className="fa fa-star"></i>
               </p>
               <h3 className="display-6  my-4">${product.price}</h3>
@@ -131,17 +129,17 @@ console.log(product)
           <div className="d-flex">
             {similarProducts.map((item) => {
               return (
-                <div key={item.id} className="card mx-4 text-center">
+                <div key={item.id_book} className="card mx-4 text-center">
                   <img
                     className="card-img-top p-3"
-                    src={item.image}
+                    src={`data:image/jpeg;base64,${item.image_data}`}
                     alt="Card"
                     height={300}
                     width={300}
                   />
                   <div className="card-body">
                     <h5 className="card-title">
-                      {item.title.substring(0, 15)}...
+                      {item.book_name.substring(0, 15)}...
                     </h5>
                   </div>
                   {/* <ul className="list-group list-group-flush">
@@ -149,7 +147,7 @@ console.log(product)
                   </ul> */}
                   <div className="card-body">
                     <Link
-                      to={"/product/" + item.id}
+                      to={"/product/" + item.id_book}
                       className="btn btn-dark m-1"
                     >
                       Buy Now

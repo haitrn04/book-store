@@ -4,8 +4,9 @@ const productcon = require('../controller/productcon');
 
 router.get('/getproducts', productcon.getProducts);
 router.get('/getproductbyid', productcon.getProductbyID);
-router.post('/addproduct', productcon.addproduct); // Fix syntax error
+router.post('/addproduct', productcon.addproduct);
 router.post('/editproduct', productcon.editproduct);
 router.delete('/deleteproduct', productcon.deleteProductbyID);
+router.get('/getproductbygenre', productcon.getProductByGenre); 
 
 module.exports = router;

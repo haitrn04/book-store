@@ -54,7 +54,7 @@ const Cart = () => {
                   <div className="card-body">
                     {state.map((item) => {
                       return (
-                        <div key={item.id}>
+                        <div key={item.id_book}>
                           <div className="row d-flex align-items-center">
                             <div className="col-lg-3 col-md-12">
                               <div
@@ -62,18 +62,18 @@ const Cart = () => {
                                 data-mdb-ripple-color="light"
                               >
                                 <img
-                                  src={item.image}
+                                  src={`data:image/jpeg;base64,${item.image_data}`}
                                   // className="w-100"
-                                  alt={item.title}
-                                  width={100}
-                                  height={75}
+                                  alt={item.book_name}
+                                  width={75}
+                                  height={125}
                                 />
                               </div>
                             </div>
 
                             <div className="col-lg-5 col-md-6">
                               <p>
-                                <strong>{item.title}</strong>
+                                <strong>{item.book_name}</strong>
                               </p>
                               {/* <p>Color: blue</p>
                               <p>Size: M</p> */}

@@ -26,6 +26,11 @@ const postEditProduct = ( book_name, id_genre, author, publisher, yopublication,
     return axios.post('http://localhost:3005/products/editproduct', {  book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name });
 };
 
+const getProductbyGenre = (id_genre) => {
+    return axios.get(`http://localhost:3005/products/getproductbygenre?id_genre=${id_genre}`);
+};
+
+
 const getProducts = () => {
     return axios.get('http://localhost:3005/products/getproducts');
 };
@@ -42,4 +47,4 @@ const deleteProductbyID = (id_book) => {
     return axios.delete(`http://localhost:3005/products/deleteproduct/?id_book=${id_book}`)
 }
 
-export { postLogin, getImage, postRegister, postAddProduct,postEditProduct, getProducts, getProductbyID, getGenre, getInfor,deleteProductbyID }; 
+export { postLogin, getImage, postRegister, postAddProduct,postEditProduct, getProducts, getProductbyID, getGenre, getInfor,deleteProductbyID, getProductbyGenre }; 
