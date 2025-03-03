@@ -2,15 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Footer, Navbar } from "../../components";
 import {
   FaUsers,
-  FaUber,
-  FaShoppingCart,
-  FaDollarSign,
-  FaClock,
   FaBox,
   FaList,
   FaChartBar,
   FaSignOutAlt,
-  FaBars,
+  FaAddressCard,
+  FaCartPlus,
+  FaUser,
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
@@ -33,17 +31,17 @@ const Sidebar = () => {
             to="/myprofile"
             className="nav-link text-white fw-bold bg-primary p-2 rounded"
           >
-            <FaBox className="me-2" /> My Profile
+            <FaUser className="me-2" /> My Profile
           </Link>
         </li>
         <li className="nav-item">
           <Link to="/addressbook" className="nav-link text-dark">
-            <FaList className="me-2" /> Address Book
+            <FaAddressCard className="me-2" /> Address Book
           </Link>
         </li>
         <li className="nav-item">
           <Link to="/myorder" className="nav-link text-dark">
-            <FaChartBar className="me-2" /> My order
+            <FaCartPlus className="me-2" /> My order
           </Link>
         </li>
         <hr />
@@ -73,7 +71,7 @@ const MyProfile = () => {
   const [editing, setEditing] = useState(false);
 
   // State lưu giá trị chỉnh sửa tạm thời
-  const [editedUser, setEditedUser] = useState(user);
+
 
   // Khi nhấn "EDIT PROFILE", chuyển sang chế độ chỉnh sửa
   const handleEditClick = () => {
@@ -83,14 +81,13 @@ const MyProfile = () => {
   // Khi nhấn "Cancel", quay lại chế độ xem và khôi phục giá trị ban đầu
   const handleCancelClick = () => {
     setEditing(false);
-    setEditedUser(user);
   };
 
   // Cập nhật giá trị khi người dùng thay đổi thông tin
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEditedUser({
-      ...editedUser,
+    setUser({
+      ...user,
       [name]: value,
     });
   };
@@ -103,7 +100,7 @@ const MyProfile = () => {
 
   const handleSaveClick = () => {
     setUser({
-      ...editedUser,
+      ...user,
       avatar: selectedImage, // Lưu ảnh khi nhấn Save
     });
     setEditing(false);
@@ -150,9 +147,9 @@ const MyProfile = () => {
                   <input
                     type="text"
                     id="fullName"
-                    name="fullName"
+                    name="full_name"
                     className="form-control"
-                    value={editedUser.fullName}
+                    value={user.full_name}
                     onChange={handleChange}
                   />
                 </div>
@@ -164,7 +161,7 @@ const MyProfile = () => {
             
                 <div className="mb-3" style={{ width: "250px" , marginRight: "20px" }}>
                   <label style={{ fontWeight: "bold" }}>Mobile</label>
-                  <p>{user.mobile}</p>
+                  <p>{user.phone_num}</p>
                 </div>
               </div>
               <div className = "Khoi1-1" style={{display: "flex"}}>
@@ -179,7 +176,7 @@ const MyProfile = () => {
                         id="birthday"
                         name="birthday"
                         className="form-control"
-                        value={editedUser.birthday}
+                        value={user.birthday}
                         onChange={handleChange}
                       />
                     </div>
@@ -192,7 +189,7 @@ const MyProfile = () => {
                         id="gender"
                         name="gender"
                         className="form-control"
-                        value={editedUser.gender}
+                        value={user.gender}
                         onChange={handleChange}
                       >
                         <option value="Female">Female</option>
@@ -273,7 +270,7 @@ const MyProfile = () => {
                   </div>
                   <div className="item-s1">
                     <div className="item-s2">
-                      <p style={{ fontWeight: "bold" }}>Mobile</p>
+                      <p style={{ fontWeight: "bold" }}>Phone Number</p>
                     </div>
                     <div className="item-s2">
                       <p>{user.phone_num}</p>

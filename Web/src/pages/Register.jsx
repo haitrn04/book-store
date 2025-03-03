@@ -8,6 +8,9 @@ const Register = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [fullName, setFullName] = useState("");
+    const [mobile, setMobile] = useState("");
+    const [gender, setGender] = useState("");
+    const [birthday, setBithday] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -16,14 +19,14 @@ const Register = () => {
         setLoading(true);
         setError(null);
 
-        if (!email || !password || !fullName) {
-            setError("Email, Password và Full Name  không được để trống!");
+        if (!email || !password || !fullName || mobile || gender || birthday) {
+            setError("Các thông tin không được để trống!");
             setLoading(false);
             return;
         }
 
         try {
-            await postRegister(fullName, email, password);
+            await postRegister(fullName, email, password, mobile, gender, birthday);
             alert("Register successfully")
             navigate(`/login`);
         } catch (err) {
@@ -90,6 +93,28 @@ const Register = () => {
                                     placeholder="Password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value.trim())}
+                                />
+                            </div>
+                            <div className="my-3">
+                                <label htmlFor="floatingInput">Phone Number</label>
+                                <input
+                                    type="number"
+                                    className="form-control"
+                                    id="floatingInput"
+                                    placeholder=""
+                                    value={mobile}
+                                    onChange={(e) => setMobile(e.target.value.trim())}
+                                />
+                            </div>
+                            <div className="my-3">
+                                <label htmlFor="floatingInput">Gender</label>
+                                <input
+                                    type="email"
+                                    className="form-control"
+                                    id="floatingInput"
+                                    placeholder="name@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value.trim())}
                                 />
                             </div>
                             <div className="my-3">

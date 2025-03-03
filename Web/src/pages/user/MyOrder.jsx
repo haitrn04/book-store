@@ -7,6 +7,9 @@ import {
   FaChartBar,
   FaSignOutAlt,
   FaSearch,
+  FaAddressCard,
+  FaCartPlus,
+  FaUser,
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
@@ -26,12 +29,12 @@ const Sidebar = () => {
         </li>
         <li className="nav-item">
           <Link to="/myprofile" className="nav-link text-dark">
-            <FaBox className="me-2" /> My Profile
+            <FaUser className="me-2" /> My Profile
           </Link>
         </li>
         <li className="nav-item">
           <Link to="/addressbook" className="nav-link text-dark">
-            <FaList className="me-2" /> Address Book
+            <FaAddressCard className="me-2" /> Address Book
           </Link>
         </li>
         <li className="nav-item">
@@ -39,7 +42,7 @@ const Sidebar = () => {
             to="/myorder"
             className="nav-link text-white fw-bold bg-primary p-2 rounded"
           >
-            <FaChartBar className="me-2" /> My order
+            <FaCartPlus className="me-2" /> My order
           </Link>
         </li>
         <hr />

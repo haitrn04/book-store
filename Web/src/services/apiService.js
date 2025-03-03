@@ -4,8 +4,8 @@ const postLogin = (email, password) => {
     return axios.post('http://localhost:3005/login', { email, password });
 };
 
-const postRegister = ( full_name, email, password ) => {
-    return axios.post('http://localhost:3005/accounts/register', { full_name, email, password });
+const postRegister = ( full_name, email, password, mobile, gender, birthday ) => {
+    return axios.post('http://localhost:3005/accounts/register', { full_name, email, password, mobile, gender, birthday });
 };
 
 const getImage = (idImage) => {
