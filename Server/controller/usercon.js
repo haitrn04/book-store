@@ -37,11 +37,11 @@ const usercon = {
         }
     },
     register: async (req, res) => {
-        const { full_name, email, password } = req.body
+        const { full_name, email, password, mobile, gender, birthday } = req.body
         try {
-            let sql = ` INSERT INTO accounts (full_name, email, password, role)
-                            VALUES ($1, $2, $3, 2);`;
-            await pool.query(sql, [full_name, email, password]);
+            let sql = ` INSERT INTO accounts (full_name, email, password, role, phone_num, gender, birthday )
+                            VALUES ($1, $2, $3, 2, $4, $5, $6);`;
+            await pool.query(sql, [full_name, email, password, mobile, gender, birthday ]);
             res.status(200).send({ message: "Register successfully" });
         } catch (err) {
             console.error(err);

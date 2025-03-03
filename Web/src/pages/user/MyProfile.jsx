@@ -73,7 +73,7 @@ const MyProfile = () => {
   const [editing, setEditing] = useState(false);
 
   // State lưu giá trị chỉnh sửa tạm thời
-  const [editedUser, setEditedUser] = useState(user);
+
 
   // Khi nhấn "EDIT PROFILE", chuyển sang chế độ chỉnh sửa
   const handleEditClick = () => {
@@ -83,14 +83,13 @@ const MyProfile = () => {
   // Khi nhấn "Cancel", quay lại chế độ xem và khôi phục giá trị ban đầu
   const handleCancelClick = () => {
     setEditing(false);
-    setEditedUser(user);
   };
 
   // Cập nhật giá trị khi người dùng thay đổi thông tin
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEditedUser({
-      ...editedUser,
+    setUser({
+      ...user,
       [name]: value,
     });
   };
@@ -103,7 +102,7 @@ const MyProfile = () => {
 
   const handleSaveClick = () => {
     setUser({
-      ...editedUser,
+      ...user,
       avatar: selectedImage, // Lưu ảnh khi nhấn Save
     });
     setEditing(false);
@@ -150,9 +149,9 @@ const MyProfile = () => {
                   <input
                     type="text"
                     id="fullName"
-                    name="fullName"
+                    name="full_name"
                     className="form-control"
-                    value={editedUser.fullName}
+                    value={user.full_name}
                     onChange={handleChange}
                   />
                 </div>
@@ -164,7 +163,7 @@ const MyProfile = () => {
             
                 <div className="mb-3" style={{ width: "250px" , marginRight: "20px" }}>
                   <label style={{ fontWeight: "bold" }}>Mobile</label>
-                  <p>{user.mobile}</p>
+                  <p>{user.phone_num}</p>
                 </div>
               </div>
               <div className = "Khoi1-1" style={{display: "flex"}}>
@@ -179,7 +178,7 @@ const MyProfile = () => {
                         id="birthday"
                         name="birthday"
                         className="form-control"
-                        value={editedUser.birthday}
+                        value={user.birthday}
                         onChange={handleChange}
                       />
                     </div>
@@ -192,7 +191,7 @@ const MyProfile = () => {
                         id="gender"
                         name="gender"
                         className="form-control"
-                        value={editedUser.gender}
+                        value={user.gender}
                         onChange={handleChange}
                       >
                         <option value="Female">Female</option>
