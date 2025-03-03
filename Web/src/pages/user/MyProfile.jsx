@@ -2,15 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Footer, Navbar } from "../../components";
 import {
   FaUsers,
-  FaUber,
-  FaShoppingCart,
-  FaDollarSign,
-  FaClock,
   FaBox,
   FaList,
   FaChartBar,
   FaSignOutAlt,
-  FaBars,
+  FaAddressCard,
+  FaCartPlus,
+  FaUser,
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
@@ -33,17 +31,17 @@ const Sidebar = () => {
             to="/myprofile"
             className="nav-link text-white fw-bold bg-primary p-2 rounded"
           >
-            <FaBox className="me-2" /> My Profile
+            <FaUser className="me-2" /> My Profile
           </Link>
         </li>
         <li className="nav-item">
           <Link to="/addressbook" className="nav-link text-dark">
-            <FaList className="me-2" /> Address Book
+            <FaAddressCard className="me-2" /> Address Book
           </Link>
         </li>
         <li className="nav-item">
           <Link to="/myorder" className="nav-link text-dark">
-            <FaChartBar className="me-2" /> My order
+            <FaCartPlus className="me-2" /> My order
           </Link>
         </li>
         <hr />
@@ -272,7 +270,7 @@ const MyProfile = () => {
                   </div>
                   <div className="item-s1">
                     <div className="item-s2">
-                      <p style={{ fontWeight: "bold" }}>Mobile</p>
+                      <p style={{ fontWeight: "bold" }}>Phone Number</p>
                     </div>
                     <div className="item-s2">
                       <p>{user.phone_num}</p>

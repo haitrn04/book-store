@@ -94,7 +94,7 @@ const AddProductForm = () => {
             <div className="row">
               <div className="col-md-4 mb-3">
                 <label className="form-label">Book ID</label>
-                <input type="text" className="form-control" name="id_book" value={product.id_book} onChange={(e) => handleChange(e)}/>
+                <input type="text" className="form-control" name="id_book" value={product.id_book} onChange={(e) => handleChange(e)} disabled/>
               </div>
               <div className="col-md-4 mb-3">
                 <label className="form-label">Book Name</label>

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars, FaUber } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useNavigate } from "react-router-dom";
 import { postAddProduct, getGenre } from "../../services/apiService";
-import { toast } from "react-toastify"; // Import react-toastify
+import { toast, ToastContainer } from "react-toastify"; // Import react-toastify
 import 'react-toastify/dist/ReactToastify.css'; // Import the default styles for toast
 
+// Sidebar component
 const Sidebar = () => {
   return (
     <div className="d-flex flex-column p-3 bg-white shadow position-fixed" style={{ width: "250px", height: "100vh", top: "0", left: "0" }}>
@@ -46,6 +46,7 @@ const Sidebar = () => {
   );
 };
 
+// Header component
 const Header = () => {
   return (
     <div className="d-flex justify-content-between align-items-center p-3 shadow-sm bg-white position-fixed"
@@ -62,21 +63,22 @@ const Header = () => {
   );
 };
 
+// AddProductForm component
 const AddProductForm = () => {
   const navigate = useNavigate();
-  const [book_name, setbook_name] = useState("");
-  const [id_genre, setid_genre] = useState("");
+  const [book_name, setBookName] = useState("");
+  const [id_genre, setIdGenre] = useState("");
   const [author, setAuthor] = useState("");
   const [publisher, setPublisher] = useState("");
-  const [yopublication, setyopublication] = useState("");
+  const [yopublication, setYoPublication] = useState("");
   const [price, setPrice] = useState("");
   const [discount, setDiscount] = useState("");
   const [stock, setStock] = useState("");
-  const [image_data, setimage_data] = useState(null);
-  const [description, setdescription] = useState("");
+  const [image_data, setImageData] = useState(null);
+  const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [genre, setGenre] = useState([]);
+  const [error, setError] = useState(null);
 
   // Fetch genres
   useEffect(() => {
@@ -84,9 +86,8 @@ const AddProductForm = () => {
       try {
         const response = await getGenre();
         setGenre(response.data);
-        if (id_genre === "") {
-          setid_genre(response.data[0].id_genre);
-          
+        if (!id_genre && response.data.length > 0) {
+          setIdGenre(response.data[0].id_genre);
         }
       } catch (error) {
         console.error("Error fetching genres:", error);
@@ -97,6 +98,12 @@ const AddProductForm = () => {
     fetchGenres();
   }, [id_genre]);
 
+  // Handle file upload
+  const previewFile = (data) => {
+    setImageData(data);
+  };
+
+  // Handle form submission
   const upload = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -115,19 +122,22 @@ const AddProductForm = () => {
 
     try {
       const res = await postAddProduct(formData);
-      console.log(res);
       toast.success("Product added successfully!");
-      navigate("/productsad");
+      // Reset form after submission
+      setBookName("");
+      setAuthor("");
+      setPublisher("");
+      setYoPublication("");
+      setPrice("");
+      setDiscount("");
+      setStock("");
+      setDescription("");
+      setImageData(null);
     } catch (error) {
-      console.log(error);
-      toast.error("Failed to insert product"); 
+      toast.error("Failed to add product.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const previewFile = (data) => {
-    setimage_data(data);
   };
 
   return (
@@ -138,12 +148,12 @@ const AddProductForm = () => {
           <div className="row">
             <div className="col-md-4 mb-3">
               <label className="form-label">Book Name</label>
-              <input type="text" className="form-control" value={book_name} onChange={(e) => setbook_name(e.target.value)} />
+              <input type="text" className="form-control" value={book_name} onChange={(e) => setBookName(e.target.value)} />
             </div>
             <div className="col-md-4 mb-3">
               <label className="form-label">Genres</label>
-              <select className="form-select" onChange={(e) => setid_genre(e.target.value)} value={id_genre}>
-                {genre && genre.map((e, index) => (
+              <select className="form-select" onChange={(e) => setIdGenre(e.target.value)} value={id_genre}>
+                {genre.map((e, index) => (
                   <option key={index} value={e.id_genre}>
                     {e.genre}
                   </option>
@@ -162,7 +172,7 @@ const AddProductForm = () => {
             </div>
             <div className="col-md-4 mb-3">
               <label className="form-label">Year of Publication</label>
-              <input type="date" className="form-control" value={yopublication} onChange={(e) => setyopublication(e.target.value)} />
+              <input type="date" className="form-control" value={yopublication} onChange={(e) => setYoPublication(e.target.value)} />
             </div>
           </div>
           <div className="row">
@@ -185,11 +195,15 @@ const AddProductForm = () => {
           </div>
           <div className="mb-3">
             <label className="form-label">Description</label>
-            <textarea className="form-control" rows="5" value={description} onChange={(e) => setdescription(e.target.value)}></textarea>
+            <textarea className="form-control" rows="5" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
           </div>
           <div className="d-flex justify-content-between">
-            <Link to="/products_ad"><button type="button" className="btn btn-secondary">Cancel</button></Link>
-            <button type="submit" className="btn btn-primary">Add Now</button>
+            <Link to="/products_ad">
+              <button type="button" className="btn btn-secondary">Cancel</button>
+            </Link>
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? "Adding..." : "Add Now"}
+            </button>
           </div>
         </form>
       </div>
@@ -197,6 +211,7 @@ const AddProductForm = () => {
   );
 };
 
+// AddProducts page container
 const AddProducts = () => {
   return (
     <div className="d-flex">
@@ -205,6 +220,7 @@ const AddProducts = () => {
         <Header />
         <AddProductForm />
       </div>
+      <ToastContainer />
     </div>
   );
 };

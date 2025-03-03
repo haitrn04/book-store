@@ -1,6 +1,8 @@
 import React, {useState, addressState, useEffect} from "react";
+
 import { Footer, Navbar } from "../../components";
-import { FaUsers,FaUber, FaShoppingCart, FaDollarSign, FaClock, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars } from "react-icons/fa";
+import { FaUsers,FaUber,  FaBox, FaList, FaChartBar, FaSignOutAlt, FaAddressCard, FaCartPlus, FaUser,  } from "react-icons/fa";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 import { getInfor } from "../../services/apiService";
@@ -30,7 +32,7 @@ useEffect(() => {
               <p style={{fontSize: "23px"}}>Personal Profile</p>
               <div><p><strong>Name: </strong> {user.full_name}</p></div>
               <div><p><strong>Email: </strong> {user.email}</p></div>
-              <div><p><strong>Mobile: </strong> </p>{user.phone_num}</div>
+              <div><p><strong>Phone Number: </strong> </p>{user.phone_num}</div>
               <div><p><strong>Birthday: </strong></p>{user.birthday}</div>
             </div>
             <div className = "card shadow-sm p-3" style = {{left: "50px" ,  width: "60%"}}>  
@@ -40,12 +42,12 @@ useEffect(() => {
                   <p style={{fontSize :"14px"}}>DEFAULT SHIPPING ADDRESS</p>
                   <p><strong>Name:  </strong> </p>
                   <p><strong>Address: </strong></p>
-                  <p><strong>Mobile: </strong></p>
+                  <p><strong>Phone Number: </strong></p>
                 </div>
                 <div className = "s1" style={{marginTop: "89px"}}>
-                  <p>{user.fullName}</p>
-                  <p>{user.address}</p>
-                  <p> {user.phoneNumber}</p>
+                  <p>{user.full_name}</p>
+                  <p>{user.detailed_address}</p>
+                  <p> {user.phone_number}</p>
                 </div>
               
               </div>
@@ -88,17 +90,17 @@ const Sidebar = () => {
         </li>
         <li className="nav-item">
           <Link to="/myprofile" className="nav-link text-dark">
-            <FaBox className="me-2" /> My Profile
+            <FaUser className="me-2" /> My Profile
           </Link>
         </li>
         <li className="nav-item">
           <Link to="/addressbook" className="nav-link text-dark">
-            <FaList className="me-2" /> Address Book
+            <FaAddressCard className="me-2" /> Address Book
           </Link>
         </li>
         <li className="nav-item">
           <Link to="/myorder" className="nav-link text-dark">
-            <FaChartBar className="me-2" /> My order
+            <FaCartPlus className="me-2" /> My order
           </Link>
         </li>
         <hr />

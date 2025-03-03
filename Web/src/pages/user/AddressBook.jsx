@@ -6,9 +6,14 @@ import {
   FaList,
   FaChartBar,
   FaSignOutAlt,
+  FaAddressCard,
+  FaCartPlus,
+  FaUser,
+
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
+import { getInfor } from "../../services/apiService";
 
 /** Sidebar cho menu bên trái */
 const Sidebar = () => {
@@ -25,7 +30,7 @@ const Sidebar = () => {
         </li>
         <li className="nav-item">
           <Link to="/myprofile" className="nav-link text-dark">
-            <FaBox className="me-2" /> My Profile
+            <FaUser className="me-2" /> My Profile
           </Link>
         </li>
         <li className="nav-item">
@@ -33,12 +38,12 @@ const Sidebar = () => {
             to="/addressbook"
             className="nav-link text-white fw-bold bg-primary p-2 rounded"
           >
-            <FaList className="me-2" /> Address Book
+            <FaAddressCard className="me-2" /> Address Book
           </Link>
         </li>
         <li className="nav-item">
           <Link to="/myorder" className="nav-link text-dark">
-            <FaChartBar className="me-2" /> My order
+            <FaCartPlus className="me-2" /> My order
           </Link>
         </li>
         <hr />
@@ -54,22 +59,29 @@ const Sidebar = () => {
 
 /** Trang Address Book */
 const AddressBook = () => {
-  const [user, setUser] = useState([
-    {
-      fullName: "Hieu Nguyen",
-      email: "HieuNguyen@gmail.com",
-      mobile: "0123456789",
-      birthday: "01/01/2000",
-      phoneNumber: "0123456789",
-      address: "ABC Street",
-      postcode: "100000",
-      province: "Hanoi",
-      district: "",
-      ward: "",
-      gender: "Female",
-    }
-  ]);
+
+  // tạo đối tượng user mặc định 
+  const [user, setUser] = useState([]);
+   const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
+   useEffect(() => {
+    const getin4 = async () => {
+      try {
+        const response = await getInfor(storedUser.id_account);
+        console.log("Dữ liệu từ API:", response.data); // Xem dữ liệu trả về
   
+        if (Array.isArray(response.data)) {
+          setUser(response.data); // Nếu là mảng, lưu vào state
+        } else {
+          setUser([response.data]); // Nếu là object, chuyển thành mảng
+        }
+      } catch (error) {
+        console.error("Lỗi lấy thông tin user:", error);
+      }
+    };
+  
+    getin4();
+  }, [storedUser?.id_account]);
+
   const [province, setProvince] = useState([]);
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
@@ -102,9 +114,9 @@ const AddressBook = () => {
   const handleAddNew = () => {
     setEditingIndex(user.length);
     setEditedAddress({
-      fullName: "",
-      phoneNumber: "",
-      address: "",
+      full_name: "",
+      phone_number: "",
+      detailed_address: "",
       postcode: "",
       province: "",
       district: "",
@@ -138,7 +150,7 @@ const AddressBook = () => {
     setEditedAddress(null);
   };
   
-  const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
+
   return (
     <>
       <Navbar user={storedUser} />
@@ -162,7 +174,7 @@ const AddressBook = () => {
                       name="fullName"
                       className="form-control"
                       placeholder="First Last"
-                      value={editedAddress.fullName}
+                      value={editedAddress.full_name}
                       onChange={handleChange}
                     />
                   </div>
@@ -179,7 +191,7 @@ const AddressBook = () => {
                       name="phoneNumber"
                       className="form-control"
                       placeholder="Please enter your phone number"
-                      value={editedAddress.phoneNumber}
+                      value={editedAddress.phone_number}
                       onChange={handleChange}
                     />
                   </div>
@@ -196,6 +208,7 @@ const AddressBook = () => {
                       className="form-control"
                       placeholder="Enter your full address here..."
                       rows="5" // Điều chỉnh số dòng hiển thị
+                      value={editedAddress.detailed_address}
                       onChange={handleChange}
                     />
                   </div>
@@ -291,10 +304,10 @@ const AddressBook = () => {
                 <tbody>
                   {user.map((item, index) => (
                     <tr key={index}>
-                      <td>{item.fullName}</td>
-                      <td>{item.address}</td>
+                      <td>{item.full_name}</td>
+                      <td>{item.detailed_address}</td>
                       <td>{item.postcode}</td>
-                      <td>{item.phoneNumber}</td>
+                      <td>{item.phone_numer}</td>
                       <td className="text-end">
                         <span
                           className="text-primary"

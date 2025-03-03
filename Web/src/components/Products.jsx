@@ -7,11 +7,13 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import { getProducts, getGenre } from "../services/apiService";
 
 const Products = () => {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState(data);
   const [loading, setLoading] = useState(false);
+  const [genre, setGenre] = useState([]);
   let componentMounted = true;
 
   const dispatch = useDispatch();
@@ -21,21 +23,32 @@ const Products = () => {
   };
 
   useEffect(() => {
-    const getProducts = async () => {
+    const getListProducts = async () => {
       setLoading(true);
-      const response = await fetch("https://fakestoreapi.com/products/");
+      const response = await getProducts(); // Assuming getProducts returns an axios response
       if (componentMounted) {
-        setData(await response.clone().json());
-        setFilter(await response.json());
+        setData(response.data);  // No need to use response.json(), just use response.data
+        setFilter(response.data); // Same here, use response.data
         setLoading(false);
       }
 
       return () => {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         componentMounted = false;
       };
     };
 
-    getProducts();
+    const fetchGenres = async () => {
+      try {
+        const response = await getGenre();
+        setGenre(response.data);
+      } catch (error) {
+        console.error("Error fetching genres:", error);
+      }
+    };
+
+    getListProducts();
+    fetchGenres();
   }, []);
 
   const Loading = () => {
@@ -67,7 +80,7 @@ const Products = () => {
   };
 
   const filterProduct = (cat) => {
-    const updatedList = data.filter((item) => item.category === cat);
+    const updatedList = data.filter((item) => item.id_genre === cat);
     setFilter(updatedList);
   };
 
@@ -81,62 +94,44 @@ const Products = () => {
           >
             All
           </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("men's clothing")}
-          >
-            Men's Clothing
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("women's clothing")}
-          >
-            Women's Clothing
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("jewelery")}
-          >
-            Jewelery
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("electronics")}
-          >
-            Electronics
-          </button>
+          {genre && genre.map((e) => (
+            <button
+              key={e.id_genre}
+              className="btn btn-outline-dark btn-sm m-2"
+              onClick={() => filterProduct(e.id_genre)}
+            >{e.genre}</button>
+          ))}
         </div>
 
         {filter.map((product) => {
           return (
             <div
-              id={product.id}
-              key={product.id}
+              id={product.id_book}
+              key={product.id_book}
               className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4"
             >
-              <div className="card text-center h-100" key={product.id}>
+              <div className="card text-center h-100" key={product.id_book}>
                 <img
-                  className="card-img-top p-3"
-                  src={product.image}
-                  alt="Card"
-                  height={300}
+                  src={`data:image/jpeg;base64,${product.image_data}`}
+                  id="prodimg"
+                  className="card-img-top mx-auto"
+                  alt={product.book_name}
+                  style={{ height: "300px", objectFit: "contain", maxWidth: "200px" }}
                 />
                 <div className="card-body">
                   <h5 className="card-title">
-                    {product.title.substring(0, 12)}...
+                    {product.book_name.substring(0, 30)}...
                   </h5>
                   <p className="card-text">
                     {product.description.substring(0, 90)}...
                   </p>
                 </div>
                 <ul className="list-group list-group-flush">
-                  <li className="list-group-item lead">$ {product.price}</li>
-                  {/* <li className="list-group-item">Dapibus ac facilisis in</li>
-                    <li className="list-group-item">Vestibulum at eros</li> */}
+                  <li className="list-group-item lead">{product.price} VNĐ</li>
                 </ul>
                 <div className="card-body">
                   <Link
-                    to={"/product/" + product.id}
+                    to={"/product/" + product.id_book}
                     className="btn btn-dark m-1"
                   >
                     Buy Now
@@ -158,6 +153,7 @@ const Products = () => {
       </>
     );
   };
+
   return (
     <>
       <div className="container my-3 py-3">

@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { addCart } from "../redux/action";
 
 import { Footer, Navbar } from "../components";
-
+import { getProductbyID } from "../services/apiService";
 const Product = () => {
   const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
   const { id } = useParams();
@@ -25,9 +25,9 @@ const Product = () => {
     const getProduct = async () => {
       setLoading(true);
       setLoading2(true);
-      const response = await fetch(`https://fakestoreapi.com/products/${id}`);
-      const data = await response.json();
-      setProduct(data);
+      const response = getProductbyID(id);
+      const data = (await response).data;
+      setProduct((await response).data);
       setLoading(false);
       const response2 = await fetch(
         `https://fakestoreapi.com/products/category/${data.category}`
@@ -38,7 +38,7 @@ const Product = () => {
     };
     getProduct();
   }, [id]);
-
+console.log(product)
   const Loading = () => {
     return (
       <>
