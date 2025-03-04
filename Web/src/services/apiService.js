@@ -4,7 +4,7 @@ const postLogin = (email, password) => {
     return axios.post('http://localhost:3005/login', { email, password });
 };
 
-const postRegister = ( full_name, email, password, mobile, gender, birthday ) => {
+const postRegister = (full_name, email, password, mobile, gender, birthday) => {
     return axios.post('http://localhost:3005/accounts/register', { full_name, email, password, mobile, gender, birthday });
 };
 
@@ -22,8 +22,8 @@ const postAddProduct = (formData) => {
     });
 };
 // co anh
-const postEditProduct = ( book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name) => {
-    return axios.post('http://localhost:3005/products/editproduct', {  book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name });
+const postEditProduct = (book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name) => {
+    return axios.post('http://localhost:3005/products/editproduct', { book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name });
 };
 
 const getProductbyGenre = (id_genre) => {
@@ -42,17 +42,25 @@ const getProductbyID = (id_book) => {
 const getInfor = (id_account) => {
     return axios.get(`http://localhost:3005/accounts/infor/?id_account=${id_account}`);
 }
-
-const deleteProductbyID = (id_book) => {
-    return axios.delete(`http://localhost:3005/products/deleteproduct/?id_book=${id_book}`)
-}
-
-const postAddress = (id_account, full_name, phone_number, detailed_address, province, district, ward) => {
-    return axios.post(`http://localhost:3005/address/addaddress`, {id_account, full_name, phone_number, detailed_address, province, district, ward});
-}
-
+const postAddress = (formData) => {
+    return axios.post('http://localhost:3005/address/addaddress', formData, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+const editAddress = (formData) => {
+    return axios.post('http://localhost:3005/address/editaddress', formData, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
 const getAddress = (id_account) => {
     return axios.get(`http://localhost:3005/address/getaddress/?id_account=${id_account}`);
+}
+const deleteProductbyID = (id_book) => {
+    return axios.delete(`http://localhost:3005/products/deleteproduct/?id_book=${id_book}`)
 }
 
 const deleteAddress =(address_id) => {
@@ -60,4 +68,4 @@ const deleteAddress =(address_id) => {
 }
 export { postLogin, getImage, postRegister, postAddProduct,postEditProduct, 
         getProducts, getProductbyID, getGenre, getInfor,deleteProductbyID,
-        getProductbyGenre, postAddress, getAddress, deleteAddress }; 
+        getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress }; 

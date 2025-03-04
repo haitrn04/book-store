@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Footer, Navbar } from "../../components";
+import { Navbar } from "../../components";
 import {
   FaUsers,
-  FaBox,
-  FaList,
-  FaChartBar,
   FaSignOutAlt,
   FaAddressCard,
   FaCartPlus,
@@ -15,6 +12,7 @@ import { Link } from "react-router-dom";
 import { getInfor } from "../../services/apiService";
 const moment = require('moment');
 
+import avt from '../../assets/images/avt_default.jpg';
 const Sidebar = () => {
   return (
     <div
@@ -47,11 +45,11 @@ const Sidebar = () => {
         </li>
         <hr />
         <Link to="/" className="nav-link text-danger">
-             <FaSignOutAlt className="me-2" /> Logout
+          <FaSignOutAlt className="me-2" /> Logout
         </Link>
       </ul>
-   
-      
+
+
     </div>
   );
 };
@@ -62,13 +60,13 @@ const MyProfile = () => {
   const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
   useEffect(() => {
     const getin4 = async () => {
-      const response = await(getInfor(storedUser.id_account));
+      const response = await (getInfor(storedUser.id_account));
       setUser(response.data[0]);
-      }
-      getin4();
-  
-    }, [storedUser.id_account]);
-  
+    }
+    getin4();
+
+  }, [storedUser.id_account]);
+
   const [editing, setEditing] = useState(false);
 
 
@@ -106,11 +104,11 @@ const MyProfile = () => {
     });
     setEditing(false);
   };
-  
+
 
   // Up load ảnh 
   // Thêm useState để lưu hình ảnh
-  const [selectedImage, setSelectedImage] = useState("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaYEpc4B2qC8kSHxdMwncUf29mvhGps7RVhg&s");
+  const [selectedImage, setSelectedImage] = useState(user.image_data);
 
   // Hàm xử lý khi người dùng chọn ảnh
   const handleImageUpload = (event) => {
@@ -138,109 +136,108 @@ const MyProfile = () => {
           <div className="card shadow-sm p-3" style={{ width: "90%", minHeight: "400px" }}>
             {editing ? (
               // Chế độ chỉnh sửa: hiển thị các input
-              
+
               <div className="edit-form" style={{ padding: "20px" }}>
-              <div className="d-flex" style={{ gap: "20px", alignItems: "flex-start" }}>
-                <div className="mb-3" style={{ width: "250px" , marginRight: "20px" }}>
-                  <label htmlFor="fullName" style={{ fontWeight: "bold" }}>
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    id="fullName"
-                    name="full_name"
-                    className="form-control"
-                    value={user.full_name}
-                    onChange={handleChange}
-                  />
-                </div>
-            
-                <div className="mb-3" style={{ width: "250px", marginRight: "20px" }}>
-                  <label style={{ fontWeight: "bold" }}>Email Address</label>
-                  <p>{user.email}</p>
-                </div>
-            
-                <div className="mb-3" style={{ width: "250px" , marginRight: "20px" }}>
-                  <label style={{ fontWeight: "bold" }}>Mobile</label>
-                  <p>{user.phone_num}</p>
-                </div>
-              </div>
-              <div className = "Khoi1-1" style={{display: "flex"}}>
-                <div className = "Khoi2" style={{marginRight: "10px"}}>
-                  <div className="d-flex" style={{ gap: "20px", alignItems: "flex-start", marginTop: "20px" }}>
-                    <div className="mb-3" style={{ width: "250px" , marginRight: "20px"}}>
-                      <label htmlFor="birthday" style={{ fontWeight: "bold" }}>
-                        Birthday
-                      </label>
-                      <input
-                        type="date"
-                        id="birthday"
-                        name="birthday"
-                        className="form-control"
-                        value={user.birthday}
-                        onChange={handleChange}
-                      />
-                    </div>
-                
-                    <div className="mb-3" style={{ width: "250px" , marginRight: "20px" }}>
-                      <label htmlFor="gender" style={{ fontWeight: "bold" }}>
-                        Gender
-                      </label>
-                      <select
-                        id="gender"
-                        name="gender"
-                        className="form-control"
-                        value={user.gender}
-                        onChange={handleChange}
-                      >
-                        <option value="Female">Female</option>
-                        <option value="Male">Male</option>
-                        <option value="Other">Other</option>
-                      </select>
-                    </div>
-                  </div>
-                
-                  {/* Nút Save và Cancel */}
-                  <div className="d-flex" style={{ gap: "20px", marginTop: "20px" }}>
-                    <button className="btn btn-success me-3" style={{width:"100px"}} onClick={handleSaveClick}>
-                      Save
-                    </button>
-                    <button className="btn btn-secondary" style={{width:"100px"}} onClick={handleCancelClick}>
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-                <div className="Khoi2">
-                  <p style={{ fontWeight: "bold" }}>Ảnh đại diện</p>
-                  <div className="img">
-                    <img
-                      src={selectedImage}
-                      alt="User Avatar"
-                      style={{ width: "200px", height: "200px", objectFit: "cover", borderRadius: "10px" }}
-                      
+                <div className="d-flex" style={{ gap: "20px", alignItems: "flex-start" }}>
+                  <div className="mb-3" style={{ width: "250px", marginRight: "20px" }}>
+                    <label htmlFor="fullName" style={{ fontWeight: "bold" }}>
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      id="fullName"
+                      name="full_name"
+                      className="form-control"
+                      value={user.full_name}
+                      onChange={handleChange}
                     />
                   </div>
-                  {/* Input ẩn để chọn ảnh */}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    style={{ display: "none" }}
-                    id="fileInput"
-                    onChange={handleImageUpload}
-                  />
-                  {/* Nút upload ảnh */}
-                  <button
-                    className="btn-upload-anh"
-                    onClick={() => document.getElementById("fileInput").click()}
-                  >
-                    Up image
-                  </button>
+
+                  <div className="mb-3" style={{ width: "250px", marginRight: "20px" }}>
+                    <label style={{ fontWeight: "bold" }}>Email Address</label>
+                    <p>{user.email}</p>
+                  </div>
+
+                  <div className="mb-3" style={{ width: "250px", marginRight: "20px" }}>
+                    <label style={{ fontWeight: "bold" }}>Mobile</label>
+                    <p>{user.phone_num}</p>
+                  </div>
                 </div>
+                <div className="Khoi1-1" style={{ display: "flex" }}>
+                  <div className="Khoi2" style={{ marginRight: "10px" }}>
+                    <div className="d-flex" style={{ gap: "20px", alignItems: "flex-start", marginTop: "20px" }}>
+                      <div className="mb-3" style={{ width: "250px", marginRight: "20px" }}>
+                        <label htmlFor="birthday" style={{ fontWeight: "bold" }}>
+                          Birthday
+                        </label>
+                        <input
+                          type="date"
+                          id="birthday"
+                          name="birthday"
+                          className="form-control"
+                          value={user.birthday}
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      <div className="mb-3" style={{ width: "250px", marginRight: "20px" }}>
+                        <label htmlFor="gender" style={{ fontWeight: "bold" }}>
+                          Gender
+                        </label>
+                        <select
+                          id="gender"
+                          name="gender"
+                          className="form-control"
+                          value={user.gender}
+                          onChange={handleChange}
+                        >
+                          <option value="Female">Female</option>
+                          <option value="Male">Male</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Nút Save và Cancel */}
+                    <div className="d-flex" style={{ gap: "20px", marginTop: "20px" }}>
+                      <button className="btn btn-success me-3" style={{ width: "100px" }} onClick={handleSaveClick}>
+                        Save
+                      </button>
+                      <button className="btn btn-secondary" style={{ width: "100px" }} onClick={handleCancelClick}>
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                  <div className="Khoi2">
+                    <p style={{ fontWeight: "bold" }}>Ảnh đại diện</p>
+                    <div className="img">
+                      <img
+                        src={selectedImage}
+                        alt="User Avatar"
+                        style={{ width: "200px", height: "200px", objectFit: "cover", borderRadius: "10px" }}
+                      />
+                    </div>
+                    {/* Input ẩn để chọn ảnh */}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      id="fileInput"
+                      onChange={handleImageUpload}
+                    />
+                    {/* Nút upload ảnh */}
+                    <button
+                      className="btn-upload-anh"
+                      onClick={() => document.getElementById("fileInput").click()}
+                    >
+                      Up image
+                    </button>
+                  </div>
+                </div>
+
+
               </div>
-              
-             
-            </div>
-            
+
             ) : (
               // Chế độ xem: hiển thị thông tin của user
               <div>
@@ -278,10 +275,10 @@ const MyProfile = () => {
                       <p>{user.phone_num}</p>
                     </div>
                   </div>
-                <div></div>
+                  <div></div>
                 </div>
-                <div className = "Khoi" style={{display: "flex"}}>
-                  <div className = "Sua">
+                <div className="Khoi" style={{ display: "flex" }}>
+                  <div className="Sua">
                     <div
                       className="item-s0"
                       style={{
@@ -323,19 +320,19 @@ const MyProfile = () => {
                       </button>
                     </div>
                   </div>
-                  <div className = "SuaImg">
+                  <div className="SuaImg">
                     <p style={{ fontWeight: "bold" }}>Ảnh đại điện</p>
-                    <div className = "img" >
-                    <img
-                      src={user.image_data || selectedImage}  // Ưu tiên ảnh đã lưu
-                      alt="User Avatar"
-                      style={{ width: "200px", height: "200px", objectFit: "cover", borderRadius: "10px" }}
-                    />
+                    <div className="img" >
+                      <img
+                        src={user.image_data || avt}  // Ưu tiên ảnh đã lưu
+                        alt="User Avatar"
+                        style={{ width: "200px", height: "200px", objectFit: "cover", borderRadius: "10px" }}
+                      />
                     </div>
                   </div>
                 </div>
-               
-                
+
+
               </div>
             )}
           </div>

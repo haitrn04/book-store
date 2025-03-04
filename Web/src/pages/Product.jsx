@@ -81,7 +81,7 @@ console.log("sp ", product, "id ", id)
                 {product.rating && product.rating.rate}{" "} Chua set
                 <i className="fa fa-star"></i>
               </p>
-              <h3 className="display-6  my-4">${product.price}</h3>
+              <h3 className="display-6  my-4">{product.price} VNĐ</h3>
               <p className="lead">{product.description}</p>
               <button
                 className="btn btn-outline-dark"
