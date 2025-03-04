@@ -13,8 +13,8 @@ import {
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
-import { getInfor } from "../../services/apiService";
-
+import { getAddress, postAddress } from "../../services/apiService";
+import axios from "axios";
 /** Sidebar cho menu bên trái */
 const Sidebar = () => {
   return (
@@ -48,11 +48,11 @@ const Sidebar = () => {
         </li>
         <hr />
         <Link to="/" className="nav-link text-danger">
-            <FaSignOutAlt className="me-2" /> Logout
+          <FaSignOutAlt className="me-2" /> Logout
         </Link>
       </ul>
-      
-      
+
+
     </div>
   );
 };
@@ -61,41 +61,57 @@ const Sidebar = () => {
 const AddressBook = () => {
 
   // tạo đối tượng user mặc định 
-  const [user, setUser] = useState([]);
-   const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
-   useEffect(() => {
-    const getin4 = async () => {
+
+  const [address, setAddress] = useState([]);
+  const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
+  useEffect(() => {
+    const getaddress = async () => {
       try {
-        const response = await getInfor(storedUser.id_account);
-        console.log("Dữ liệu từ API:", response.data); // Xem dữ liệu trả về
-  
-        if (Array.isArray(response.data)) {
-          setUser(response.data); // Nếu là mảng, lưu vào state
-        } else {
-          setUser([response.data]); // Nếu là object, chuyển thành mảng
-        }
+        const response = await (getAddress(storedUser.id_account));
+        setAddress(response.data);
+        console.log("address", response.data);
       } catch (error) {
-        console.error("Lỗi lấy thông tin user:", error);
+        console.error("Lỗi lấy thông tin address:", error);
       }
     };
-  
-    getin4();
+
+    getaddress();
   }, [storedUser?.id_account]);
 
-  const [province, setProvince] = useState([]);
-  const [district, setDistrict] = useState("");
-  const [ward, setWard] = useState("");
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+
   useEffect(() => {
-    fetch("https://open.oapi.vn/location/provinces?size=63&query=")
-      .then((res) => res.json())
-      .then((data) => {
-        setProvince(data.data);
-        
-      });
+    axios.get("https://provinces.open-api.vn/api/?depth=1").then((response) => {
+      setProvinces(response.data);
+    });
   }, []);
 
-  
-  console.log(province);
+  const handleProvinceChange = async (event) => {
+    handleChange(event);
+    const provinceCode = event.target.value;
+    if (provinceCode) {
+      const response = await axios.get(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
+      setDistricts(response.data.districts);
+      setWards([]);
+    } else {
+      setDistricts([]);
+      setWards([]);
+    }
+  };
+
+  const handleDistrictChange = async (event) => {
+    handleChange(event);
+    const districtCode = event.target.value;
+    if (districtCode) {
+      const response = await axios.get(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
+      setWards(response.data.wards);
+    } else {
+      setWards([]);
+    }
+  };
+
   /* 
     editingIndex: nếu là số từ 0 đến addresses.length - 1, tức đang chỉnh sửa địa chỉ đó.
     Nếu editingIndex === addresses.length, nghĩa là đang thêm địa chỉ mới.
@@ -107,12 +123,12 @@ const AddressBook = () => {
   /** Khi nhấn "Edit" trên một dòng địa chỉ */
   const handleEditClick = (index) => {
     setEditingIndex(index);
-    setEditedAddress({ ...user[index] });
+    setEditedAddress({ ...address[index] });
   };
 
   /** Khi nhấn "+ ADD NEW ADDRESS" */
   const handleAddNew = () => {
-    setEditingIndex(user.length);
+    setEditingIndex(address.length);
     setEditedAddress({
       full_name: "",
       phone_number: "",
@@ -123,7 +139,7 @@ const AddressBook = () => {
       ward: "",
     });
   };
-  
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -138,18 +154,27 @@ const AddressBook = () => {
     setEditedAddress(null);
   };
 
-  const handleSaveClick = () => {
-    if (editingIndex === user.length) {
-      setUser([...user, editedAddress]);
-    } else {
-      const updated = [...user];
-      updated[editingIndex] = editedAddress;
-      setUser(updated);
+  const handleSaveClick = async () => {
+    try {
+      await postAddress({
+        id_account: storedUser.id_account,
+        ...editedAddress,
+        
+      });
+      if (editingIndex === address.length) {
+        setAddress([...address, editedAddress]);
+      } else {
+        const updated = [...address];
+        updated[editingIndex] = editedAddress;
+        setAddress(updated);
+      }
+      setEditingIndex(null);
+      setEditedAddress(null);
+    } catch (error) {
+      console.error("Error saving address:", error);
     }
-    setEditingIndex(null);
-    setEditedAddress(null);
   };
-  
+
 
   return (
     <>
@@ -161,134 +186,51 @@ const AddressBook = () => {
           <br />
 
           {editingIndex !== null && editedAddress ? (
-            <div className="edit-form card shadow-sm p-4 mt-4">
+            <form className="edit-form card shadow-sm p-4 mt-4">
               <div style={{ display: "flex", gap: "40px" }}>
                 <div style={{ flex: 1 }}>
                   <div className="mb-3">
-                    <label htmlFor="fullName" style={{ fontWeight: "bold" }}>
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      id="fullName"
-                      name="fullName"
-                      className="form-control"
-                      placeholder="First Last"
-                      value={editedAddress.full_name}
-                      onChange={handleChange}
-                    />
+                    <label htmlFor="fullName" style={{ fontWeight: "bold" }}>Full Name</label>
+                    <input type="text" id="fullName" name="fullName" className="form-control" placeholder="First Last" value={editedAddress.full_name} onChange={handleChange} />
                   </div>
                   <div className="mb-3">
-                    <label
-                      htmlFor="phoneNumber"
-                      style={{ fontWeight: "bold" }}
-                    >
-                      Phone Number
-                    </label>
-                    <input
-                      type="text"
-                      id="phoneNumber"
-                      name="phoneNumber"
-                      className="form-control"
-                      placeholder="Please enter your phone number"
-                      value={editedAddress.phone_number}
-                      onChange={handleChange}
-                    />
+                    <label htmlFor="phoneNumber" style={{ fontWeight: "bold" }}>Phone Number</label>
+                    <input type="text" id="phoneNumber" name="phoneNumber" className="form-control" placeholder="Please enter your phone number" value={editedAddress.phone_number} onChange={handleChange} />
                   </div>
                   <div className="mb-3">
-                    <label
-                      htmlFor="phoneNumber"
-                      style={{ fontWeight: "bold" }}
-                    >
-                     Detailed Address
-                    </label>
-                    <input
-                      id="detailedAddress"
-                      name="detailedAddress"
-                      className="form-control"
-                      placeholder="Enter your full address here..."
-                      rows="5" // Điều chỉnh số dòng hiển thị
-                      value={editedAddress.detailed_address}
-                      onChange={handleChange}
-                    />
+                    <label htmlFor="detailedAddress" style={{ fontWeight: "bold" }}>Detailed Address</label>
+                    <input type="text" id="detailedAddress" name="detailedAddress" className="form-control" placeholder="Enter your full address here..." value={editedAddress.detailed_address} onChange={handleChange} />
                   </div>
-                  
                 </div>
                 <div style={{ flex: 1 }}>
                   <div className="mb-3">
-                    <label htmlFor="province" style={{ fontWeight: "bold" }}>
-                      Province
-                    </label>
-                    <select
-                      id="province"
-                      name="province"
-                      className="form-control"
-                      value={editedAddress.province}
-                      onChange={handleChange}
-                    >
+                    <label htmlFor="province" style={{ fontWeight: "bold" }}>Province</label>
+                    <select id="province" name="province" className="form-control" value={editedAddress.province} onChange={handleProvinceChange}>
                       <option value="">Please choose your province</option>
-                      <option value="Hanoi">Hà Nội</option>
-                      <option value="HCM">Hồ Chí Minh</option>
-                      <option value="Danang">Đà Nẵng</option>
+                      {provinces.map((p) => <option key={p.code} value={p.code}>{p.name}</option>)}
                     </select>
                   </div>
                   <div className="mb-3">
-                    <label htmlFor="district" style={{ fontWeight: "bold" }}>
-                      District
-                    </label>
-                    <select
-                      id="district"
-                      name="district"
-                      className="form-control"
-                      value={editedAddress.district}
-                      onChange={handleChange}
-                    >
+                    <label htmlFor="district" style={{ fontWeight: "bold" }}>District</label>
+                    <select id="district" name="district" className="form-control" value={editedAddress.district} onChange={handleDistrictChange}>
                       <option value="">Please choose your district</option>
-                      <option value="District 1">District 1</option>
-                      <option value="District 2">District 2</option>
+                      {districts.map((d) => <option key={d.code} value={d.code}>{d.name}</option>)}
                     </select>
                   </div>
                   <div className="mb-3">
-                    <label htmlFor="ward" style={{ fontWeight: "bold" }}>
-                      Ward
-                    </label>
-                    <select
-                      id="ward"
-                      name="ward"
-                      className="form-control"
-                      value={editedAddress.ward}
-                      onChange={handleChange}
-                    >
+                    <label htmlFor="ward" style={{ fontWeight: "bold" }}>Ward</label>
+                    <select id="ward" name="ward" className="form-control" value={editedAddress.ward} onChange={handleChange}>
                       <option value="">Please choose your ward</option>
-                      <option value="Ward 1">Ward 1</option>
-                      <option value="Ward 2">Ward 2</option>
+                      {wards.map((w) => <option key={w.code} value={w.code}>{w.name}</option>)}
                     </select>
                   </div>
                 </div>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  marginTop: "20px",
-                }}
-              >
-                <button
-                  className="btn btn-light me-3"
-                  style={{ width: "100px", backgroundColor: "#f2f2f2" }}
-                  onClick={handleCancelClick}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="btn btn-primary"
-                  style={{ width: "100px", backgroundColor: "#ff7a00", color: "#fff" }}
-                  onClick={handleSaveClick}
-                >
-                  Save
-                </button>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
+                <button className="btn btn-light me-3" style={{ width: "100px", backgroundColor: "#f2f2f2" }} onClick={handleCancelClick}>Cancel</button>
+                <button className="btn btn-primary" style={{ width: "100px", backgroundColor: "#ff7a00", color: "#fff" }} onClick={handleSaveClick}>Save</button>
               </div>
-            </div>
+            </form>
           ) : (
             <div className="card shadow-sm p-4 mt-4">
               <table className="table table-striped mt-3">
@@ -296,18 +238,16 @@ const AddressBook = () => {
                   <tr>
                     <th>Full Name</th>
                     <th>Address</th>
-                    <th>Postcode</th>
                     <th>Phone Number</th>
                     <th className="text-end">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {user.map((item, index) => (
+                  {address.map((item, index) => (
                     <tr key={index}>
                       <td>{item.full_name}</td>
                       <td>{item.detailed_address}</td>
-                      <td>{item.postcode}</td>
-                      <td>{item.phone_numer}</td>
+                      <td>{item.phone_number}</td>
                       <td className="text-end">
                         <span
                           className="text-primary"
@@ -319,6 +259,11 @@ const AddressBook = () => {
                       </td>
                     </tr>
                   ))}
+                  {address.length === 0 && (
+                    <tr>
+                      <td colSpan="5" className="text-center">No address found</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

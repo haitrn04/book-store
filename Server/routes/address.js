@@ -6,4 +6,5 @@ router.post('/addaddress', addresscon.addAddress);
 router.get('/getaddress', addresscon.getAddress);
 router.delete('/deleteaddress', addresscon.deleteAddress);
 router.post('/editaddress', addresscon.editAddress);
+
 module.exports = router;

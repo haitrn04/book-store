@@ -9,8 +9,8 @@ const app = express();
 app.use(cors({ origin: '*' }));
 
 // Middleware for handling JSON and URL encoded data
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
 // Ensure the uploads directory exists
 if (!fs.existsSync('uploads')) {
@@ -19,7 +19,7 @@ if (!fs.existsSync('uploads')) {
 
 const upload = multer({
     storage: multer.memoryStorage(), // Store image in memory
-    limits: { fileSize: 50 * 1024 * 1024 } // Limit file size to 50MB
+    limits: { fileSize: 100 * 1024 * 1024 } // Limit file size to 50MB
 });
 
 const productcon = {
