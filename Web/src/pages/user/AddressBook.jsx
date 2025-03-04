@@ -13,7 +13,7 @@ import {
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
-import { getInfor } from "../../services/apiService";
+import { getInfor, getAddress } from "../../services/apiService";
 
 /** Sidebar cho menu bên trái */
 const Sidebar = () => {
@@ -66,7 +66,7 @@ const AddressBook = () => {
    useEffect(() => {
     const getin4 = async () => {
       try {
-        const response = await getInfor(storedUser.id_account);
+        const response = await getAddress(storedUser.id_account);
         console.log("Dữ liệu từ API:", response.data); // Xem dữ liệu trả về
   
         if (Array.isArray(response.data)) {
@@ -296,7 +296,6 @@ const AddressBook = () => {
                   <tr>
                     <th>Full Name</th>
                     <th>Address</th>
-                    <th>Postcode</th>
                     <th>Phone Number</th>
                     <th className="text-end">Action</th>
                   </tr>
@@ -306,8 +305,7 @@ const AddressBook = () => {
                     <tr key={index}>
                       <td>{item.full_name}</td>
                       <td>{item.detailed_address}</td>
-                      <td>{item.postcode}</td>
-                      <td>{item.phone_numer}</td>
+                      <td>0{item.phone_number}</td>
                       <td className="text-end">
                         <span
                           className="text-primary"

@@ -13,6 +13,7 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 import { getInfor } from "../../services/apiService";
+const moment = require('moment');
 
 const Sidebar = () => {
   return (
@@ -70,8 +71,8 @@ const MyProfile = () => {
   
   const [editing, setEditing] = useState(false);
 
-  // State lưu giá trị chỉnh sửa tạm thời
 
+  const formatbth = moment(user.birthday).format("DD/MM/YYYY");
 
   // Khi nhấn "EDIT PROFILE", chuyển sang chế độ chỉnh sửa
   const handleEditClick = () => {
@@ -216,6 +217,7 @@ const MyProfile = () => {
                       src={selectedImage}
                       alt="User Avatar"
                       style={{ width: "200px", height: "200px", objectFit: "cover", borderRadius: "10px" }}
+                      
                     />
                   </div>
                   {/* Input ẩn để chọn ảnh */}
@@ -295,7 +297,7 @@ const MyProfile = () => {
                           <p style={{ fontWeight: "bold" }}>Birthday</p>
                         </div>
                         <div className="item-s2">
-                          <p>{user.birthday}</p>
+                          <p>{formatbth}</p>
                         </div>
                       </div>
                       <div className="item-s1">

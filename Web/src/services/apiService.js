@@ -47,4 +47,17 @@ const deleteProductbyID = (id_book) => {
     return axios.delete(`http://localhost:3005/products/deleteproduct/?id_book=${id_book}`)
 }
 
-export { postLogin, getImage, postRegister, postAddProduct,postEditProduct, getProducts, getProductbyID, getGenre, getInfor,deleteProductbyID, getProductbyGenre }; 
+const postAddress = (id_account, full_name, phone_number, detailed_address, province, district, ward) => {
+    return axios.post(`http://localhost:3005/address/addaddress`, {id_account, full_name, phone_number, detailed_address, province, district, ward});
+}
+
+const getAddress = (id_account) => {
+    return axios.get(`http://localhost:3005/address/getaddress/?id_account=${id_account}`);
+}
+
+const deleteAddress =(address_id) => {
+    return axios.delete(`http://localhost:3005/address/deleteaddress/?address_id=${address_id}`);
+}
+export { postLogin, getImage, postRegister, postAddProduct,postEditProduct, 
+        getProducts, getProductbyID, getGenre, getInfor,deleteProductbyID,
+        getProductbyGenre, postAddress, getAddress, deleteAddress }; 

@@ -140,6 +140,18 @@ const productcon = {
             console.error(err);
             res.status(500).json({ error: 'Internal Server Error' });
         }
+    },
+    getProductbyName: async (req, res) => {
+        const { book_name } = req.query;
+        try {
+            const sql = `SELECT * FROM books WHERE book_name=$1;`;
+            const data = await pool.query(sql, [book_name]);
+            res.status(200).json(data.rows);
+
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
     }
 };
 

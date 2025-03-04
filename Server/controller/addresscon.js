@@ -6,11 +6,11 @@ pool.connect((err, connection) => {
 
 const addresscon = {
     addAddress: async (req, res) => {
-        const { address_id, id_account, full_name, phone_number, detailed_address, province, district, ward } = req.body
+        const { id_account, full_name, phone_number, detailed_address, province, district, ward } = req.body
         try {
-            let sql = ` INSERT INTO address (address_id, id_account, full_name, phone_number, detailed_address, province, district, ward)
-                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`;
-            await pool.query(sql, [address_id, id_account, full_name, phone_number, detailed_address, province, district, ward]);
+            let sql = ` INSERT INTO address (id_account, full_name, phone_number, detailed_address, province, district, ward)
+                            VALUES ($1, $2, $3, $4, $5, $6, $7);`;
+            await pool.query(sql, [id_account, full_name, phone_number, detailed_address, province, district, ward]);
             res.status(200).send({ message: "Insert data into table address successfully" });
         } catch (err) {
             console.error(err);

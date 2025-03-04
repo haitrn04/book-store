@@ -37,6 +37,7 @@ const usercon = {
         }
     },
     register: async (req, res) => {
+        
         const { full_name, email, password, mobile, gender, birthday } = req.body
         try {
             let sql = ` INSERT INTO accounts (full_name, email, password, role, phone_num, gender, birthday )

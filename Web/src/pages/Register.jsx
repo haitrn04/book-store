@@ -18,8 +18,8 @@ const Register = () => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-
-        if (!email || !password || !fullName || mobile || gender || birthday) {
+        
+        if (!email || !password || !fullName || !mobile || !gender || !birthday) {
             setError("Các thông tin không được để trống!");
             setLoading(false);
             return;
@@ -98,7 +98,7 @@ const Register = () => {
                             <div className="my-3">
                                 <label htmlFor="floatingInput">Phone Number</label>
                                 <input
-                                    type="number"
+                                    type="tel"
                                     className="form-control"
                                     id="floatingInput"
                                     placeholder=""
@@ -108,14 +108,28 @@ const Register = () => {
                             </div>
                             <div className="my-3">
                                 <label htmlFor="floatingInput">Gender</label>
-                                <input
-                                    type="email"
+                                <select
+                                    id="gender"
+                                    name="gender"
                                     className="form-control"
-                                    id="floatingInput"
-                                    placeholder="name@example.com"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value.trim())}
-                                />
+                                    value={gender}
+                                    onChange={(e) => setGender(e.target.value)}
+                                >
+                                    <option value="Female">Female</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div className="my-3">
+                            <label htmlFor="floatingInput">Birthday</label>
+                            <input
+                                type="date"
+                                id="birthday"
+                                name="birthday"
+                                className="form-control"
+                                value={birthday}
+                                onChange={(e) => setBithday(e.target.value)}
+                            />
                             </div>
                             <div className="my-3">
                                 <p>Already has an account? <Link to="/login" className="text-decoration-underline text-info">Login</Link> </p>

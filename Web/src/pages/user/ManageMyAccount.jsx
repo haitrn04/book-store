@@ -6,6 +6,7 @@ import { FaUsers,FaUber,  FaBox, FaList, FaChartBar, FaSignOutAlt, FaAddressCard
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 import { getInfor } from "../../services/apiService";
+const moment = require('moment');
 
 const ManageMyAccount = () => {
 const [user, setUser] = useState([]);
@@ -18,7 +19,7 @@ useEffect(() => {
     getin4();
 
   }, [storedUser.id_account]);
-
+const formatbth = moment(user.birthday).format("DD/MM/YYYY")
   return (
     <>
       <Navbar user={storedUser} />
@@ -32,8 +33,8 @@ useEffect(() => {
               <p style={{fontSize: "23px"}}>Personal Profile</p>
               <div><p><strong>Name: </strong> {user.full_name}</p></div>
               <div><p><strong>Email: </strong> {user.email}</p></div>
-              <div><p><strong>Phone Number: </strong> </p>{user.phone_num}</div>
-              <div><p><strong>Birthday: </strong></p>{user.birthday}</div>
+              <div><p><strong>Phone Number: </strong>0{user.phone_num} </p></div>
+              <div><p><strong>Birthday: </strong>{formatbth}</p></div>
             </div>
             <div className = "card shadow-sm p-3" style = {{left: "50px" ,  width: "60%"}}>  
               <div className = "s0" style={{display: "flex"}}>
