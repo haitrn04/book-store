@@ -10,9 +10,10 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 import { getInfor } from "../../services/apiService";
+import avt from '../../assets/images/avt_default.jpg';
+
 const moment = require('moment');
 
-import avt from '../../assets/images/avt_default.jpg';
 const Sidebar = () => {
   return (
     <div
