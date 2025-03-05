@@ -2,18 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Footer, Navbar } from "../../components";
 import {
   FaUsers,
-  FaBox,
-  FaList,
-  FaChartBar,
   FaSignOutAlt,
   FaAddressCard,
   FaCartPlus,
   FaUser,
 
 } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
-import { getAddress, postAddress } from "../../services/apiService";
+import { getAddress, postAddress, deleteAddress } from "../../services/apiService";
 import axios from "axios";
 /** Sidebar cho menu bên trái */
 const Sidebar = () => {
@@ -88,9 +87,41 @@ const AddressBook = () => {
     });
   }, []);
 
+  // const handleProvinceChange = async (event) => {
+  //   handleChange(event);
+  //   const provinceCode = event.target.value;
+  //   if (provinceCode) {
+  //     const response = await axios.get(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
+  //     setDistricts(response.data.districts);
+  //     setWards([]);
+  //   } else {
+  //     setDistricts([]);
+  //     setWards([]);
+  //   }
+  // };
+
+  // const handleDistrictChange = async (event) => {
+  //   handleChange(event);
+  //   const districtCode = event.target.value;
+  //   if (districtCode) {
+  //     const response = await axios.get(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
+  //     setWards(response.data.wards);
+  //   } else {
+  //     setWards([]);
+  //   }
+  // };
+
   const handleProvinceChange = async (event) => {
-    handleChange(event);
     const provinceCode = event.target.value;
+    const selectedProvince = provinces.find((p) => p.code === parseInt(provinceCode));
+  
+    setEditedAddress({
+      ...editedAddress,
+      province: selectedProvince ? selectedProvince.name : "",
+      district: "",
+      ward: "",
+    });
+  
     if (provinceCode) {
       const response = await axios.get(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
       setDistricts(response.data.districts);
@@ -100,10 +131,17 @@ const AddressBook = () => {
       setWards([]);
     }
   };
-
+  
   const handleDistrictChange = async (event) => {
-    handleChange(event);
     const districtCode = event.target.value;
+    const selectedDistrict = districts.find((d) => d.code === parseInt(districtCode));
+  
+    setEditedAddress({
+      ...editedAddress,
+      district: selectedDistrict ? selectedDistrict.name : "",
+      ward: "",
+    });
+  
     if (districtCode) {
       const response = await axios.get(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
       setWards(response.data.wards);
@@ -111,6 +149,17 @@ const AddressBook = () => {
       setWards([]);
     }
   };
+  
+  const handleWardChange = (event) => {
+    const wardCode = event.target.value;
+    const selectedWard = wards.find((w) => w.code === parseInt(wardCode));
+  
+    setEditedAddress({
+      ...editedAddress,
+      ward: selectedWard ? selectedWard.name : "",
+    });
+  };
+  
 
   /* 
     editingIndex: nếu là số từ 0 đến addresses.length - 1, tức đang chỉnh sửa địa chỉ đó.
@@ -141,6 +190,31 @@ const AddressBook = () => {
   };
 
 
+  /** Khi nhấn "Delete" */
+  /** Khi nhấn "Delete" */
+
+  const handleDelete = async (index) => {
+    if (!address || address.length === 0) return;
+
+    const addressId = address[index]?.address_id;
+    if (!addressId) return;
+
+    try {
+        await deleteAddress(addressId);
+        setAddress((prev) => prev.filter((_, i) => i !== index));
+    } catch (error) {
+        console.error("Failed to delete address:", error);
+    }
+  };
+
+
+
+
+
+  
+  
+  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEditedAddress({
@@ -149,11 +223,13 @@ const AddressBook = () => {
     });
   };
 
+  /** khi nhấn "Cancel"*/ 
   const handleCancelClick = () => {
     setEditingIndex(null);
     setEditedAddress(null);
   };
 
+  /** khi nhấn "Save" */
   const handleSaveClick = async () => {
     try {
       await postAddress({
@@ -191,16 +267,23 @@ const AddressBook = () => {
                 <div style={{ flex: 1 }}>
                   <div className="mb-3">
                     <label htmlFor="fullName" style={{ fontWeight: "bold" }}>Full Name</label>
-                    <input type="text" id="fullName" name="fullName" className="form-control" placeholder="First Last" value={editedAddress.full_name} onChange={handleChange} />
+                    <input type="text" id="fullName" name="fullName" className="form-control" placeholder="First Last" 
+                    value={editedAddress.full_name} onChange={(e) => setEditedAddress({ ...editedAddress, full_name: e.target.value})
+                    } />
                   </div>
                   <div className="mb-3">
                     <label htmlFor="phoneNumber" style={{ fontWeight: "bold" }}>Phone Number</label>
-                    <input type="text" id="phoneNumber" name="phoneNumber" className="form-control" placeholder="Please enter your phone number" value={editedAddress.phone_number} onChange={handleChange} />
+                    <input type="text" id="phoneNumber" name="phoneNumber" className="form-control" placeholder="Please enter your phone number" 
+                    value={editedAddress.phone_number} onChange={(e) => setEditedAddress({ ...editedAddress, phone_number: e.target.value})
+                  } />
                   </div>
                   <div className="mb-3">
                     <label htmlFor="detailedAddress" style={{ fontWeight: "bold" }}>Detailed Address</label>
-                    <input type="text" id="detailedAddress" name="detailedAddress" className="form-control" placeholder="Enter your full address here..." value={editedAddress.detailed_address} onChange={handleChange} />
+                    <input type="text" id="detailedAddress" name="detailedAddress" className="form-control" placeholder="Enter your full address here..." 
+                    value={editedAddress.detailed_address} onChange={(e) => setEditedAddress({ ... editedAddress , detailed_address: e.target.value})
+                    } />
                   </div>
+                
                 </div>
                 <div style={{ flex: 1 }}>
                   <div className="mb-3">
@@ -219,7 +302,7 @@ const AddressBook = () => {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="ward" style={{ fontWeight: "bold" }}>Ward</label>
-                    <select id="ward" name="ward" className="form-control" value={editedAddress.ward} onChange={handleChange}>
+                    <select id="ward" name="ward" className="form-control" value={editedAddress.ward} onChange={handleWardChange}>
                       <option value="">Please choose your ward</option>
                       {wards.map((w) => <option key={w.code} value={w.code}>{w.name}</option>)}
                     </select>
@@ -240,6 +323,7 @@ const AddressBook = () => {
                     <th>Address</th>
                     <th>Phone Number</th>
                     <th className="text-end">Action</th>
+                    <th className= "delete" style={{width: "80px" , cursor: "pointer"}}>Delete</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -247,7 +331,7 @@ const AddressBook = () => {
                     <tr key={index}>
                       <td>{item.full_name}</td>
                       <td>{item.detailed_address}</td>
-                      <td>0{item.phone_number}</td>
+                      <td>{item.phone_number}</td>
                       <td className="text-end">
                         <span
                           className="text-primary"
@@ -257,6 +341,19 @@ const AddressBook = () => {
                           Edit
                         </span>
                       </td>
+                      <td>
+                        <span
+                          className="text-danger"
+                          style={{ cursor: "pointer" }}
+                          onClick={(event) => {
+                            event.stopPropagation(); // Ngăn chặn event lan sang thẻ cha
+                            handleDelete(index);
+                          }}
+                        >
+                          <MdDelete  style={{marginLeft: "13px", fontSize: "30px"}}/>
+                        </span>
+                      </td>
+
                     </tr>
                   ))}
                   {address.length === 0 && (
