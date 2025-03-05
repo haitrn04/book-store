@@ -133,7 +133,6 @@ const AddressBook = () => {
       full_name: "",
       phone_number: "",
       detailed_address: "",
-      postcode: "",
       province: "",
       district: "",
       ward: "",
@@ -144,7 +143,7 @@ const AddressBook = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEditedAddress({
-      ...editedAddress,
+
       [name]: value,
     });
   };
@@ -154,13 +153,11 @@ const AddressBook = () => {
     setEditedAddress(null);
   };
 
-  const handleSaveClick = async () => {
+  const handleSaveClick = async (event) => {
     try {
       await postAddress({
         id_account: storedUser.id_account,
-        ...editedAddress,
-        
-      });
+        ...editedAddress});
       if (editingIndex === address.length) {
         setAddress([...address, editedAddress]);
       } else {
