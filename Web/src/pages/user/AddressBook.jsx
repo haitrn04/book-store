@@ -87,41 +87,9 @@ const AddressBook = () => {
     });
   }, []);
 
-  // const handleProvinceChange = async (event) => {
-  //   handleChange(event);
-  //   const provinceCode = event.target.value;
-  //   if (provinceCode) {
-  //     const response = await axios.get(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
-  //     setDistricts(response.data.districts);
-  //     setWards([]);
-  //   } else {
-  //     setDistricts([]);
-  //     setWards([]);
-  //   }
-  // };
-
-  // const handleDistrictChange = async (event) => {
-  //   handleChange(event);
-  //   const districtCode = event.target.value;
-  //   if (districtCode) {
-  //     const response = await axios.get(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
-  //     setWards(response.data.wards);
-  //   } else {
-  //     setWards([]);
-  //   }
-  // };
-
   const handleProvinceChange = async (event) => {
+    handleChange(event);
     const provinceCode = event.target.value;
-    const selectedProvince = provinces.find((p) => p.code === parseInt(provinceCode));
-  
-    setEditedAddress({
-      ...editedAddress,
-      province: selectedProvince ? selectedProvince.name : "",
-      district: "",
-      ward: "",
-    });
-  
     if (provinceCode) {
       const response = await axios.get(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
       setDistricts(response.data.districts);
@@ -131,17 +99,10 @@ const AddressBook = () => {
       setWards([]);
     }
   };
-  
+
   const handleDistrictChange = async (event) => {
+    handleChange(event);
     const districtCode = event.target.value;
-    const selectedDistrict = districts.find((d) => d.code === parseInt(districtCode));
-  
-    setEditedAddress({
-      ...editedAddress,
-      district: selectedDistrict ? selectedDistrict.name : "",
-      ward: "",
-    });
-  
     if (districtCode) {
       const response = await axios.get(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
       setWards(response.data.wards);
@@ -149,16 +110,55 @@ const AddressBook = () => {
       setWards([]);
     }
   };
+
+  // const handleProvinceChange = async (event) => {
+  //   const provinceCode = event.target.value;
+  //   const selectedProvince = provinces.find((p) => p.code === parseInt(provinceCode));
   
-  const handleWardChange = (event) => {
-    const wardCode = event.target.value;
-    const selectedWard = wards.find((w) => w.code === parseInt(wardCode));
+  //   setEditedAddress({
+  //     ...editedAddress,
+  //     province: selectedProvince ? selectedProvince.name : "",
+  //     district: "",
+  //     ward: "",
+  //   });
   
-    setEditedAddress({
-      ...editedAddress,
-      ward: selectedWard ? selectedWard.name : "",
-    });
-  };
+  //   if (provinceCode) {
+  //     const response = await axios.get(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
+  //     setDistricts(response.data.districts);
+  //     setWards([]);
+  //   } else {
+  //     setDistricts([]);
+  //     setWards([]);
+  //   }
+  // };
+  
+  // const handleDistrictChange = async (event) => {
+  //   const districtCode = event.target.value;
+  //   const selectedDistrict = districts.find((d) => d.code === parseInt(districtCode));
+  
+  //   setEditedAddress({
+  //     ...editedAddress,
+  //     district: selectedDistrict ? selectedDistrict.name : "",
+  //     ward: "",
+  //   });
+  
+  //   if (districtCode) {
+  //     const response = await axios.get(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
+  //     setWards(response.data.wards);
+  //   } else {
+  //     setWards([]);
+  //   }
+  // };
+  
+  // const handleWardChange = (event) => {
+  //   const wardCode = event.target.value;
+  //   const selectedWard = wards.find((w) => w.code === parseInt(wardCode));
+  
+  //   setEditedAddress({
+  //     ...editedAddress,
+  //     ward: selectedWard ? selectedWard.name : "",
+  //   });
+  // };
   
 
   /* 
@@ -207,8 +207,7 @@ const AddressBook = () => {
     }
   };
 
-
-
+  
 
 
   
@@ -302,7 +301,7 @@ const AddressBook = () => {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="ward" style={{ fontWeight: "bold" }}>Ward</label>
-                    <select id="ward" name="ward" className="form-control" value={editedAddress.ward} onChange={handleWardChange}>
+                    <select id="ward" name="ward" className="form-control" value={editedAddress.ward} onChange={handleChange}>
                       <option value="">Please choose your ward</option>
                       {wards.map((w) => <option key={w.code} value={w.code}>{w.name}</option>)}
                     </select>

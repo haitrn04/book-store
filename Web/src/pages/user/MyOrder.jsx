@@ -247,19 +247,34 @@ const OrderItem = ({ order, onView }) => (
         <p style={{ fontWeight: "bold", marginRight: "150px" }}>Qty: {order.quantity}</p>
       </div>
     </div>
-    <div>
-      <button
-        className="btn btn-primary"
+    <div  className = "khoi" style={{ display: "flex" }}>
+      <div>
+        <button
+          className="btn btn-primary"
+          style={{
+            border: "none",
+            padding: "5px 10px",
+            borderRadius: "15px",
+            marginLeft: "900px",
+          }}
+          onClick={() => onView(order)}
+        >
+          View order
+        </button>
+      </div>
+      <div>
+        <button 
+        className = "btn btn-danger"
         style={{
           border: "none",
           padding: "5px 10px",
           borderRadius: "15px",
           marginLeft: "900px",
-        }}
-        onClick={() => onView(order)}
-      >
-        View order
-      </button>
+        }}>
+          Delete order
+        
+        </button>
+      </div>
     </div>
   </div>
 );
