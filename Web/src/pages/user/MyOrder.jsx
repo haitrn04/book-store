@@ -255,7 +255,7 @@ const OrderItem = ({ order, onView }) => (
             border: "none",
             padding: "5px 10px",
             borderRadius: "15px",
-            marginLeft: "900px",
+            marginLeft: "700px",
           }}
           onClick={() => onView(order)}
         >
@@ -269,7 +269,7 @@ const OrderItem = ({ order, onView }) => (
           border: "none",
           padding: "5px 10px",
           borderRadius: "15px",
-          marginLeft: "900px",
+          marginLeft: "50px",
         }}>
           Delete order
         
