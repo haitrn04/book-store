@@ -5,19 +5,24 @@ import { FaUsers,FaUber,  FaBox, FaList, FaChartBar, FaSignOutAlt, FaAddressCard
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
-import { getInfor } from "../../services/apiService";
+import { getInfor, getAddress } from "../../services/apiService";
 const moment = require('moment');
 
 const ManageMyAccount = () => {
 const [user, setUser] = useState([]);
+const [address, setAddress] = useState([])
 const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
 useEffect(() => {
   const getin4 = async () => {
-    const response = await(getInfor(storedUser.id_account));
+    const response = await getInfor(storedUser.id_account);
     setUser(response.data[0]);
     }
     getin4();
-
+    const getaddress = async () => {
+      const res = await getAddress(storedUser.id_account);
+      setAddress(res.data[0]);
+    }
+    getaddress()
   }, [storedUser.id_account]);
 const formatbth = moment(user.birthday).format("DD/MM/YYYY")
   return (
@@ -46,9 +51,9 @@ const formatbth = moment(user.birthday).format("DD/MM/YYYY")
                   <p><strong>Phone Number: </strong></p>
                 </div>
                 <div className = "s1" style={{marginTop: "89px"}}>
-                  <p>{user.full_name}</p>
-                  <p>{user.detailed_address}</p>
-                  <p> {user.phone_number}</p>
+                  <p>{address.full_name}</p>
+                  <p>{address.detailed_address}</p>
+                  <p>0{address.phone_number}</p>
                 </div>
               
               </div>

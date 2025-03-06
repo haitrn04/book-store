@@ -89,7 +89,8 @@ const AddressBook = () => {
 
   const handleProvinceChange = async (event) => {
     handleChange(event);
-    const provinceCode = event.target.value;
+    const provinceCode = (event.target.value.split(",")[0]);
+    console.log(provinceCode);
     if (provinceCode) {
       const response = await axios.get(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
       setDistricts(response.data.districts);
@@ -102,7 +103,8 @@ const AddressBook = () => {
 
   const handleDistrictChange = async (event) => {
     handleChange(event);
-    const districtCode = event.target.value;
+    const districtCode = (event.target.value.split(",")[0]);
+    console.log(districtCode);
     if (districtCode) {
       const response = await axios.get(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
       setWards(response.data.wards);
@@ -167,7 +169,14 @@ const AddressBook = () => {
     Nếu editingIndex === null, không có thao tác chỉnh sửa nào.
   */
   const [editingIndex, setEditingIndex] = useState(null);
-  const [editedAddress, setEditedAddress] = useState(null);
+  const [editedAddress, setEditedAddress] = useState({
+    full_name: "",
+    phone_number: "",
+    detailed_address: "",
+    // province: "",
+    // district: "",
+    // ward: "",
+  });
 
   /** Khi nhấn "Edit" trên một dòng địa chỉ */
   const handleEditClick = (index) => {
@@ -178,14 +187,6 @@ const AddressBook = () => {
   /** Khi nhấn "+ ADD NEW ADDRESS" */
   const handleAddNew = () => {
     setEditingIndex(address.length);
-    setEditedAddress({
-      full_name: "",
-      phone_number: "",
-      detailed_address: "",
-      province: "",
-      district: "",
-      ward: "",
-    });
   };
 
 
@@ -216,7 +217,7 @@ const AddressBook = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEditedAddress({
-
+      ...editedAddress,
       [name]: value,
     });
   };
@@ -232,7 +233,11 @@ const AddressBook = () => {
     try {
       await postAddress({
         id_account: storedUser.id_account,
-        ...editedAddress});
+        ...editedAddress,
+        province: editedAddress.province.split(',')[1],
+        district: editedAddress.district.split(',')[1],
+        ward: editedAddress.ward.split(',')[1]
+      });
       if (editingIndex === address.length) {
         setAddress([...address, editedAddress]);
       } else {
@@ -285,22 +290,22 @@ const AddressBook = () => {
                   <div className="mb-3">
                     <label htmlFor="province" style={{ fontWeight: "bold" }}>Province</label>
                     <select id="province" name="province" className="form-control" value={editedAddress.province} onChange={handleProvinceChange}>
-                      <option value="">Please choose your province</option>
-                      {provinces.map((p) => <option key={p.code} value={p.code}>{p.name}</option>)}
+                      <option value="">{address.province}</option>
+                      {provinces.map((p) => <option key={p.code} value={[p.code,p.name]} >{p.name}</option>)}
                     </select>
                   </div>
                   <div className="mb-3">
                     <label htmlFor="district" style={{ fontWeight: "bold" }}>District</label>
                     <select id="district" name="district" className="form-control" value={editedAddress.district} onChange={handleDistrictChange}>
                       <option value="">Please choose your district</option>
-                      {districts.map((d) => <option key={d.code} value={d.code}>{d.name}</option>)}
+                      {districts.map((d) => <option key={d.code} value={[d.code,d.name]} >{d.name}</option>)}
                     </select>
                   </div>
                   <div className="mb-3">
                     <label htmlFor="ward" style={{ fontWeight: "bold" }}>Ward</label>
                     <select id="ward" name="ward" className="form-control" value={editedAddress.ward} onChange={handleChange}>
                       <option value="">Please choose your ward</option>
-                      {wards.map((w) => <option key={w.code} value={w.code}>{w.name}</option>)}
+                      {wards.map((w) => <option key={w.code} value={[w.code,w.name]} >{w.name}</option>)}
                     </select>
                   </div>
                 </div>

@@ -121,7 +121,7 @@ const AddProductForm = () => {
               </div>
               <div className="col-md-4 mb-3">
                 <label className="form-label">Year of Publication</label>
-                <input type="text" className="form-control" name="yopublication" value={product.yopublication} onChange={(e) => handleChange(e)}/>
+                <input type="date" className="form-control" name="yopublication" value={product.yopublication} onChange={(e) => handleChange(e)}/>
               </div>
             </div>
             <div className="row">
