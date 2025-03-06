@@ -173,11 +173,8 @@ const AddressBook = () => {
     full_name: "",
     phone_number: "",
     detailed_address: "",
-    // province: "",
-    // district: "",
-    // ward: "",
   });
-
+ // handle phần tỉnh huyện riêng 
   /** Khi nhấn "Edit" trên một dòng địa chỉ */
   const handleEditClick = (index) => {
     setEditingIndex(index);
