@@ -22,7 +22,7 @@ useEffect(() => {
       const res = await getAddress(storedUser.id_account);
       setAddress(res.data[0]);
     }
-    getaddress()
+    getaddress();
   }, [storedUser.id_account]);
 const formatbth = moment(user.birthday).format("DD/MM/YYYY")
   return (

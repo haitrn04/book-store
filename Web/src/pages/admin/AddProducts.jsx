@@ -18,7 +18,7 @@ const Sidebar = () => {
           </Link>
         </li>
         <li className="nav-item">
-          <Link to="/products_ad" className="nav-link text-white fw-bold bg-primary p-2 rounded">
+          <Link to="/productsad" className="nav-link text-white fw-bold bg-primary p-2 rounded">
             <FaBox className="me-2" /> Products
           </Link>
         </li>
@@ -198,7 +198,7 @@ const AddProductForm = () => {
             <textarea className="form-control" rows="5" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
           </div>
           <div className="d-flex justify-content-between">
-            <Link to="/products_ad">
+            <Link to="/productsad">
               <button type="button" className="btn btn-secondary">Cancel</button>
             </Link>
             <button type="submit" className="btn btn-primary" disabled={loading}>

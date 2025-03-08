@@ -2,7 +2,7 @@ import React, { useState,useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars, FaUber } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { getProductbyID, postEditProduct } from "../../services/apiService";
+import { getProductbyID, postEditProduct, deleteProductbyID } from "../../services/apiService";
 
 const Sidebar = () => {
   return (
@@ -70,6 +70,8 @@ const AddProductForm = () => {
     const fetchProduct = async () => {
       const response = getProductbyID(id_book);
       const data = (await response).data;
+      const date = new Date(data[0].yopublication).toISOString().split('T')[0];
+      data[0].yopublication= date;
       setProduct(data[0]);
       setLoading(false);
     };
@@ -85,6 +87,15 @@ const AddProductForm = () => {
     const { name, value } = e.target;
     setProduct({...product, [name]: value});
   };
+
+  const handledel = async () => {
+    try {
+      await deleteProductbyID(id_book);
+      navigate("/productsad");
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
     return (
       <div className="container mt-5 pt-5">
@@ -150,7 +161,7 @@ const AddProductForm = () => {
               <Link to="/productsad">
                 <button type="button" className="btn btn-secondary btn-lg">Cancel</button>
               </Link>
-              <button type="submit" className="btn btn-danger btn-lg">Delete</button>
+              <button type="submit" className="btn btn-danger btn-lg" onClick={handledel}>Delete</button>
               <button type="submit" className="btn btn-primary btn-lg">Edit</button>
             </div>
           </form>

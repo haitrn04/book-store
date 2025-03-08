@@ -42,6 +42,14 @@ const getProductbyID = (id_book) => {
 const getInfor = (id_account) => {
     return axios.get(`http://localhost:3005/accounts/infor/?id_account=${id_account}`);
 }
+
+const editInfor = (formData) => {
+    return axios.post('http://localhost:3005/accounts/editinfor', formData, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
 const postAddress = (formData) => {
     return axios.post('http://localhost:3005/address/addaddress', formData, {
         headers: {
@@ -68,4 +76,4 @@ const deleteAddress =(address_id) => {
 }
 export { postLogin, getImage, postRegister, postAddProduct,postEditProduct, 
         getProducts, getProductbyID, getGenre, getInfor,deleteProductbyID,
-        getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress }; 
+        getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress, editInfor }; 

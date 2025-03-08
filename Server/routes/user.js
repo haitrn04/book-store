@@ -6,4 +6,5 @@ router.get('/accounts', usercon.getAccounts);
 router.get('/genre', usercon.getGenre);
 router.post('/register', usercon.register);
 router.get('/infor', usercon.getin4);
+router.post('/editinfor', usercon.editin4);
 module.exports = router;

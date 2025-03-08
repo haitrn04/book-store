@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
-import { getInfor } from "../../services/apiService";
+import { getInfor, editInfor } from "../../services/apiService";
 import avt from '../../assets/images/avt_default.jpg';
 
 const moment = require('moment');
@@ -62,6 +62,8 @@ const MyProfile = () => {
   useEffect(() => {
     const getin4 = async () => {
       const response = await (getInfor(storedUser.id_account));
+      const date = new Date(response.data[0].birthday).toISOString().split('T')[0];
+      response.data[0].birthday = date;
       setUser(response.data[0]);
     }
     getin4();
@@ -99,10 +101,14 @@ const MyProfile = () => {
   // };
 
   const handleSaveClick = () => {
-    setUser({
-      ...user,
-      avatar: selectedImage, // Lưu ảnh khi nhấn Save
-    });
+    const post = async () => {
+      try {
+        await editInfor(user);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    post();
     setEditing(false);
   };
 
@@ -118,6 +124,10 @@ const MyProfile = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setSelectedImage(reader.result);
+        setUser({
+          ...user,
+          image_data: selectedImage,
+        });
       };
       reader.readAsDataURL(file);
     }

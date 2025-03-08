@@ -5,6 +5,7 @@ const http = require('http');
 const userRouter = require('./routes/user');
 const productRouter = require('./routes/product');
 const addressRouter = require('./routes/address');
+const reviewRouter = require('./routes/review');
 const port = process.env.PORT || 3005;
 const fs = require('fs');
 const app = express();
@@ -65,6 +66,7 @@ app.post('/editinfor', async (req, res) => {
 });
 
 app.use('/address', addressRouter);
+app.use('/review', reviewRouter);
 
 // API để tải ảnh lên
 // app.post('/upload', upload.single('image'), (req, res) => {

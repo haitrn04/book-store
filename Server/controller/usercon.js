@@ -59,6 +59,20 @@ const usercon = {
             console.error(err);
             res.sendStatus(500);
         }
+    },
+    editin4: async (req, res) => {
+      
+        const {id_account, full_name, birthday, gender} = req.body;
+        // const image_data = req.file.buffer;
+        try {
+            let sql = `UPDATE accounts SET full_name = $2, birthday = $3, gender = $4 WHERE id_account = $1;`;
+            await pool.query(sql, [id_account, full_name, birthday, gender]);
+            res.status(200).send({ message: "Edit successfully" });
+        } catch (error) {
+            console.error(error);
+            res.sendStatus(500);
+            
+        }
     }
 }
 

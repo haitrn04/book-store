@@ -67,7 +67,7 @@ const productcon = {
     ],
 
     editproduct: async (req, res) => {
-        const image_data = req.file.buffer;
+
         const { id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, description } = req.body;
         try {
             const sql = `
