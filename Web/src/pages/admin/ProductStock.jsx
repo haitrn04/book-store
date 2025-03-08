@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars, FaTrash, FaEdit, FaUber } from "react-icons/fa";
+import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars, FaTrash, FaEdit, FaUber, FaHome } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Sidebar = () => {
@@ -36,7 +36,10 @@ const Sidebar = () => {
       </ul>
       <hr />
       <Link to="/" className="nav-link text-danger">
-        <FaSignOutAlt className="me-2" /> Logout
+        <FaHome className="me-2" /> Back to Home
+      </Link>
+      <Link to="/login" className="nav-link text-danger">
+        <FaSignOutAlt className="me-2" />Login
       </Link>
     </div>
   );

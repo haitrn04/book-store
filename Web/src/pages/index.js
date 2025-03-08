@@ -21,5 +21,7 @@ export { default as MyProfile } from './user/MyProfile';
 export { default as AddressBook } from './user/AddressBook';
 export { default as MyOrder } from './user/MyOrder';
 
+export { default as OrderSuccess } from './OrderSuccess';
+export { default as OrderFail } from './OrderFail';
 
 

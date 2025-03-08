@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaUsers, FaBox, FaUber, FaList, FaChartBar, FaSignOutAlt, FaBars } from "react-icons/fa";
+import { FaUsers, FaBox, FaUber, FaList, FaChartBar, FaSignOutAlt, FaBars, FaHome } from "react-icons/fa";
 
 const Header = () => {
   return (
@@ -51,7 +51,10 @@ const Sidebar = () => {
       </ul>
       <hr />
       <Link to="/" className="nav-link text-danger">
-        <FaSignOutAlt className="me-2" /> Logout
+        <FaHome className="me-2" /> Back to Home
+      </Link>
+      <Link to="/login" className="nav-link text-danger">
+        <FaSignOutAlt className="me-2" />Login
       </Link>
     </div>
   );

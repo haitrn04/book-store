@@ -1,6 +1,6 @@
 import React, {useState} from "react";
-import { FaUsers,FaUber, FaShoppingCart, FaDollarSign, FaClock, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars } from "react-icons/fa";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { FaUsers,FaUber, FaShoppingCart, FaDollarSign, FaClock, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars, FaHome } from "react-icons/fa";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 
@@ -68,9 +68,12 @@ const Sidebar = () => {
             </li>
           </ul>
           <hr />
-          <Link to="/" className="nav-link text-danger">
-            <FaSignOutAlt className="me-2" /> Logout
-          </Link>
+      <Link to="/" className="nav-link text-danger">
+        <FaHome className="me-2" /> Back to Home
+      </Link>
+      <Link to="/login" className="nav-link text-danger">
+        <FaSignOutAlt className="me-2" />Login
+      </Link>
         </div>
   );
 };

@@ -30,6 +30,8 @@ import {
   MyProfile,
   AddressBook,
   MyOrder,
+  OrderSuccess,
+  OrderFail
 } from "./pages";
 import ScrollToTop from "./components/ScrollToTop";
 import { Toaster } from "react-hot-toast";
@@ -70,7 +72,8 @@ root.render(
                   <Route path="/MyProfile" element={<MyProfile />} />
                   <Route path="/AddressBook" element={<AddressBook />} />
                   <Route path="/MyOrder" element={<MyOrder />} />
-
+                  <Route path="/OrderSuccess" element={<OrderSuccess />} />
+                  <Route path="/OrderFail" element={<OrderFail />} />
                 </Routes>
               </AuthWrapper>
             }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaUsers, FaBox, FaList, FaUber, FaChartBar, FaSignOutAlt, FaBars } from "react-icons/fa";
+import { FaUsers, FaBox, FaList, FaUber, FaChartBar, FaSignOutAlt, FaBars, FaHome } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { getProducts } from "../../services/apiService";
@@ -55,7 +55,10 @@ const Sidebar = () => {
       </ul>
       <hr />
       <Link to="/" className="nav-link text-danger">
-        <FaSignOutAlt className="me-2" /> Logout
+        <FaHome className="me-2" /> Back to Home
+      </Link>
+      <Link to="/login" className="nav-link text-danger">
+        <FaSignOutAlt className="me-2" />Login
       </Link>
     </div>
   );
@@ -106,7 +109,18 @@ const ProductsAd = () => {
 
                     <div className="card-body">
                       <h5 className="card-title text-truncate">{product.book_name.substring(0, 40)}...</h5>
-                      <p className="text-primary fw-bold">{product.price} VNĐ</p>
+                      <p className="fw-bold text-secondary">
+                        {parseInt((parseInt(product.price) * (100 - parseInt(product.discount)) / 100)).toLocaleString("vi-VN")} VNĐ
+                        {parseInt(product.discount) > 0 && (
+                          <span className="text-danger text-decoration-line-through ms-2">
+                            {parseInt(product.price).toLocaleString("vi-VN")} VNĐ
+                          </span>
+                        )}
+                      </p>
+
+
+
+
                       <div className="d-flex justify-content-center align-items-center">
                         <span className="text-warning me-2">★★★★☆</span>
                         <small className="text-muted">(131)</small>

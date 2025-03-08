@@ -36,7 +36,7 @@ const Product = () => {
     };
     getProduct();
   }, [id]);
-console.log("sp ", product, "id ", id)
+  console.log("sp ", product, "id ", id)
   const Loading = () => {
     return (
       <>
@@ -66,22 +66,30 @@ console.log("sp ", product, "id ", id)
         <div className="container my-5 py-2">
           <div className="row">
             <div className="col-md-6 col-sm-12 py-3">
-            <img
-                  src={`data:image/jpeg;base64,${product.image_data}`}
-                  id="prodimg"
-                  className="card-img-top mx-auto"
-                  alt={product.book_name}
-                  style={{ height: "450px", objectFit: "contain", maxWidth: "450px" }}
-                />
+              <img
+                src={`data:image/jpeg;base64,${product.image_data}`}
+                id="prodimg"
+                className="card-img-top mx-auto"
+                alt={product.book_name}
+                style={{ height: "450px", objectFit: "contain", maxWidth: "450px" }}
+              />
             </div>
             <div className="col-md-6 col-md-6 py-5">
               <h4 className="text-uppercase text-muted">{product.genre}</h4>
               <h1 className="display-5">{product.book_name}</h1>
               <p className="lead">
-                {product.rating && product.rating.rate}{" "} Chua set
-                <i className="fa fa-star"></i>
+                {product.rating && product.rating.rate}{" "} 
+                <i className="fa fa-star"></i> 4.5 (10)
               </p>
-              <h3 className="display-6  my-4">{product.price} VNĐ</h3>
+              <h3 className="display-6  my-4">
+                <p className="fw-bold text-secondary">
+                  {parseInt((parseInt(product.price) * (100 - parseInt(product.discount)) / 100)).toLocaleString("vi-VN")} VNĐ
+                  {parseInt(product.discount) > 0 && (
+                    <span className="text-danger text-decoration-line-through ms-2">
+                      {parseInt(product.price).toLocaleString("vi-VN")} VNĐ
+                    </span>
+                  )}
+                </p></h3>
               <p className="lead">{product.description}</p>
               <button
                 className="btn btn-outline-dark"
@@ -174,7 +182,7 @@ console.log("sp ", product, "id ", id)
         <div className="row">{loading ? <Loading /> : <ShowProduct />}</div>
         <div className="row my-5 py-5">
           <div className="d-none d-md-block">
-          <h2 className="">You may also Like</h2>
+            <h2 className="">You may also Like</h2>
             <Marquee
               pauseOnHover={true}
               pauseOnClick={true}

@@ -56,6 +56,13 @@ const editAddress = (formData) => {
         }
     });
 };
+const addOrderAndOrderDetail = (formData) => {
+    return axios.post('http://localhost:3005/order/addOrderAndOrderDetail', formData, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
 const getAddress = (id_account) => {
     return axios.get(`http://localhost:3005/address/getaddress/?id_account=${id_account}`);
 }
@@ -68,4 +75,4 @@ const deleteAddress =(address_id) => {
 }
 export { postLogin, getImage, postRegister, postAddProduct,postEditProduct, 
         getProducts, getProductbyID, getGenre, getInfor,deleteProductbyID,
-        getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress }; 
+        getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress, addOrderAndOrderDetail }; 

@@ -5,6 +5,7 @@ const http = require('http');
 const userRouter = require('./routes/user');
 const productRouter = require('./routes/product');
 const addressRouter = require('./routes/address');
+const orderRouter = require('./routes/order');
 const port = process.env.PORT || 3005;
 const fs = require('fs');
 const app = express();
@@ -29,6 +30,7 @@ pool.connect((err, connection) => {
 
 app.use('/accounts', userRouter);
 app.use('/address', addressRouter);
+app.use('/order', orderRouter);
 /////////////////////// POST
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
