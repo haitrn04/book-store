@@ -3,22 +3,8 @@ import { Link } from "react-router-dom";
 import { FaUsers, FaBox, FaList,FaUber , FaChartBar, FaSignOutAlt, FaBars, FaHome } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { HeaderAdmin } from "../../components";
 
-const Header = () => {
-  return (
-    <div className="d-flex justify-content-between align-items-center p-3 shadow-sm bg-white position-fixed"
-         style={{ top: "0", left: "250px", right: "0", height: "60px", zIndex: "1000", width: "calc(100% - 250px)" }}>
-      <FaBars className="text-secondary" size={24} />
-      <div className="d-flex align-items-center">
-        <img src="./assets/main.png.jpg" className="rounded-circle border" alt="User" height="45px" width="50px"/>
-        <div className="text-end ms-2">
-          <span className="d-block fw-bold">Moni Roy</span>
-          <span className="text-muted">Admin</span>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const Sidebar = () => {
   return (
@@ -80,7 +66,7 @@ const Customer = () => {
     <div className="d-flex">
       <Sidebar />
       <div className="flex-grow-1" style={{ marginLeft: "250px" }}>
-        <Header />
+        <HeaderAdmin />
         <div className="container mt-5 py-4">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h2 className="fw-bold">Customers</h2>

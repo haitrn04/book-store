@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "../../components";
 import {
   FaUsers,
-  FaSignOutAlt,
   FaAddressCard,
   FaCartPlus,
   FaUser,
@@ -44,10 +43,7 @@ const Sidebar = () => {
             <FaCartPlus className="me-2" /> My order
           </Link>
         </li>
-        <hr />
-        <Link to="/" className="nav-link text-danger">
-          <FaSignOutAlt className="me-2" /> Logout
-        </Link>
+
       </ul>
 
 

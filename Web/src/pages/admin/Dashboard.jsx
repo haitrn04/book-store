@@ -3,6 +3,7 @@ import { FaUsers,FaUber, FaShoppingCart, FaDollarSign, FaClock, FaBox, FaList, F
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
+import { HeaderAdmin } from "../../components";
 
 const salesData = {
   "January": [
@@ -78,21 +79,7 @@ const Sidebar = () => {
   );
 };
 
-const Header = () => {
-  return (
-    <div className="d-flex justify-content-between align-items-center p-3 shadow-sm bg-white">
-      <FaBars className="text-secondary" size={24} />
-      <div className="d-flex align-items-center">
-        <img src="./assets/main.png.jpg" className="rounded-circle border" alt="User" height = "45px" width= "50px"/>
-        <div className="text-end me-2">
-          <span className="d-block fw-bold">Moni Roy</span>
-          <span className="text-muted">Admin</span>
-        </div>
-    
-      </div>
-    </div>
-  );
-};
+
 
 const Dashboard = () => {
   const [selectedMonth, setSelectedMonth] = useState("January");
@@ -100,7 +87,7 @@ const Dashboard = () => {
     <div className="d-flex">
       <Sidebar />
       <div className="flex-grow-1" style={{ marginLeft: "250px" }}>
-        <Header />
+        <HeaderAdmin />
         <div className="container my-4">
           <h2>Dashboard</h2>
           <br />

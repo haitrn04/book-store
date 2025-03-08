@@ -129,8 +129,10 @@ const Navbar = ({ user }) => {
                         {
                             user ? (
                                 user.image_data ? (
+                                    // eslint-disable-next-line jsx-a11y/img-redundant-alt
                                     <img src={user.image_data} alt="User Image" className="avt rounded-circle" style={{ width: '35px', height: '35px'  }} />
                                 ) : (
+                                    // eslint-disable-next-line jsx-a11y/img-redundant-alt
                                     <img src={avt} alt="User Image" className="avt rounded-circle" style={{ width: '35px', height: '35px'  }} />
                                 )
                             ) : (

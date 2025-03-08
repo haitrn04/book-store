@@ -1,11 +1,7 @@
 import React, { useState } from "react";
-import { Footer, Navbar } from "../../components";
+import { Navbar } from "../../components";
 import {
   FaUsers,
-  FaBox,
-  FaList,
-  FaChartBar,
-  FaSignOutAlt,
   FaSearch,
   FaAddressCard,
   FaCartPlus,
@@ -45,10 +41,6 @@ const Sidebar = () => {
             <FaCartPlus className="me-2" /> My order
           </Link>
         </li>
-        <hr />
-        <Link to="/" className="nav-link text-danger">
-          <FaSignOutAlt className="me-2" /> Logout
-        </Link>
       </ul>
     </div>
   );

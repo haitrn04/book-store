@@ -1,7 +1,7 @@
-import React, {useState, addressState, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 
-import { Footer, Navbar } from "../../components";
-import { FaUsers,FaUber,  FaBox, FaList, FaChartBar, FaSignOutAlt, FaAddressCard, FaCartPlus, FaUser,  } from "react-icons/fa";
+import {  Navbar } from "../../components";
+import { FaUsers, FaAddressCard, FaCartPlus, FaUser,  } from "react-icons/fa";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
@@ -109,10 +109,6 @@ const Sidebar = () => {
             <FaCartPlus className="me-2" /> My order
           </Link>
         </li>
-        <hr />
-        <Link to="/" className="nav-link text-danger">
-            <FaSignOutAlt className="me-2" /> Logout
-        </Link>
       </ul>
       
       

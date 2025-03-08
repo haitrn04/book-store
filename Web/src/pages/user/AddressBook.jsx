@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Footer, Navbar } from "../../components";
+import {  Navbar } from "../../components";
 import {
   FaUsers,
-  FaSignOutAlt,
   FaAddressCard,
   FaCartPlus,
   FaUser,
@@ -45,10 +44,6 @@ const Sidebar = () => {
             <FaCartPlus className="me-2" /> My order
           </Link>
         </li>
-        <hr />
-        <Link to="/" className="nav-link text-danger">
-          <FaSignOutAlt className="me-2" /> Logout
-        </Link>
       </ul>
 
 
@@ -278,7 +273,7 @@ const AddressBook = () => {
                   <div className="mb-3">
                     <label htmlFor="detailedAddress" style={{ fontWeight: "bold" }}>Detailed Address</label>
                     <input type="text" id="detailedAddress" name="detailedAddress" className="form-control" placeholder="Enter your full address here..." 
-                    value={editedAddress.detailed_address} onChange={(e) => setEditedAddress({ ... editedAddress , detailed_address: e.target.value})
+                    value={editedAddress.detailed_address} onChange={(e) => setEditedAddress({ ...editedAddress , detailed_address: e.target.value})
                     } />
                   </div>
                 
