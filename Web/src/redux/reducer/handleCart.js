@@ -36,6 +36,9 @@ const handleCart = (state = getInitialCart(), action) => {
       // Update localStorage
       localStorage.setItem("cart", JSON.stringify(updatedCart));
       return updatedCart;
+    
+      case "CLEAR_CART":
+        return []; // Xóa toàn bộ giỏ hàng
 
     default:
       return state;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaUsers, FaBox, FaList,FaUber , FaChartBar, FaSignOutAlt, FaBars } from "react-icons/fa";
+import { FaUsers, FaBox, FaList,FaUber , FaChartBar, FaSignOutAlt, FaBars, FaHome } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
@@ -53,7 +53,10 @@ const Sidebar = () => {
       </ul>
       <hr />
       <Link to="/" className="nav-link text-danger">
-        <FaSignOutAlt className="me-2" /> Logout
+        <FaHome className="me-2" /> Back to Home
+      </Link>
+      <Link to="/login" className="nav-link text-danger">
+        <FaSignOutAlt className="me-2" />Login
       </Link>
     </div>
   );

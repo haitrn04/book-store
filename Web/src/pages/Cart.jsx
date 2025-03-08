@@ -32,10 +32,10 @@ const Cart = () => {
 
   const ShowCart = () => {
     let subtotal = 0;
-    let shipping = 30.0;
+    let shipping = 0;
     let totalItems = 0;
     state.map((item) => {
-      return (subtotal += item.price * item.qty);
+      return (subtotal += parseInt(item.price * item.qty *(1 - item.discount/100)));
     });
 
     state.map((item) => {
@@ -108,7 +108,7 @@ const Cart = () => {
                               <p className="text-start text-md-center">
                                 <strong>
                                   <span className="text-muted">{item.qty}</span>{" "}
-                                  x {item.price} VNĐ
+                                  x {parseInt(item.price *(1 - item.discount/100)).toLocaleString("vi-VN")} VNĐ
                                 </strong>
                               </p>
                             </div>
@@ -129,18 +129,18 @@ const Cart = () => {
                   <div className="card-body">
                     <ul className="list-group list-group-flush">
                       <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                        Products ({totalItems})<span>{Math.round(subtotal)} VNĐ</span>
+                        Products ({totalItems})<span>{Math.round(subtotal).toLocaleString("vi-VN")} VNĐ</span>
                       </li>
                       <li className="list-group-item d-flex justify-content-between align-items-center px-0">
                         Shipping
-                        <span>{shipping} VNĐ</span>
+                        <span>{shipping.toLocaleString("vi-VN")} VNĐ</span>
                       </li>
                       <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
                         <div>
                           <strong>Total amount</strong>
                         </div>
                         <span>
-                          <strong>{Math.round(subtotal + shipping)} VNĐ</strong>
+                          <strong>{Math.round(subtotal + shipping).toLocaleString("vi-VN")} VNĐ</strong>
                         </span>
                       </li>
                     </ul>

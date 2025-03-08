@@ -127,8 +127,17 @@ const Products = () => {
                   </p>
                 </div>
                 <ul className="list-group list-group-flush">
-                  <li className="list-group-item lead">{product.price} VNĐ</li>
+                  <li className="list-group-item lead fw-bold text-secondary">
+                    {parseInt((parseInt(product.price) * (100 - parseInt(product.discount)) / 100)).toLocaleString("vi-VN")} VNĐ
+                  </li>
+                  {parseInt(product.discount) > 0 && (
+                    <li className="list-group-item text-danger text-decoration-line-through">
+                      {parseInt(product.price).toLocaleString("vi-VN")} VNĐ
+                    </li>
+                  )}
                 </ul>
+
+
                 <div className="card-body">
                   <Link
                     to={"/product/" + product.id_book}
