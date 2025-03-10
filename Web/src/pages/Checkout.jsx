@@ -61,6 +61,7 @@ const Checkout = () => {
             navigate("/OrderFail");
           }
         });
+        
       } else if (selectedPayment === 'momo') {
         alert('Chức năng thanh toán qua MoMo đang được phát triển');
       }

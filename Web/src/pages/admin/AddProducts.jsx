@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaBars, FaUber, FaHome } from "react-icons/fa";
+import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaUber, FaHome } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { postAddProduct, getGenre } from "../../services/apiService";
 import { toast, ToastContainer } from "react-toastify"; // Import react-toastify
@@ -53,7 +53,6 @@ const Sidebar = () => {
 
 // AddProductForm component
 const AddProductForm = () => {
-  const navigate = useNavigate();
   const [book_name, setBookName] = useState("");
   const [id_genre, setIdGenre] = useState("");
   const [author, setAuthor] = useState("");
@@ -111,7 +110,6 @@ const AddProductForm = () => {
     try {
       const res = await postAddProduct(formData);
       toast.success("Product added successfully!");
-      // Reset form after submission
       setBookName("");
       setAuthor("");
       setPublisher("");
@@ -121,6 +119,7 @@ const AddProductForm = () => {
       setStock("");
       setDescription("");
       setImageData(null);
+      console.log(res);
     } catch (error) {
       toast.error("Failed to add product.");
     } finally {

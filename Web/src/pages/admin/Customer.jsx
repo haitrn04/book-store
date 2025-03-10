@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaUsers, FaBox, FaList,FaUber , FaChartBar, FaSignOutAlt, FaBars, FaHome } from "react-icons/fa";
+import { FaUsers, FaBox, FaList,FaUber , FaChartBar, FaSignOutAlt, FaHome } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { HeaderAdmin } from "../../components";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaUsers, FaBox,FaUber, FaList, FaChartBar, FaSignOutAlt, FaBars, FaFilter, FaHome } from "react-icons/fa";
+import { FaUsers, FaBox,FaUber, FaList, FaChartBar, FaSignOutAlt, FaFilter, FaHome } from "react-icons/fa";
 import { HeaderAdmin } from "../../components";
 
 
