@@ -31,7 +31,7 @@ const Sidebar = () => {
         </li>
         <li className="nav-item">
           <Link to="/customer" className="nav-link text-white fw-bold bg-primary p-2 rounded">
-            <FaUber className="me-2" /> Contact
+            <FaUber className="me-2" /> Customer
           </Link>
         </li>
       </ul>

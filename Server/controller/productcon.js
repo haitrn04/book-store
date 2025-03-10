@@ -66,24 +66,48 @@ const productcon = {
         }
     ],
 
-    editproduct: async (req, res) => {
+    editproduct:[
+        upload.single('imageData'),
+        async (req, res) => {
+            try {
+                if (!req.file) {
+                    return res.status(400).json({ error: 'No file uploaded' });
+                }
 
-        const { id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, description } = req.body;
-        try {
-            const sql = `
-                UPDATE books
-                SET book_name=$2, id_genre=$3, author=$4, publisher=$5, yopublication=$6, price=$7, discount=$8, stock=$9, image_data=$10, description=$11
-                WHERE id_book=$1;
-            `;
+                const imageData = req.file.buffer;
+                const { id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, description } = req.body;
 
-            await pool.query(sql, [id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description]);
-            res.status(200).json({ message: "Book updated successfully" });
+                if ( !id_book||!book_name || !id_genre || !author || !publisher || !yopublication || !price || !discount || !stock || !description) {
+                    return res.status(400).json({ error: 'Missing required fields' });
+                }
 
-        } catch (err) {
-            console.error(err);
-            res.status(500).json({ error: 'Internal Server Error' });
+                const sql = `
+                    UPDATE books SET (book_name=$2, id_genre=$3, author =$4, publisher=$5, yopublication=$6, price=$7, discount=$8, stock=$9, image_data=$10, description=$11)
+                    WHERE id_book=$1;`;
+
+                const values = [
+                    parseInt(id_book),
+                    book_name,
+                    parseInt(id_genre),
+                    author,
+                    publisher,
+                    yopublication,
+                    parseInt(price),
+                    parseInt(discount),
+                    parseInt(stock),
+                    imageData,
+                    description
+                ];
+
+                const result = await pool.query(sql, values);
+                res.status(200).json({ message: 'Book edited successfully', id_book: result.rows[0].id_book });
+
+            } catch (error) {
+                console.error('Unexpected error:', error);
+                res.status(500).json({ error: 'Internal Server Error' });
+            }
         }
-    },
+    ],
 
     getProducts: async (req, res) => {
         try {

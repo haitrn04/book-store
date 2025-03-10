@@ -89,6 +89,7 @@ const AddProductForm = () => {
   // Handle file upload
   const previewFile = (data) => {
     setImageData(data);
+    console.log(data);
   };
 
   // Handle form submission

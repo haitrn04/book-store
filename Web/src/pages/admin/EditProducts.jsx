@@ -2,7 +2,7 @@ import React, { useState,useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaUber, FaHome } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { getProductbyID, postEditProduct, deleteProductbyID } from "../../services/apiService";
+import { getProductbyID, postEditProduct, deleteProductbyID, getGenre } from "../../services/apiService";
 import { HeaderAdmin } from "../../components";
 
 const Sidebar = () => {
@@ -55,29 +55,80 @@ const AddProductForm = () => {
   const searchParams = new URLSearchParams(location.search);
   const id_book = searchParams.get('id');
   const [product, setProduct] = useState([]);
+  const [id_genre, setIdGenre] = useState("");
+  const [image_data, setImageData] = useState(null);
+  const [genre, setGenre] = useState([]);
   const [loading, setLoading] = useState(true);
+      // Fetch genres
+      useEffect(() => {
+        const fetchGenres = async () => {
+          try {
+            const response = await getGenre();
+            setGenre(response.data);
+            if (!id_genre && response.data.length > 0) {
+              setIdGenre(response.data[0].id_genre);
+            }
+          } catch (error) {
+            console.error("Error fetching genres:", error);
+          }
+        };
+    
+        fetchGenres();
+      }, [id_genre]);
+
   useEffect(() => {
     const fetchProduct = async () => {
       const response = getProductbyID(id_book);
       const data = (await response).data;
       const date = new Date(data[0].yopublication).toISOString().split('T')[0];
       data[0].yopublication= date;
+      setIdGenre(data[0].id_genre);
       setProduct(data[0]);
       setLoading(false);
     };
     fetchProduct();
   }, [id_book]);
+
   const handleEdit = async (e) =>{
     e.preventDefault();
-      const res = await postEditProduct(product.id_book, product.book_name, product.genres, product.author, product.publisher, product.yopublication, product.price, product.discount, product.stock, product.description);
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("id_book", product.id_book);
+    formData.append("book_name", product.book_name);
+    formData.append("id_genre", id_genre);
+    formData.append("author", product.author);
+    formData.append("publisher", product.publisher);
+    formData.append("yopublication", product.yopublication);
+    formData.append("price", product.price);
+    formData.append("discount", product.discount);
+    formData.append("stock", product.stock);
+    formData.append("image_data", image_data);
+    formData.append("description", product.description);
+    console.log(formData.getAll("id_genre"));
+    try {
+      const res = await postEditProduct(formData);
       alert(res.data.message);
       navigate("/productsad");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+
   };
   const handleChange = (e) =>{ 
     const { name, value } = e.target;
     setProduct({...product, [name]: value});
   };
 
+  const previewFile = (data) => {
+    setImageData(data);
+    console.log(data);
+  };
+
+  const handlegerne = (e) => {
+    setIdGenre(e.target.value);
+  };
   const handledel = async () => {
     try {
       await deleteProductbyID(id_book);
@@ -103,12 +154,13 @@ const AddProductForm = () => {
               </div>
               <div className="col-md-4 mb-3">
                 <label className="form-label">Genres</label>
-                <select className="form-select" name="genres" value={product.genres} onChange={(e) => handleChange(e)}>
-                  <option>Select Genre</option>
-                  <option>Novel</option>
-                  <option>Adventure</option>
-                  <option>Fiction</option>
-                </select>
+                <select className="form-select" onChange={(e) => handlegerne(e)} value={id_genre}>
+                {genre.map((e, index) => (
+                  <option key={index} value={e.id_genre}>
+                    {e.genre}
+                  </option>
+                ))}
+              </select>
               </div>
             </div>
             <div className="row">
@@ -140,9 +192,9 @@ const AddProductForm = () => {
               </div>
             </div>
             <div className="mb-3">
-              <label className="form-label">Select Pictures</label>
-              <input type="file" className="form-control" />
-            </div>
+            <label className="form-label">Select Pictures</label>
+            <input type="file" className="form-control" id="prod" onChange={(e) => previewFile(e.target.files[0])} />
+          </div>
             <div className="mb-3">
               <label className="form-label">Content</label>
               <textarea className="form-control" name="description" rows="5" value={product.description} onChange={(e) => handleChange(e)}></textarea>
