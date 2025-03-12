@@ -1,8 +1,8 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaUber, FaHome } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { getProductbyID, postEditProduct, deleteProductbyID } from "../../services/apiService";
+import { getProductbyID, postEditProduct, deleteProductbyID, getGenre } from "../../services/apiService";
 import { HeaderAdmin } from "../../components";
 
 const Sidebar = () => {
@@ -49,35 +49,89 @@ const Sidebar = () => {
 
 
 
-const AddProductForm = () => {  
-  const navigate  = useNavigate();
+const AddProductForm = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const id_book = searchParams.get('id');
   const [product, setProduct] = useState([]);
+  const [id_genre, setIdGenre] = useState("");
+  const [image_data, setImageData] = useState(null);
+  const [genre, setGenre] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Fetch genres
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const response = await getGenre();
+        setGenre(response.data);
+        if (!id_genre && response.data.length > 0) {
+          setIdGenre(response.data[0].id_genre);
+        }
+      } catch (error) {
+        console.error("Error fetching genres:", error);
+      }
+    };
+
+    fetchGenres();
+  }, [id_genre]);
+
   useEffect(() => {
     const fetchProduct = async () => {
       const response = getProductbyID(id_book);
       const data = (await response).data;
       const date = new Date(data[0].yopublication).toISOString().split('T')[0];
-      data[0].yopublication= date;
+      data[0].yopublication = date;
+      setIdGenre(data[0].id_genre);
       setProduct(data[0]);
       setLoading(false);
     };
     fetchProduct();
   }, [id_book]);
-  const handleEdit = async (e) =>{
+  console.log(product)
+  const handleEdit = async (e) => {
     e.preventDefault();
-      const res = await postEditProduct(product.id_book, product.book_name, product.genres, product.author, product.publisher, product.yopublication, product.price, product.discount, product.stock, product.description);
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("id_book", product.id_book);
+    formData.append("book_name", product.book_name);
+    formData.append("id_genre", id_genre);
+    formData.append("author", product.author);
+    formData.append("publisher", product.publisher);
+    formData.append("yopublication", product.yopublication);
+    formData.append("price", product.price);
+    formData.append("discount", product.discount);
+    formData.append("stock", product.stock);
+    formData.append("description", product.description);
+    if (image_data) {
+      formData.append("imageData", image_data);
+    }
+    try {
+      const res = await postEditProduct(formData);
       alert(res.data.message);
       navigate("/productsad");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
-  const handleChange = (e) =>{ 
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setProduct({...product, [name]: value});
+    setProduct({ ...product, [name]: value });
   };
 
+  const previewFile = (file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setImageData(file);
+      setProduct({ ...product, image_data: reader.result.split(',')[1] });
+    };
+  };
+  const handlegerne = (e) => {
+    setIdGenre(e.target.value);
+  };
   const handledel = async () => {
     try {
       await deleteProductbyID(id_book);
@@ -87,79 +141,112 @@ const AddProductForm = () => {
     }
   }
 
-    return (
-      <div className="container mt-5 pt-5">
-        <h2 className="fw-bold">Edit Product</h2>
-        <div className="bg-light p-4 rounded shadow-sm">
-          <form onSubmit={handleEdit}>
-            <div className="row">
-              <div className="col-md-4 mb-3">
-                <label className="form-label">Book ID</label>
-                <input type="text" className="form-control" name="id_book" value={product.id_book} onChange={(e) => handleChange(e)} disabled/>
-              </div>
-              <div className="col-md-4 mb-3">
-                <label className="form-label">Book Name</label>
-                <input type="text" className="form-control" name="book_name" value={product.book_name} onChange={(e) => handleChange(e)} />
-              </div>
-              <div className="col-md-4 mb-3">
-                <label className="form-label">Genres</label>
-                <select className="form-select" name="genres" value={product.genres} onChange={(e) => handleChange(e)}>
-                  <option>Select Genre</option>
-                  <option>Novel</option>
-                  <option>Adventure</option>
-                  <option>Fiction</option>
-                </select>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-md-4 mb-3">
-                <label className="form-label">Author</label>
-                <input type="text" className="form-control" name="author" value={product.author} onChange={(e) => handleChange(e)}/>
-              </div>
-              <div className="col-md-4 mb-3">
-                <label className="form-label">Publisher</label>
-                <input type="text" className="form-control" name="publisher" value={product.publisher} onChange={(e) => handleChange(e)} />
-              </div>
-              <div className="col-md-4 mb-3">
-                <label className="form-label">Year of Publication</label>
-                <input type="date" className="form-control" name="yopublication" value={product.yopublication} onChange={(e) => handleChange(e)}/>
+  return (
+    <div className="container mt-5 pt-5">
+      <div className="bg-light p-4 rounded shadow-sm">
+        <form onSubmit={handleEdit} className="container p-4 bg-light shadow rounded" style={{ width: "100%", maxWidth: "1200px", margin: "0 auto" }}>
+          <h3 className="text-center mb-4">Edit Book Information</h3>
+
+          <div className="row g-4">
+            {/* Left side - Image */}
+            <div className="col-md-5">
+              <div className="card p-3 shadow-sm h-100 w-100">
+                <label className="form-label fw-bold">Book Image</label>
+                <input
+                  type="file"
+                  className="form-control mb-3"
+                  id="prod"
+                  onChange={(e) => previewFile(e.target.files[0])}
+                />
+                <div className="text-center d-flex align-items-center justify-content-center" style={{ minHeight: "400px", width: "100%" }}>
+                  <img
+                    src={`data:image/jpeg;base64,${product.image_data}`}
+                    alt="product"
+                    className="img-fluid rounded shadow"
+                    style={{ maxHeight: "400px", objectFit: "contain" }}
+                  />
+                </div>
               </div>
             </div>
-            <div className="row">
-              <div className="col-md-4 mb-3">
-                <label className="form-label">Price</label>
-                <input type="text" className="form-control" name="price" value={product.price} onChange={(e) => handleChange(e)} />
+
+            {/* Right side - Book Information */}
+            <div className="col-md-7">
+              <div className="card p-3 shadow-sm h-100 w-100">
+                <div className="row g-3">
+                  <div className="col-md-4">
+                    <label className="form-label fw-bold">Book ID</label>
+                    <input type="text" className="form-control w-100" name="id_book" value={product.id_book} disabled />
+                  </div>
+                  <div className="col-md-8">
+                    <label className="form-label fw-bold">Book Name</label>
+                    <input type="text" className="form-control w-100" name="book_name" value={product.book_name} onChange={handleChange} />
+                  </div>
+                </div>
+
+                <div className="row g-3 mt-2 w-100">
+                  <div className="col-md-6">
+                    <label className="form-label fw-bold">Author</label>
+                    <input type="text" className="form-control w-100" name="author" value={product.author} onChange={handleChange} />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label fw-bold">Genres</label>
+                    <select className="form-select w-100" onChange={handlegerne} value={id_genre}>
+                      {genre.map((e, index) => (
+                        <option key={index} value={e.id_genre}>{e.genre}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="row g-3 mt-2 w-100">
+                  <div className="col-md-6">
+                    <label className="form-label fw-bold">Publisher</label>
+                    <input type="text" className="form-control w-100" name="publisher" value={product.publisher} onChange={handleChange} />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label fw-bold">Year of Publication</label>
+                    <input type="date" className="form-control w-100" name="yopublication" value={product.yopublication} onChange={handleChange} />
+                  </div>
+                </div>
+
+                <div className="row g-3 mt-2 w-100">
+                  <div className="col-md-4">
+                    <label className="form-label fw-bold">Price</label>
+                    <input type="text" className="form-control w-100" name="price" value={product.price} onChange={handleChange} />
+                  </div>
+                  <div className="col-md-4">
+                    <label className="form-label fw-bold">Discount %</label>
+                    <input type="text" className="form-control w-100" name="discount" value={product.discount} onChange={handleChange} />
+                  </div>
+                  <div className="col-md-4">
+                    <label className="form-label fw-bold">Stock</label>
+                    <input type="text" className="form-control w-100" name="stock" value={product.stock} onChange={handleChange} />
+                  </div>
+                </div>
+
+                <div className="mt-3 w-100">
+                  <label className="form-label fw-bold">Content</label>
+                  <textarea className="form-control w-100" name="description" rows="4" value={product.description} onChange={handleChange}></textarea>
+                </div>
               </div>
-              <div className="col-md-4 mb-3">
-                <label className="form-label">Discount %</label>
-                <input type="text" className="form-control" name="discount" value={product.discount} onChange={(e) => handleChange(e)} />
+
+              <div className="d-flex justify-content-end gap-3 mt-4 w-100">
+                <Link to="/productsad">
+                  <button type="button" className="btn btn-secondary">Cancel</button>
+                </Link>
+                <button type="submit" className="btn btn-danger" onClick={handledel}>Delete</button>
+                <button type="submit" className="btn btn-primary">Edit</button>
               </div>
-              <div className="col-md-4 mb-3">
-                <label className="form-label">Stock</label>
-                <input type="text" className="form-control" name="stock" value={product.stock} onChange={(e) => handleChange(e)}/>
-              </div>
             </div>
-            <div className="mb-3">
-              <label className="form-label">Select Pictures</label>
-              <input type="file" className="form-control" />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Content</label>
-              <textarea className="form-control" name="description" rows="5" value={product.description} onChange={(e) => handleChange(e)}></textarea>
-            </div>
-            <div className="d-flex justify-content-center gap-3">
-              <Link to="/productsad">
-                <button type="button" className="btn btn-secondary btn-lg">Cancel</button>
-              </Link>
-              <button type="submit" className="btn btn-danger btn-lg" onClick={handledel}>Delete</button>
-              <button type="submit" className="btn btn-primary btn-lg">Edit</button>
-            </div>
-          </form>
-        </div>
+          </div>
+          <br />
+          <br />
+        </form>
       </div>
-    );
-  };
-  
+    </div>
+  );
+};
+
 
 const EditProducts = () => {
   return (

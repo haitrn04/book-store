@@ -22,8 +22,12 @@ const postAddProduct = (formData) => {
     });
 };
 // co anh
-const postEditProduct = (book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name) => {
-    return axios.post('http://localhost:3005/products/editproduct', { book_name, id_genre, author, publisher, yopublication, price, discount, stock, image_data, description, image_name });
+const postEditProduct = (formData) => {
+    return axios.post('http://localhost:3005/products/editproduct', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
 };
 
 const getProductbyGenre = (id_genre) => {

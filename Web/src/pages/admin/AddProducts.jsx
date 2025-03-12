@@ -66,7 +66,7 @@ const AddProductForm = () => {
   const [loading, setLoading] = useState(false);
   const [genre, setGenre] = useState([]);
   const [error, setError] = useState(null);
-
+  const [imagePreview, setImagePreview] = useState(null);
   // Fetch genres
   useEffect(() => {
     const fetchGenres = async () => {
@@ -86,8 +86,17 @@ const AddProductForm = () => {
   }, [id_genre]);
 
   // Handle file upload
-  const previewFile = (data) => {
-    setImageData(data);
+  const previewFile = (file) => {
+    if (file) {
+      setImageData(file);
+
+      // Create a FileReader to read and preview the image
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   // Handle form submission
@@ -133,58 +142,96 @@ const AddProductForm = () => {
       <div className="bg-light p-4 rounded shadow-sm">
         <form onSubmit={upload} encType="multipart/form-data">
           <div className="row">
-            <div className="col-md-4 mb-3">
-              <label className="form-label">Book Name</label>
-              <input type="text" className="form-control" value={book_name} onChange={(e) => setBookName(e.target.value)} />
+            {/* Left side - Form Fields */}
+            <div className="col-md-8">
+              <div className="row">
+                <div className="col-md-12 mb-3">
+                  <label className="form-label">Book Name</label>
+                  <input type="text" className="form-control" value={book_name} onChange={(e) => setBookName(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Author</label>
+                  <input type="text" className="form-control" value={author} onChange={(e) => setAuthor(e.target.value)} />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Publisher</label>
+                  <input type="text" className="form-control" value={publisher} onChange={(e) => setPublisher(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-md-4 mb-3">
+                  <label className="form-label">Year of Publication</label>
+                  <input type="date" className="form-control" value={yopublication} onChange={(e) => setYoPublication(e.target.value)} />
+                </div>
+                <div className="col-md-4 mb-3">
+                  <label className="form-label">Price</label>
+                  <input type="number" className="form-control" value={price} onChange={(e) => setPrice(e.target.value)} />
+                </div>
+                <div className="col-md-4 mb-3">
+                  <label className="form-label">Discount %</label>
+                  <input type="number" className="form-control" value={discount} onChange={(e) => setDiscount(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Stock</label>
+                  <input type="number" className="form-control" value={stock} onChange={(e) => setStock(e.target.value)} />
+                </div>
+
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Genres</label>
+                  <select className="form-select" onChange={(e) => setIdGenre(e.target.value)} value={id_genre}>
+                    {genre.map((e, index) => (
+                      <option key={index} value={e.id_genre}>
+                        {e.genre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Description</label>
+                <textarea className="form-control" rows="5" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
+              </div>
             </div>
-            <div className="col-md-4 mb-3">
-              <label className="form-label">Genres</label>
-              <select className="form-select" onChange={(e) => setIdGenre(e.target.value)} value={id_genre}>
-                {genre.map((e, index) => (
-                  <option key={index} value={e.id_genre}>
-                    {e.genre}
-                  </option>
-                ))}
-              </select>
+
+            {/* Right side - Image Upload */}
+            <div className="col-md-4">
+              <div className="card p-3 shadow-sm h-100">
+                <label className="form-label fw-bold">Book Image</label>
+                <input
+                  type="file"
+                  className="form-control mb-3"
+                  id="prod"
+                  onChange={(e) => previewFile(e.target.files[0])}
+                />
+                <div className="d-flex flex-column align-items-center justify-content-center" style={{ minHeight: "300px" }}>
+                  {imagePreview ? (
+                    <img
+                      src={imagePreview}
+                      alt="product"
+                      className="img-fluid rounded shadow"
+                      style={{ maxHeight: "300px", objectFit: "contain" }}
+                    />
+                  ) : (
+                    <div className="text-center p-4">
+                      <i className="bi bi-image" style={{ fontSize: "3rem", color: "#adb5bd" }}></i>
+                      <h5 className="mt-3 text-secondary">Please select an image</h5>
+                      <p className="text-muted">Upload a cover image for your book</p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-          <div className="row">
-            <div className="col-md-4 mb-3">
-              <label className="form-label">Author</label>
-              <input type="text" className="form-control" value={author} onChange={(e) => setAuthor(e.target.value)} />
-            </div>
-            <div className="col-md-4 mb-3">
-              <label className="form-label">Publisher</label>
-              <input type="text" className="form-control" value={publisher} onChange={(e) => setPublisher(e.target.value)} />
-            </div>
-            <div className="col-md-4 mb-3">
-              <label className="form-label">Year of Publication</label>
-              <input type="date" className="form-control" value={yopublication} onChange={(e) => setYoPublication(e.target.value)} />
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-4 mb-3">
-              <label className="form-label">Price</label>
-              <input type="number" className="form-control" value={price} onChange={(e) => setPrice(e.target.value)} />
-            </div>
-            <div className="col-md-4 mb-3">
-              <label className="form-label">Discount %</label>
-              <input type="number" className="form-control" value={discount} onChange={(e) => setDiscount(e.target.value)} />
-            </div>
-            <div className="col-md-4 mb-3">
-              <label className="form-label">Stock</label>
-              <input type="number" className="form-control" value={stock} onChange={(e) => setStock(e.target.value)} />
-            </div>
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Select Pictures</label>
-            <input type="file" className="form-control" id="prod" onChange={(e) => previewFile(e.target.files[0])} />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Description</label>
-            <textarea className="form-control" rows="5" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
-          </div>
-          <div className="d-flex justify-content-between">
+
+          <div className="d-flex justify-content-between mt-4">
             <Link to="/productsad">
               <button type="button" className="btn btn-secondary">Cancel</button>
             </Link>
