@@ -3,25 +3,23 @@ const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
 
-let sslConfig = {};
+let sslConfig = {
+    ssl: {
+        rejectUnauthorized: false,
+    },
+};
 
-if (process.env.NODE_ENV === 'production') {
-    const caPath = path.join(__dirname, 'ca.pem');
+const caPath = path.join(__dirname, 'ca.pem');
 
-    try {
-        if (fs.existsSync(caPath)) {
-            sslConfig = {
-                ssl: {
-                    ca: fs.readFileSync(caPath),
-                    rejectUnauthorized: true,
-                },
-            };
-        } else {
-            console.error('Warning: ca.pem file not found. SSL connection may fail.');
-        }
-    } catch (err) {
-        console.error('Error reading ca.pem file:', err);
+try {
+    if (fs.existsSync(caPath)) {
+        sslConfig.ssl.ca = fs.readFileSync(caPath);
+        sslConfig.ssl.rejectUnauthorized = true;
+    } else {
+        console.error('Warning: ca.pem file not found. SSL connection may fail.');
     }
+} catch (err) {
+    console.error('Error reading ca.pem file:', err);
 }
 
 const pool = new Pool({
