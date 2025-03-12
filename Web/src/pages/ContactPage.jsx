@@ -21,7 +21,7 @@ const ContactPage = () => {
               justifyContent: "center",
             // eslint-disable-next-line react/jsx-no-comment-textnodes
             }}>
-              // eslint-disable-next-line jsx-a11y/alt-text
+  
               <img
                 className="img-fluid rounded-circle"
                 src={require("../assets/images/725105061.jpg")}

@@ -94,11 +94,11 @@ const ProductsAd = () => {
                     />
 
                     <div className="card-body">
-                      <h5 className="card-title text-truncate">{product.book_name.substring(0, 40)}...</h5>
+                      <h5 className="card-title text-truncate">{product.book_name.substring(0, 30)}{product.book_name.length > 30 ? "..." : ""}</h5>
                       <p className="fw-bold text-secondary">
                         {parseInt((parseInt(product.price) * (100 - parseInt(product.discount)) / 100)).toLocaleString("vi-VN")} VNĐ
                         {parseInt(product.discount) > 0 && (
-                          <span className="text-danger text-decoration-line-through ms-2">
+                          <span className="text-danger text-decoration-line-through ms-2" style={{ fontSize: "1rem" }}>
                             {parseInt(product.price).toLocaleString("vi-VN")} VNĐ
                           </span>
                         )}

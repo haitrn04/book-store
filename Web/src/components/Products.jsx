@@ -120,21 +120,21 @@ const Products = () => {
                 />
                 <div className="card-body">
                   <h5 className="card-title">
-                    {product.book_name.substring(0, 30)}...
+                    {product.book_name.substring(0, 30)}{product.book_name.length > 30 ? "..." : ""}
                   </h5>
                   <p className="card-text">
-                    {product.description.substring(0, 90)}...
+                    {product.description.substring(0, 90)}{product.description.length > 90 ? "..." : ""}
                   </p>
                 </div>
                 <ul className="list-group list-group-flush">
                   <li className="list-group-item lead fw-bold text-secondary">
                     {parseInt((parseInt(product.price) * (100 - parseInt(product.discount)) / 100)).toLocaleString("vi-VN")} VNĐ
+                    {parseInt(product.discount) > 0 && (
+                      <span className="text-danger text-decoration-line-through ms-2" style={{ fontSize: "1rem" }}>
+                        {parseInt(product.price).toLocaleString("vi-VN")} VNĐ
+                      </span>
+                    )}
                   </li>
-                  {parseInt(product.discount) > 0 && (
-                    <li className="list-group-item text-danger text-decoration-line-through">
-                      {parseInt(product.price).toLocaleString("vi-VN")} VNĐ
-                    </li>
-                  )}
                 </ul>
 
 
