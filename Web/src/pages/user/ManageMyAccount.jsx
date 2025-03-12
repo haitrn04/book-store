@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { Navbar } from "../../components";
+import { Footer, Navbar } from "../../components";
 import { FaUsers, FaAddressCard, FaCartPlus, FaUser, } from "react-icons/fa";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -80,6 +80,7 @@ const ManageMyAccount = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   )
 }

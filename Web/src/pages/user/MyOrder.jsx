@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Navbar } from "../../components";
+import { Footer, Navbar } from "../../components";
 import {
   FaUsers,
   FaSearch,
@@ -360,6 +360,7 @@ const MyOrder = () => {
       {selectedOrder && (
         <OrderDetailModal order={selectedOrder} onClose={handleCloseModal} />
       )}
+      <Footer />
     </>
   );
 };

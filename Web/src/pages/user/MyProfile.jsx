@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Navbar } from "../../components";
+import { Footer, Navbar } from "../../components";
 import {
   FaUsers,
   FaAddressCard,
@@ -27,7 +27,6 @@ const Sidebar = () => {
         top: "100px"
       }}
     >
-      <h5 className="fw-bold mb-3 text-primary">My Account</h5>
       <ul className="nav flex-column">
         <li className="nav-item mb-2">
           <Link to="/managemyaccount" className="nav-link text-dark hover-bg-light rounded p-2">
@@ -413,19 +412,20 @@ const MyProfile = () => {
                         </div>
                       </div>
 
-                      {/* <div className="card border-0 bg-light p-4">
+                      <div className="card border-0 bg-light p-4">
                         <div className="d-flex justify-content-between align-items-center">
                           <div>
-                            <h5 className="mb-1">Two-Factor Authentication</h5>
-                            <p className="text-muted mb-0">Status: Not enabled</p>
+                            <h5 className="mb-1">Email Verification</h5>
+                            <p className="text-muted mb-0">Status: Not verified</p>
                           </div>
                           <button
                             className="btn btn-outline-primary"
                           >
-                            Enable
+                            Verify
                           </button>
                         </div>
-                      </div> */}
+                      </div>
+
                     </div>
                   )}
                 </div>
@@ -434,6 +434,7 @@ const MyProfile = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

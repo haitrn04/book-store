@@ -62,48 +62,64 @@ const Product = () => {
 
   const ShowProduct = () => {
     return (
-      <>
-        <div className="container my-5 py-2">
-          <div className="row">
-            <div className="col-md-6 col-sm-12 py-3">
-              <img
-                src={`data:image/jpeg;base64,${product.image_data}`}
-                id="prodimg"
-                className="card-img-top mx-auto"
-                alt={product.book_name}
-                style={{ height: "450px", objectFit: "contain", maxWidth: "450px" }}
-              />
-            </div>
-            <div className="col-md-6 col-md-6 py-5">
-              <h4 className="text-uppercase text-muted">{product.genre}</h4>
-              <h1 className="display-5">{product.book_name}</h1>
-              <p className="lead">
-                {product.rating && product.rating.rate}{" "} 
-                <i className="fa fa-star"></i> 4.5 (10)
-              </p>
-              <h3 className="display-6  my-4">
-                <p className="fw-bold text-secondary">
-                  {parseInt((parseInt(product.price) * (100 - parseInt(product.discount)) / 100)).toLocaleString("vi-VN")} VNĐ
-                  {parseInt(product.discount) > 0 && (
-                    <span className="text-danger text-decoration-line-through ms-2">
-                      {parseInt(product.price).toLocaleString("vi-VN")} VNĐ
-                    </span>
-                  )}
-                </p></h3>
-              <p className="lead">{product.description}</p>
-              <button
-                className="btn btn-outline-dark"
-                onClick={() => addProduct(product)}
-              >
-                Add to Cart
-              </button>
-              <Link to="/cart" className="btn btn-dark mx-3">
-                Go to Cart
-              </Link>
-            </div>
-          </div>
+<>
+  <div className="container my-5 py-2">
+    <div className="row">
+      <div className="col-md-6 col-sm-12 py-3">
+        <img
+          src={`data:image/jpeg;base64,${product.image_data}`}
+          id="prodimg"
+          className="card-img-top mx-auto d-block"
+          alt={product.book_name}
+          style={{ height: "450px", objectFit: "contain", maxWidth: "450px" }}
+        />
+      </div>
+      <div className="col-md-6 py-5">
+        <h4 className="text-uppercase text-muted">{product.genre}</h4>
+        <h1 className="display-5">{product.book_name}</h1>
+        <p className="lead">
+          {product.rating && product.rating.rate}{" "}
+          <i className="fa fa-star text-warning"></i> 4.5 (10)
+        </p>
+        
+        {/* Price and Discount Section */}
+        <div className="position-relative mb-4">
+          {/* Discount Badge */}
+          {parseInt(product.discount, 10) > 0 && (
+            <span
+              className="badge bg-danger text-white position-absolute"
+              style={{ top: "-10px", right: "0", fontSize: "0.9rem" }}
+            >
+              -{parseInt(product.discount, 10)}%
+            </span>
+          )}
+          
+          <h3 className="display-6 fw-bold text-secondary">
+            {parseInt((parseInt(product.price) * (100 - parseInt(product.discount || 0)) / 100)).toLocaleString("vi-VN")}
+            <sup>₫</sup>
+            {parseInt(product.discount, 10) > 0 && (
+              <span className="text-danger text-decoration-line-through ms-3" style={{ fontSize: "1.2rem" }}>
+                {parseInt(product.price).toLocaleString("vi-VN")}
+                <sup>₫</sup>
+              </span>
+            )}
+          </h3>
         </div>
-      </>
+
+        <p className="lead">{product.description}</p>
+        <button
+          className="btn btn-outline-dark me-3"
+          onClick={() => addProduct(product)}
+        >
+          Add to Cart
+        </button>
+        <Link to="/cart" className="btn btn-dark">
+          Go to Cart
+        </Link>
+      </div>
+    </div>
+  </div>
+</>
     );
   };
 
