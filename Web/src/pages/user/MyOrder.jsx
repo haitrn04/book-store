@@ -6,6 +6,8 @@ import {
   FaAddressCard,
   FaCartPlus,
   FaUser,
+  FaCommentDots,
+  FaStar, FaCamera,
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
@@ -188,9 +190,138 @@ const OrderDetailModal = ({ order, onClose }) => {
     </div>
   );
 };
+const ReviewModal = ({ order, onClose, onSubmit }) => {
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [media, setMedia] = useState([]);
+
+  const handleMediaUpload = (e) => {
+    const files = Array.from(e.target.files);
+    setMedia([...media, ...files]);
+  };
+
+  const handleSubmit = () => {
+    onSubmit({ rating, comment, media });
+    onClose();
+  };
+  
+  const [anonymous, setAnonymous] = useState(false);
+  const [sellerRating, setSellerRating] = useState(0);
+  const [deliveryRating, setDeliveryRating] = useState(0);
+
+  return (
+    <div
+      className="modal d-block"
+      tabIndex="-1"
+      role="dialog"
+      style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+    >
+      <div className="modal-dialog" role="document">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">{order.productName}</h5>
+            <button type="button" className="btn-close" onClick={onClose}></button>
+          </div>
+          <div className="modal-body">
+          <div><img
+                      src={order.imageUrl}
+                      alt="Product"
+                      style={{
+                        width: "100px",
+                        height: "100px",
+                        objectFit: "cover",
+                        borderRadius: "8px",
+                      }}
+                    /></div>
+            <div>
+              <label>Đánh giá sản phẩm:</label>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FaStar
+                  key={star}
+                  color={star <= rating ? "gold" : "gray"}
+                  onClick={() => setRating(star)}
+                  style={{ cursor: "pointer", marginRight: "5px" }}
+                />
+              ))}
+            </div>
+            
+            <div className="mt-3">
+              <label>Hình ảnh:</label>
+              <div>
+                <FaCamera style={{ cursor: "pointer", marginRight: "10px" }} />
+                <input type="file" accept="image/*" onChange={handleMediaUpload} multiple />
+              </div>
+            </div>
+            {/* <div className="mt-3">
+              <label>Video:</label>
+              <div>
+                <FaVideo style={{ cursor: "pointer", marginRight: "10px" }} />
+                <input type="file" accept="video/*" onChange={handleMediaUpload} multiple />
+              </div>
+            </div> */}
+            <div className="mt-3">
+              <label>Viết đánh giá:</label>
+              <textarea
+                className="form-control"
+                rows="3"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+            </div>
+            <div className="form-check mt-3">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                checked={anonymous}
+                onChange={() => setAnonymous(!anonymous)}
+              />
+              <label className="form-check-label">Đánh giá ẩn danh</label>
+            </div>
+            <div className="mt-3">
+              <label>Dịch vụ của người bán:</label>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FaStar
+                  key={star}
+                  color={star <= sellerRating ? "gold" : "gray"}
+                  onClick={() => setSellerRating(star)}
+                  style={{ cursor: "pointer", marginRight: "5px" }}
+                />
+              ))}
+            </div>
+            <div className="mt-3">
+              <label>Tốc độ giao hàng:</label>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FaStar
+                  key={star}
+                  color={star <= deliveryRating ? "gold" : "gray"}
+                  onClick={() => setDeliveryRating(star)}
+                  style={{ cursor: "pointer", marginRight: "5px" }}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-secondary" onClick={onClose}>
+              Đóng
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => handleSubmit({ rating, comment, media, anonymous, sellerRating, deliveryRating })}
+            >
+              Gửi
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 
 // Component đơn hàng item, nhận vào hàm callback onView
-const OrderItem = ({ order, onView }) => (
+const OrderItem = ({ order, onView,onReview }) => (
   <div
     style={{
       backgroundColor: "#f5f5fa",
@@ -245,6 +376,18 @@ const OrderItem = ({ order, onView }) => (
       </div>
     </div>
     <div className="khoi" style={{ display: "flex" }}>
+    <button
+        className="btn btn-secondary"
+        style={{
+          border: "none",
+          padding: "5px 10px",
+          borderRadius: "15px",
+          marginLeft: "10px",
+        }}
+        onClick={() => onReview(order)}
+      >
+        <FaCommentDots className="me-2" /> Comment
+      </button>
       <div>
         <button
           className="btn btn-primary"
@@ -252,7 +395,7 @@ const OrderItem = ({ order, onView }) => (
             border: "none",
             padding: "5px 10px",
             borderRadius: "15px",
-            marginLeft: "700px",
+            marginLeft: "600px",
           }}
           onClick={() => onView(order)}
         >
@@ -271,21 +414,33 @@ const OrderItem = ({ order, onView }) => (
           Delete order
         </button>
       </div>
+      
     </div>
   </div>
 );
+
 
 // Component MyOrder chính, quản lý trạng thái modal
 const MyOrder = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [reviewOrder, setReviewOrder] = useState(null);
+  
 
+  const handleReviewSubmit = (data) => {
+    console.log("Review submitted:", data);
+    
+  };
+  
   const handleViewOrder = (order) => {
     setSelectedOrder(order);
   };
 
   const handleCloseModal = () => {
     setSelectedOrder(null);
+  };
+  const onReview = (order) => {
+    setReviewOrder(order);
   };
   // Lọc dữ liệu dựa trên searchQuery (seller name, order ID, product name)
   const filteredOrders = orderData.filter((order) => {
@@ -297,6 +452,7 @@ const MyOrder = () => {
     );
   });
   const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
+  
   return (
     <>
       <Navbar user={storedUser} />
@@ -330,6 +486,7 @@ const MyOrder = () => {
                   color: "gray",
                 }}
               />
+              
               <input
                 type="text"
                 placeholder="Search by seller name, order ID or product name"
@@ -347,9 +504,12 @@ const MyOrder = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
+            {reviewOrder && (
+            <ReviewModal order={reviewOrder} onClose={() => setReviewOrder(null)} onSubmit={handleReviewSubmit} />
+            )}
             {filteredOrders.length > 0 ? (
               filteredOrders.map((order) => (
-                <OrderItem key={order.id} order={order} onView={handleViewOrder} />
+                <OrderItem key={order.id} order={order} onView={handleViewOrder} onReview={onReview} />
               ))
             ) : (
               <p style={{ marginTop: "20px" }}>No orders found.</p>
