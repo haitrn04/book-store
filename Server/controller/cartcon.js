@@ -35,6 +35,16 @@ const cartcon = {
             console.error(err);
             res.sendStatus(500);
         }
+    },
+    changeQuantity: async (req, res) => {
+        const {id_account, id_product, quant} = req.body;
+        try {
+            let sql =`UPDATE cart SET (quantity=$3) WHERE id_account=$1, id_account=$2`;
+            await pool.query(sql,[id_account, id_product, quant]);
+            res.status(200).send({ message: "Product added to cart successfully" })
+        } catch (error) {
+            
+        }
     }
 };
 module.exports = cartcon;

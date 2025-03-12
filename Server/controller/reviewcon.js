@@ -27,6 +27,17 @@ const reviewcon = {
             res.sendStatus(500);
         }
     },
+    getBookReviewbyorderID: async (req, res) => {
+        const id_order = req.body;
+        try {
+            let sql= `SELECT * FROM reviews WHERE id_order =$1`;
+            const data = await pool.query(sql, [id_order]);
+            res.status(200).send(data);
+        } catch (error) {
+            console.error(err);
+            res.sendStatus(500);
+        }
+    },
     deleteReview: async (req, res) => {
         const id = req.body;
         try {
