@@ -54,7 +54,7 @@ const getInfor = (id_account) => {
 const editInfor = (formData) => {
     return axios.post('http://localhost:3005/accounts/editinfor', formData, {
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'multipart/form-data'
         }
     });
 };
@@ -86,7 +86,7 @@ const deleteProductbyID = (id_book) => {
     return axios.delete(`http://localhost:3005/products/deleteproduct/?id_book=${id_book}`)
 }
 
-const deleteAddress =(address_id) => {
+const deleteAddress = (address_id) => {
     return axios.delete(`http://localhost:3005/address/deleteaddress/?address_id=${address_id}`);
 }
 
@@ -103,8 +103,10 @@ const getBookReviewbyorderID = (id_order) => {
     return axios.get(`http://localhost:3005/review/getBookReviewbyorderID/?id_order=${id_order}`);
 }
 
-export { postLogin, getImage, postRegister, postAddProduct,postEditProduct, 
-        getProducts, getProductbyID, getGenre, getInfor,deleteProductbyID,
-        getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress,
-        editInfor, addOrderAndOrderDetail, addreview, deleteReview, getBookReviewbyID, 
-        getBookReviewbyorderID, findProduct }; 
+export {
+    postLogin, getImage, postRegister, postAddProduct, postEditProduct,
+    getProducts, getProductbyID, getGenre, getInfor, deleteProductbyID,
+    getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress,
+    editInfor, addOrderAndOrderDetail, addreview, deleteReview, getBookReviewbyID,
+    getBookReviewbyorderID, findProduct
+};

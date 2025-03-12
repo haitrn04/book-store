@@ -107,6 +107,7 @@ const usercon = {
                     updates.push(`image_data = $${index}`);
                     values.push(req.file.buffer);
                     index++;
+                    console.log('Image uploaded');
                 }
 
                 // Check if there are any fields to update

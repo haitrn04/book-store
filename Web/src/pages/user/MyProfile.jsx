@@ -131,41 +131,44 @@ const MyProfile = () => {
     try {
       const formData = new FormData();
       formData.append('id_account', storedUser.id_account);
-      
+
       if (user.full_name !== storedUser.full_name) {
         formData.append('full_name', user.full_name || '');
       }
-      
+
       // Handle birthday with moment.js for consistent timezone handling
       if (user.birthday !== storedUser.birthday) {
         if (user.birthday) {
-
           formData.append('birthday', user.birthday);
         } else {
           formData.append('birthday', '');
         }
       }
-      
+
       if (user.gender !== storedUser.gender) {
         formData.append('gender', user.gender || '');
       }
-      
+
       if (user.imageFile) {
         formData.append('image_data', user.imageFile);
       }
-  
-      if ([...formData.entries()].length === 1) { 
+
+      if ([...formData.entries()].length === 1) {
         console.log("No fields to update");
         return;
       }
-  
+
       console.log([...formData.entries()]);
-      await editInfor(formData);
-      
+      await editInfor(formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
       // Refresh user data after successful update
       const response = await getInfor(storedUser.id_account);
       const updatedUser = response.data[0];
-      
+
       // Format birthday for display in UTC+7
       let formattedBirthday = '';
       if (updatedUser.birthday) {
@@ -173,12 +176,12 @@ const MyProfile = () => {
           .utcOffset('+07:00')
           .format('YYYY-MM-DD');
       }
-      
+
       // Create a modified user object with the correctly formatted birthday
       const userForSession = {
         ...updatedUser
       };
-      
+
       // Update state with formatted data for display
       setUser({
         ...updatedUser,
@@ -186,7 +189,7 @@ const MyProfile = () => {
         imageFile: null,
         imagePreview: null
       });
-      
+
       // Store the original data in session storage
       sessionStorage.setItem('user', JSON.stringify({ data: userForSession }));
       setEditing(false);
@@ -410,7 +413,7 @@ const MyProfile = () => {
                         </div>
                       </div>
 
-                      <div className="card border-0 bg-light p-4">
+                      {/* <div className="card border-0 bg-light p-4">
                         <div className="d-flex justify-content-between align-items-center">
                           <div>
                             <h5 className="mb-1">Two-Factor Authentication</h5>
@@ -422,7 +425,7 @@ const MyProfile = () => {
                             Enable
                           </button>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   )}
                 </div>
