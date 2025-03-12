@@ -126,8 +126,27 @@ const usercon = {
                 res.status(500).json({ error: 'Internal Server Error' });
             }
         }
-    ]
+    ],
+    changePass: async (req, res) => {
+        const { id_account, oldPass, newPass } = req.body;
+        try {
+            // Check if the old password is correct
+            let checkSql = `SELECT password FROM accounts WHERE id_account = $1 AND password = $2;`;
+            const checkResult = await pool.query(checkSql, [id_account, oldPass]);
 
+            if (checkResult.rowCount === 0) {
+                return res.status(400).json({ error: 'Old password is incorrect' });
+            }
+
+            // Update the password
+            let updateSql = `UPDATE accounts SET password = $1 WHERE id_account = $2;`;
+            await pool.query(updateSql, [newPass, id_account]);
+            res.status(200).send({ message: "Password updated successfully" });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
 }
 
 module.exports = usercon;

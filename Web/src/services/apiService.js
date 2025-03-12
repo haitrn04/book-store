@@ -7,7 +7,9 @@ const postLogin = (email, password) => {
 const postRegister = (full_name, email, password, mobile, gender, birthday) => {
     return axios.post('http://localhost:3005/accounts/register', { full_name, email, password, mobile, gender, birthday });
 };
-
+const changePass = (id_account, oldPass, newPass) => {
+    return axios.post('http://localhost:3005/accounts/changepass', id_account, oldPass, newPass)
+}
 const getImage = (idImage) => {
     return axios.get(`http://localhost:3005/image/${idImage}`);
 };
@@ -108,5 +110,5 @@ export {
     getProducts, getProductbyID, getGenre, getInfor, deleteProductbyID,
     getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress,
     editInfor, addOrderAndOrderDetail, addreview, deleteReview, getBookReviewbyID,
-    getBookReviewbyorderID, findProduct
+    getBookReviewbyorderID, findProduct, changePass
 };
