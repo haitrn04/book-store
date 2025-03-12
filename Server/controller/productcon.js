@@ -111,7 +111,7 @@ const productcon = {
 
     getProducts: async (req, res) => {
         try {
-            const sql = `SELECT id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, encode(image_data, 'base64') AS image_data, description FROM books;`;
+            const sql = `SELECT id_book, book_name, id_genre, price, discount, encode(image_data, 'base64') AS image_data, description FROM books;`;
             const data = await pool.query(sql);
             res.status(200).json(data.rows);
 
@@ -165,10 +165,10 @@ const productcon = {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     },
-    getProductbyName: async (req, res) => {
+    findProduct: async (req, res) => {
         const { book_name } = req.query;
         try {
-            const sql = `SELECT * FROM books WHERE book_name=$1;`;
+            const sql = `SELECT id_book, book_name, encode(image_data, 'base64') AS image_data, price FROM books WHERE POSITION( $1 IN book_name)>0;`;
             const data = await pool.query(sql, [book_name]);
             res.status(200).json(data.rows);
 

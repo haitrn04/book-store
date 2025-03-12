@@ -1,27 +1,27 @@
-import React, { useState } from 'react';
-import { NavLink } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Link, NavLink } from "react-router-dom";
 import { useSelector } from 'react-redux';
 import avt from '../assets/images/avt_default.jpg';
 import {
     FaSearch,
 } from "react-icons/fa";
+import { findProduct } from '../services/apiService';
 
 const Navbar = ({ user }) => {
     const state = useSelector(state => state.handleCart);
     
     // State để lưu thông tin tìm kiếm
+    const [data, setData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [data] = useState([
-        { id: 1, name: "iPhone 14 pro max 2025 ", price: "$999" , image: "https://apple.ngocnguyen.vn/cdn/images/202308/goods_img/iphone-14-pro-max-chinh-hang-G15203-1693119256387.jpg"},
-        { id: 2, name: "Samsung Galaxy S23b ", price: "$899" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdooUd9PyYKEbovMo12PeDpEpDf2sVBLfyuQ&s"},
-        { id: 3, name: "MacBook Pro", price: "$1999" , image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdooUd9PyYKEbovMo12PeDpEpDf2sVBLfyuQ&s" },
-        { id: 4, name: "iPad Air  pro max 2025  pro max 2025", price: "$599", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdooUd9PyYKEbovMo12PeDpEpDf2sVBLfyuQ&s" }
-    ]);
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = findProduct(searchTerm);
+            const data = (await response).data;
+            setData(data);
+        };
+        fetchData()
+    }, [searchTerm]);
 
-    // Lọc danh sách theo searchTerm
-    const filteredData = data.filter(item =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light py-3 sticky-top">
@@ -79,7 +79,7 @@ const Navbar = ({ user }) => {
                                     </div>
 
                                     {/* Hiển thị bảng kết quả tìm kiếm */}
-                                    {searchTerm && filteredData.length > 0 && (
+                                    {searchTerm && data.length> 0 && (
                                         <div style={{
                                             position: "absolute",
                                             top: "40px",
@@ -88,16 +88,16 @@ const Navbar = ({ user }) => {
                                             backgroundColor: "white",
                                             border: "1px solid #ccc",
                                             borderRadius: "5px",
-                                            boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
+                                            boxShadow: "0px 4px 8px rgba(143, 45, 45, 0.1)",
                                             zIndex: 1000
                                            
                                         }}>
                                             <table style={{ width: "100%", borderCollapse: "collapse" }}>
                                                 <tbody>
-                                                    {filteredData.map(item => (
-                                                        <tr key={item.id} style={{ borderBottom: "1px solid #ddd" }}>
-                                                            <td style={{ padding: "8px",  width : "100px"} }>
-                                                                <img src={item.image} alt={item.name} style={{ width: "40px", height: "80px", objectFit: "cover" }} />
+                                                    {data.map(item => (
+                                                        <tr key={item.id_book} style={{ borderBottom: "1px solid #ddd" }} >
+                                                            <td style={{ padding: "8px",  width : "100px"}} >
+                                                                <img src={`data:image/jpeg;base64,${item.image_data}`} alt={item.book_name} style={{ width: "50px", height: "80px", objectFit: "cover" }} />
                                                             </td>
                                                             <td style={{ padding: "8px", width: "300px" }}>
                                                                 <div style={{
@@ -105,8 +105,9 @@ const Navbar = ({ user }) => {
                                                                     overflow: "hidden",
                                                                     textOverflow: "ellipsis",
                                                                     maxWidth: "280px" 
-                                                                }}>
-                                                                    {item.name}
+                                                                }}
+                                                                >
+                                                                   <Link to={"/product/" + item.id_book} style={{textDecoration: "none"}} >{item.book_name}</Link>
                                                                 </div>
                                                                 <div>{item.price}</div>
                                                             </td>
