@@ -26,6 +26,7 @@ const HeaderAdmin = () => {
                     <span className="text-muted">{user.full_name}</span>
                 </div>
             </div>
+            <p></p>
         </div>
     );
 };
