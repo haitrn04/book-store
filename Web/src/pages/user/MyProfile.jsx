@@ -5,6 +5,9 @@ import {
   FaAddressCard,
   FaCartPlus,
   FaUser,
+  FaCamera,
+  FaPencilAlt,
+  FaLock,
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
@@ -16,16 +19,22 @@ const moment = require('moment');
 const Sidebar = () => {
   return (
     <div
-      className="d-flex flex-column p-3 bg-white shadow position-fixed"
-      style={{ width: "250px", height: "100vh", top: "90px", left: "0" }}
+      className="d-flex flex-column p-3 bg-white shadow rounded"
+      style={{
+        width: "250px",
+        height: "calc(100vh - 100px)",
+        position: "sticky",
+        top: "100px"
+      }}
     >
-      <ul className="nav flex-column mt-3">
-        <li className="nav-item">
-          <Link to="/managemyaccount" className="nav-link text-dark">
+      <h5 className="fw-bold mb-3 text-primary">My Account</h5>
+      <ul className="nav flex-column">
+        <li className="nav-item mb-2">
+          <Link to="/managemyaccount" className="nav-link text-dark hover-bg-light rounded p-2">
             <FaUsers className="me-2" /> Manage my account
           </Link>
         </li>
-        <li className="nav-item">
+        <li className="nav-item mb-2">
           <Link
             to="/myprofile"
             className="nav-link text-white fw-bold bg-primary p-2 rounded"
@@ -33,55 +42,69 @@ const Sidebar = () => {
             <FaUser className="me-2" /> My Profile
           </Link>
         </li>
-        <li className="nav-item">
-          <Link to="/addressbook" className="nav-link text-dark">
+        <li className="nav-item mb-2">
+          <Link to="/addressbook" className="nav-link text-dark hover-bg-light rounded p-2">
             <FaAddressCard className="me-2" /> Address Book
           </Link>
         </li>
-        <li className="nav-item">
-          <Link to="/myorder" className="nav-link text-dark">
-            <FaCartPlus className="me-2" /> My order
+        <li className="nav-item mb-2">
+          <Link to="/myorder" className="nav-link text-dark hover-bg-light rounded p-2">
+            <FaCartPlus className="me-2" /> My Orders
           </Link>
         </li>
-
       </ul>
-
-
     </div>
   );
 };
 
 const MyProfile = () => {
-  // Tạo đối tượng user mặc định
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState({});
+  const [editing, setEditing] = useState(false);
+  const [activeTab, setActiveTab] = useState("info");
   const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
+
+  // In the useEffect function where you fetch user data
   useEffect(() => {
     const getin4 = async () => {
-      const response = await (getInfor(storedUser.id_account));
-      const date = new Date(response.data[0].birthday).toISOString().split('T')[0];
-      response.data[0].birthday = date;
-      setUser(response.data[0]);
+      try {
+        const response = await getInfor(storedUser.id_account);
+        const userData = response.data[0];
+
+        // Convert birthday to correct local date in UTC+7
+        let date = '';
+        if (userData.birthday) {
+          // Create a moment object from the UTC date and set it to UTC+7
+          const birthday = moment(userData.birthday).utcOffset('+07:00');
+          // Format as YYYY-MM-DD for the date input
+          date = birthday.format('YYYY-MM-DD');
+        }
+
+        setUser({
+          ...userData,
+          birthday: date
+        });
+      } catch (error) {
+        console.error("Error fetching user information:", error);
+      }
+    };
+
+    if (storedUser?.id_account) {
+      getin4();
     }
-    getin4();
+  }, [storedUser?.id_account]);
 
-  }, [storedUser.id_account]);
+  // For displaying the formatted date
+  const formatbth = user.birthday ?
+    moment(user.birthday).utcOffset('+07:00').format("DD/MM/YYYY") : '';
 
-  const [editing, setEditing] = useState(false);
-
-
-  const formatbth = moment(user.birthday).format("DD/MM/YYYY");
-
-  // Khi nhấn "EDIT PROFILE", chuyển sang chế độ chỉnh sửa
   const handleEditClick = () => {
     setEditing(true);
   };
 
-  // Khi nhấn "Cancel", quay lại chế độ xem và khôi phục giá trị ban đầu
   const handleCancelClick = () => {
     setEditing(false);
   };
 
-  // Cập nhật giá trị khi người dùng thay đổi thông tin
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser({
@@ -90,258 +113,321 @@ const MyProfile = () => {
     });
   };
 
-  // Khi nhấn "Save", lưu giá trị chỉnh sửa và thoát khỏi chế độ chỉnh sửa
-  // const handleSaveClick = () => {
-  //   setUser(editedUser);
-  //   setEditing(false);
-  // };
-
-  const handleSaveClick = () => {
-    const post = async () => {
-      try {
-        await editInfor(user);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    post();
-    setEditing(false);
-  };
-
-
-  // Up load ảnh 
-  // Thêm useState để lưu hình ảnh
-  const [selectedImage, setSelectedImage] = useState(user.image_data);
-
-  // Hàm xử lý khi người dùng chọn ảnh
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedImage(reader.result);
-        setUser({
-          ...user,
-          image_data: selectedImage,
-        });
-      };
-      reader.readAsDataURL(file);
+      setUser({
+        ...user,
+        imageFile: file,
+        imagePreview: URL.createObjectURL(file)
+      });
+    } else {
+      console.error("No file selected");
     }
   };
 
-  // Up load ảnh 
+
+  const handleSaveClick = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('id_account', storedUser.id_account);
+      
+      if (user.full_name !== storedUser.full_name) {
+        formData.append('full_name', user.full_name || '');
+      }
+      
+      // Handle birthday with moment.js for consistent timezone handling
+      if (user.birthday !== storedUser.birthday) {
+        if (user.birthday) {
+
+          formData.append('birthday', user.birthday);
+        } else {
+          formData.append('birthday', '');
+        }
+      }
+      
+      if (user.gender !== storedUser.gender) {
+        formData.append('gender', user.gender || '');
+      }
+      
+      if (user.imageFile) {
+        formData.append('image_data', user.imageFile);
+      }
+  
+      if ([...formData.entries()].length === 1) { 
+        console.log("No fields to update");
+        return;
+      }
+  
+      console.log([...formData.entries()]);
+      await editInfor(formData);
+      
+      // Refresh user data after successful update
+      const response = await getInfor(storedUser.id_account);
+      const updatedUser = response.data[0];
+      
+      // Format birthday for display in UTC+7
+      let formattedBirthday = '';
+      if (updatedUser.birthday) {
+        formattedBirthday = moment(updatedUser.birthday)
+          .utcOffset('+07:00')
+          .format('YYYY-MM-DD');
+      }
+      
+      // Create a modified user object with the correctly formatted birthday
+      const userForSession = {
+        ...updatedUser
+      };
+      
+      // Update state with formatted data for display
+      setUser({
+        ...updatedUser,
+        birthday: formattedBirthday,
+        imageFile: null,
+        imagePreview: null
+      });
+      
+      // Store the original data in session storage
+      sessionStorage.setItem('user', JSON.stringify({ data: userForSession }));
+      setEditing(false);
+    } catch (error) {
+      console.error("Error updating user information:", error);
+    }
+  };
 
 
   return (
     <>
       <Navbar user={storedUser} />
-      <div className="container">
-        <Sidebar />
-        <div className="flex-grow-1" style={{ marginLeft: "250px" }}>
-          <h2 style={{ marginTop: "30px" }}>My Profile</h2>
-          <br />
-          <div className="card shadow-sm p-3" style={{ width: "90%", minHeight: "400px" }}>
-            {editing ? (
-              // Chế độ chỉnh sửa: hiển thị các input
-
-              <div className="edit-form" style={{ padding: "20px" }}>
-                <div className="d-flex" style={{ gap: "20px", alignItems: "flex-start" }}>
-                  <div className="mb-3" style={{ width: "250px", marginRight: "20px" }}>
-                    <label htmlFor="fullName" style={{ fontWeight: "bold" }}>
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      id="fullName"
-                      name="full_name"
-                      className="form-control"
-                      value={user.full_name}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="mb-3" style={{ width: "250px", marginRight: "20px" }}>
-                    <label style={{ fontWeight: "bold" }}>Email Address</label>
-                    <p>{user.email}</p>
-                  </div>
-
-                  <div className="mb-3" style={{ width: "250px", marginRight: "20px" }}>
-                    <label style={{ fontWeight: "bold" }}>Mobile</label>
-                    <p>{user.phone_num}</p>
-                  </div>
-                </div>
-                <div className="Khoi1-1" style={{ display: "flex" }}>
-                  <div className="Khoi2" style={{ marginRight: "10px" }}>
-                    <div className="d-flex" style={{ gap: "20px", alignItems: "flex-start", marginTop: "20px" }}>
-                      <div className="mb-3" style={{ width: "250px", marginRight: "20px" }}>
-                        <label htmlFor="birthday" style={{ fontWeight: "bold" }}>
-                          Birthday
-                        </label>
-                        <input
-                          type="date"
-                          id="birthday"
-                          name="birthday"
-                          className="form-control"
-                          value={user.birthday}
-                          onChange={handleChange}
-                        />
-                      </div>
-
-                      <div className="mb-3" style={{ width: "250px", marginRight: "20px" }}>
-                        <label htmlFor="gender" style={{ fontWeight: "bold" }}>
-                          Gender
-                        </label>
-                        <select
-                          id="gender"
-                          name="gender"
-                          className="form-control"
-                          value={user.gender}
-                          onChange={handleChange}
+      <div className="container py-4">
+        <div className="row">
+          <div className="col-md-3">
+            <Sidebar />
+          </div>
+          <div className="col-md-9">
+            <div className="card border-0 shadow-sm rounded-3 mb-4">
+              <div className="card-body p-0">
+                <div className="bg-primary text-white p-4 rounded-top">
+                  <div className="d-flex align-items-center">
+                    <div className="position-relative me-4">
+                      <img
+                        src={user.imagePreview ||
+                          (user.image_data ? `data:image/jpeg;base64,${user.image_data}` : avt)}
+                        alt="User Avatar"
+                        className="rounded-circle"
+                        style={{ width: "100px", height: "100px", objectFit: "cover", border: "3px solid white" }}
+                      />
+                      {editing && (
+                        <div
+                          className="position-absolute bg-white rounded-circle d-flex align-items-center justify-content-center"
+                          style={{
+                            bottom: "0",
+                            right: "0",
+                            width: "32px",
+                            height: "32px",
+                            cursor: "pointer"
+                          }}
+                          onClick={() => document.getElementById("fileInput").click()}
                         >
-                          <option value="Female">Female</option>
-                          <option value="Male">Male</option>
-                          <option value="Other">Other</option>
-                        </select>
-                      </div>
+                          <FaCamera className="text-primary" />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            id="fileInput"
+                            onChange={handleImageUpload}
+                          />
+                        </div>
+                      )}
                     </div>
-
-                    {/* Nút Save và Cancel */}
-                    <div className="d-flex" style={{ gap: "20px", marginTop: "20px" }}>
-                      <button className="btn btn-success me-3" style={{ width: "100px" }} onClick={handleSaveClick}>
-                        Save
-                      </button>
-                      <button className="btn btn-secondary" style={{ width: "100px" }} onClick={handleCancelClick}>
-                        Cancel
-                      </button>
+                    <div>
+                      <h2 className="mb-1">{user.full_name || 'Welcome'}</h2>
+                      <p className="mb-0">{user.email || ''}</p>
                     </div>
                   </div>
-                  <div className="Khoi2">
-                    <p style={{ fontWeight: "bold" }}>Ảnh đại diện</p>
-                    <div className="img">
-                      <img
-                        src={selectedImage}
-                        alt="User Avatar"
-                        style={{ width: "200px", height: "200px", objectFit: "cover", borderRadius: "10px" }}
-                      />
-                    </div>
-                    {/* Input ẩn để chọn ảnh */}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      style={{ display: "none" }}
-                      id="fileInput"
-                      onChange={handleImageUpload}
-                    />
-                    {/* Nút upload ảnh */}
+                </div>
+
+                <ul className="nav nav-tabs px-4 pt-3">
+                  <li className="nav-item">
                     <button
-                      className="btn-upload-anh"
-                      onClick={() => document.getElementById("fileInput").click()}
+                      className={`nav-link ${activeTab === "info" ? "active fw-bold" : ""}`}
+                      onClick={() => setActiveTab("info")}
                     >
-                      Up image
+                      Personal Information
                     </button>
-                  </div>
-                </div>
-
-
-              </div>
-
-            ) : (
-              // Chế độ xem: hiển thị thông tin của user
-              <div>
-                <div
-                  className="item-s0"
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    paddingTop: "10px",
-                    paddingLeft: "40px",
-                    paddingRight: "230px",
-                  }}
-                >
-                  <div className="item-s1">
-                    <div className="item-s2">
-                      <p style={{ fontWeight: "bold" }}>Full Name</p>
-                    </div>
-                    <div className="item-s2">
-                      <p>{user.full_name}</p>
-                    </div>
-                  </div>
-                  <div className="item-s1">
-                    <div className="item-s2">
-                      <p style={{ fontWeight: "bold" }}>Email Address</p>
-                    </div>
-                    <div className="item-s2">
-                      <p>{user.email}</p>
-                    </div>
-                  </div>
-                  <div className="item-s1">
-                    <div className="item-s2">
-                      <p style={{ fontWeight: "bold" }}>Phone Number</p>
-                    </div>
-                    <div className="item-s2">
-                      <p>{user.phone_num}</p>
-                    </div>
-                  </div>
-                  <div></div>
-                </div>
-                <div className="Khoi" style={{ display: "flex" }}>
-                  <div className="Sua">
-                    <div
-                      className="item-s0"
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        paddingTop: "10px",
-                        paddingLeft: "40px",
-                        paddingRight: "200px",
-                      }}
+                  </li>
+                  <li className="nav-item">
+                    <button
+                      className={`nav-link ${activeTab === "security" ? "active fw-bold" : ""}`}
+                      onClick={() => setActiveTab("security")}
                     >
-                      <div className="item-s1" style={{ width: "200px" }}>
-                        <div className="item-s2">
-                          <p style={{ fontWeight: "bold" }}>Birthday</p>
+                      Security
+                    </button>
+                  </li>
+                </ul>
+
+                <div className="p-4">
+                  {activeTab === "info" ? (
+                    editing ? (
+                      // Edit mode
+                      <div className="edit-form">
+                        <div className="row g-3">
+                          <div className="col-md-6">
+                            <label htmlFor="fullName" className="form-label fw-bold">
+                              Full Name
+                            </label>
+                            <input
+                              type="text"
+                              id="fullName"
+                              name="full_name"
+                              className="form-control"
+                              value={user.full_name || ''}
+                              onChange={handleChange}
+                            />
+                          </div>
+
+                          <div className="col-md-6">
+                            <label className="form-label fw-bold">Email Address</label>
+                            <input
+                              type="email"
+                              className="form-control bg-light"
+                              value={user.email || ''}
+                              disabled
+                            />
+                          </div>
+
+                          <div className="col-md-6">
+                            <label className="form-label fw-bold">Phone Number</label>
+                            <input
+                              type="text"
+                              className="form-control bg-light"
+                              value={user.phone_num || ''}
+                              disabled
+                            />
+                          </div>
+
+                          <div className="col-md-6">
+                            <label htmlFor="birthday" className="form-label fw-bold">
+                              Birthday
+                            </label>
+                            <input
+                              type="date"
+                              id="birthday"
+                              name="birthday"
+                              className="form-control"
+                              value={user.birthday || ''}
+                              onChange={handleChange}
+                            />
+                          </div>
+
+                          <div className="col-md-6">
+                            <label htmlFor="gender" className="form-label fw-bold">
+                              Gender
+                            </label>
+                            <select
+                              id="gender"
+                              name="gender"
+                              className="form-control"
+                              value={user.gender || 'Other'}
+                              onChange={handleChange}
+                            >
+                              <option value="Female">Female</option>
+                              <option value="Male">Male</option>
+                              <option value="Other">Other</option>
+                            </select>
+                          </div>
                         </div>
-                        <div className="item-s2">
-                          <p>{formatbth}</p>
+
+                        <div className="d-flex mt-4">
+                          <button
+                            className="btn btn-primary me-2 px-4"
+                            onClick={handleSaveClick}
+                          >
+                            Save Changes
+                          </button>
+                          <button
+                            className="btn btn-outline-secondary px-4"
+                            onClick={handleCancelClick}
+                          >
+                            Cancel
+                          </button>
                         </div>
                       </div>
-                      <div className="item-s1">
-                        <div className="item-s2">
-                          <p style={{ fontWeight: "bold" }}>Gender</p>
+                    ) : (
+                      // View mode
+                      <div>
+                        <div className="row mb-4">
+                          <div className="col-12 d-flex justify-content-end mb-3">
+                            <button
+                              className="btn btn-outline-primary"
+                              onClick={handleEditClick}
+                            >
+                              <FaPencilAlt className="me-2" /> Edit Profile
+                            </button>
+                          </div>
+
+                          <div className="col-md-6 mb-3">
+                            <p className="text-muted mb-1">Full Name</p>
+                            <p className="fs-5">{user.full_name || 'Not provided'}</p>
+                          </div>
+
+                          <div className="col-md-6 mb-3">
+                            <p className="text-muted mb-1">Email Address</p>
+                            <p className="fs-5">{user.email || 'Not provided'}</p>
+                          </div>
+
+                          <div className="col-md-6 mb-3">
+                            <p className="text-muted mb-1">Phone Number</p>
+                            <p className="fs-5">{user.phone_num || 'Not provided'}</p>
+                          </div>
+
+                          <div className="col-md-6 mb-3">
+                            <p className="text-muted mb-1">Birthday</p>
+                            <p className="fs-5">{formatbth || 'Not provided'}</p>
+                          </div>
+
+                          <div className="col-md-6 mb-3">
+                            <p className="text-muted mb-1">Gender</p>
+                            <p className="fs-5">{user.gender || 'Not provided'}</p>
+                          </div>
                         </div>
-                        <div className="item-s2">
-                          <p>{user.gender}</p>
+                      </div>
+                    )
+                  ) : (
+                    // Security tab
+                    <div>
+                      <div className="card border-0 bg-light p-4 mb-4">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div>
+                            <h5 className="mb-1">Password</h5>
+                            <p className="text-muted mb-0">Last changed: Never</p>
+                          </div>
+                          <button
+                            className="btn btn-primary"
+                          >
+                            <FaLock className="me-2" /> Change Password
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="card border-0 bg-light p-4">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div>
+                            <h5 className="mb-1">Two-Factor Authentication</h5>
+                            <p className="text-muted mb-0">Status: Not enabled</p>
+                          </div>
+                          <button
+                            className="btn btn-outline-primary"
+                          >
+                            Enable
+                          </button>
                         </div>
                       </div>
                     </div>
-                    <div className="button">
-                      <button
-                        className="btn btn-primary"
-                        style={{ marginLeft: "40px", width: "260px", marginTop: "15px" }}
-                        onClick={handleEditClick}
-                      >
-                        EDIT PROFILE
-                      </button>
-                      <br />
-                      <button className="btn btn-primary" style={{ marginLeft: "40px", width: "260px", marginTop: "15px" }}>
-                        CHANGE PASSWORD
-                      </button>
-                    </div>
-                  </div>
-                  <div className="SuaImg">
-                    <p style={{ fontWeight: "bold" }}>Ảnh đại điện</p>
-                    <div className="img" >
-                      <img
-                        src={user.image_data || avt}  // Ưu tiên ảnh đã lưu
-                        alt="User Avatar"
-                        style={{ width: "200px", height: "200px", objectFit: "cover", borderRadius: "10px" }}
-                      />
-                    </div>
-                  </div>
+                  )}
                 </div>
-
-
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>

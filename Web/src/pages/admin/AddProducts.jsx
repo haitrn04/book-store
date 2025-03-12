@@ -128,6 +128,7 @@ const AddProductForm = () => {
       setStock("");
       setDescription("");
       setImageData(null);
+      setImagePreview(null);
       console.log(res);
     } catch (error) {
       toast.error("Failed to add product.");

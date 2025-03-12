@@ -14,8 +14,13 @@ import { Link } from "react-router-dom";
 const Sidebar = () => {
   return (
     <div
-      className="d-flex flex-column p-3 bg-white shadow position-fixed"
-      style={{ width: "250px", height: "100vh", top: "90px", left: "0" }}
+      className="d-flex flex-column p-3 bg-white shadow rounded"
+      style={{
+        width: "250px",
+        height: "calc(100vh - 100px)",
+        position: "sticky",
+        top: "100px"
+      }}
     >
       <ul className="nav flex-column mt-3">
         <li className="nav-item">
@@ -239,7 +244,7 @@ const OrderItem = ({ order, onView }) => (
         <p style={{ fontWeight: "bold", marginRight: "150px" }}>Qty: {order.quantity}</p>
       </div>
     </div>
-    <div  className = "khoi" style={{ display: "flex" }}>
+    <div className="khoi" style={{ display: "flex" }}>
       <div>
         <button
           className="btn btn-primary"
@@ -255,16 +260,15 @@ const OrderItem = ({ order, onView }) => (
         </button>
       </div>
       <div>
-        <button 
-        className = "btn btn-danger"
-        style={{
-          border: "none",
-          padding: "5px 10px",
-          borderRadius: "15px",
-          marginLeft: "50px",
-        }}>
+        <button
+          className="btn btn-danger"
+          style={{
+            border: "none",
+            padding: "5px 10px",
+            borderRadius: "15px",
+            marginLeft: "10px",
+          }}>
           Delete order
-        
         </button>
       </div>
     </div>
@@ -296,57 +300,61 @@ const MyOrder = () => {
   return (
     <>
       <Navbar user={storedUser} />
-      <div className="container">
-        <Sidebar />
-        <div className="flex-grow-1" style={{ marginLeft: "250px" }}>
-          <h2 style={{ marginTop: "30px" }}>My Orders</h2>
-          <br />
-          <Mitem />
-          <br />
-          <div
-            className="search"
-            style={{
-              marginTop: "20px",
-              height: "50px",
-              position: "relative",
-              backgroundColor: "#f5f5fa",
-              padding: "10px",
-              borderRadius: "8px",
-            }}
-          >
-            <FaSearch
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "15px",
-                transform: "translateY(-50%)",
-                color: "gray",
-              }}
-            />
-            <input
-              type="text"
-              placeholder="Search by seller name, order ID or product name"
-              style={{
-                width: "100%",
-                height: "30px",
-                paddingLeft: "40px",
-                border: "none",
-                outline: "none",
-                backgroundColor: "transparent",
-                fontSize: "14px",
-                color: "#333",
-              }}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+      <div className="container py-4">
+        <div className="row">
+          <div className="col-md-3">
+            <Sidebar />
           </div>
-          {filteredOrders.length > 0 ? (
-            filteredOrders.map((order) => (
-              <OrderItem key={order.id} order={order} onView={handleViewOrder} />
-            ))
-          ) : (
-            <p style={{ marginTop: "20px" }}>No orders found.</p>
-          )}
+          <div className="col-md-9">
+            <h2 style={{ marginTop: "30px" }}>My Orders</h2>
+            <br />
+            <Mitem />
+            <br />
+            <div
+              className="search"
+              style={{
+                marginTop: "20px",
+                height: "50px",
+                position: "relative",
+                backgroundColor: "#f5f5fa",
+                padding: "10px",
+                borderRadius: "8px",
+              }}
+            >
+              <FaSearch
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "15px",
+                  transform: "translateY(-50%)",
+                  color: "gray",
+                }}
+              />
+              <input
+                type="text"
+                placeholder="Search by seller name, order ID or product name"
+                style={{
+                  width: "100%",
+                  height: "30px",
+                  paddingLeft: "40px",
+                  border: "none",
+                  outline: "none",
+                  backgroundColor: "transparent",
+                  fontSize: "14px",
+                  color: "#333",
+                }}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            {filteredOrders.length > 0 ? (
+              filteredOrders.map((order) => (
+                <OrderItem key={order.id} order={order} onView={handleViewOrder} />
+              ))
+            ) : (
+              <p style={{ marginTop: "20px" }}>No orders found.</p>
+            )}
+          </div>
         </div>
       </div>
       {selectedOrder && (

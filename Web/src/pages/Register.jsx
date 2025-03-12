@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Footer, Navbar } from "../components";
 import { postRegister } from '../services/apiService';
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -9,28 +11,26 @@ const Register = () => {
     const [password, setPassword] = useState("");
     const [fullName, setFullName] = useState("");
     const [mobile, setMobile] = useState("");
-    const [gender, setGender] = useState("");
+    const [gender, setGender] = useState("Female"); // Set default value
     const [birthday, setBithday] = useState("");
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError(null);
         
         if (!email || !password || !fullName || !mobile || !gender || !birthday) {
-            setError("Các thông tin không được để trống!");
+            toast.error("All fields are required!");
             setLoading(false);
             return;
         }
 
         try {
             await postRegister(fullName, email, password, mobile, gender, birthday);
-            alert("Register successfully")
+            toast.success("Registration successful!");
             navigate(`/login`);
         } catch (err) {
-            setError("Error");
+            toast.error("Registration failed. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -38,35 +38,22 @@ const Register = () => {
 
     useEffect(() => {
         sessionStorage.setItem("user", JSON.stringify(''));
-        if (error) {
-            const timer = setTimeout(() => {
-                setError(null);
-            }, 2500);
+    }, []);
 
-            return () => clearTimeout(timer);
-        }
-    }, [error]);
     return (
         <>
-
-            {error &&
-                <div className="alert alert-danger fixed-bottom right-0 m-3" style={{ width: 'fit-content' }}>
-                    {error}
-                </div>
-            }
-
             <Navbar />
             <div className="container my-3 py-3">
                 <h1 className="text-center">Register</h1>
                 <hr />
-                <div class="row my-4 h-100">
+                <div className="row my-4 h-100">
                     <div className="col-md-4 col-lg-4 col-sm-8 mx-auto">
                         <form onSubmit={handleSubmit}>
-                            <div class="form my-3">
+                            <div className="form my-3">
                                 <label htmlFor="Name">Full Name</label>
                                 <input
                                     type="text"
-                                    class="form-control"
+                                    className="form-control"
                                     id="Name"
                                     placeholder="Enter Your Name"
                                     value={fullName}
@@ -140,7 +127,7 @@ const Register = () => {
                                     type="submit"
                                     disabled={loading}
                                 >
-                                    {loading ? "Logging in..." : "Register"}
+                                    {loading ? "Registering..." : "Register"}
                                 </button>
                             </div>
                         </form>
@@ -148,8 +135,19 @@ const Register = () => {
                 </div>
             </div>
             <Footer />
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </>
-    )
-}
+    );
+};
 
-export default Register
+export default Register;

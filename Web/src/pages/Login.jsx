@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Footer, Navbar } from "../components";
-import {postLogin} from '../services/apiService';
-
+import { postLogin } from '../services/apiService';
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     if (!email || !password) {
-      setError("Email và Password không được để trống!");
+      toast.error("Email and Password cannot be empty!");
       setLoading(false);
       return;
     }
@@ -25,9 +24,10 @@ const Login = () => {
     try {
       const response = await postLogin(email, password);
       sessionStorage.setItem("user", JSON.stringify(response.data));
+      toast.success("Login successful!");
       navigate(`/?id=${response.data.data.id_account}`);
     } catch (err) {
-      setError("Invalid email or password");
+      toast.error("Invalid email or password");
     } finally {
       setLoading(false);
     }
@@ -35,25 +35,10 @@ const Login = () => {
 
   useEffect(() => {
     sessionStorage.setItem("user", JSON.stringify(''));
-    if (error) {
-      const timer = setTimeout(() => {
-        setError(null);
-      }, 2500);
-
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
+  }, []);
 
   return (
     <>
-      {error &&
-        <div className="alert alert-danger fixed-bottom right-0 m-3" style={{ width: 'fit-content' }}>
-          {error}
-        </div>
-      }
-
-
-
       <Navbar />
       <div className="container my-3 py-3">
         <h1 className="text-center">Login</h1>
@@ -94,9 +79,7 @@ const Login = () => {
                   </Link>
                 </p>
               </div>
-
-
-
+              
               <div className="text-center">
                 <button
                   className="my-2 mx-auto btn btn-dark"
@@ -111,6 +94,17 @@ const Login = () => {
         </div>
       </div>
       <Footer />
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </>
   );
 };

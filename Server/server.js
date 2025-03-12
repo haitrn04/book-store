@@ -32,11 +32,14 @@ pool.connect((err, connection) => {
 app.use('/accounts', userRouter);
 app.use('/address', addressRouter);
 app.use('/order', orderRouter);
+app.use('/products', productRouter);
+app.use('/address', addressRouter);
+app.use('/review', reviewRouter);
 /////////////////////// POST
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-        let sql = `SELECT id_account, full_name, email, role, image_data FROM accounts WHERE email=$1 AND password=$2;`;
+        let sql = `SELECT id_account, email, encode(image_data, 'base64') AS image_data, role, full_name, phone_num, gender, birthday FROM accounts WHERE email=$1 AND password=$2;`;
         const result = await pool.query(sql, [email, password]);
 
         if (result.rows.length > 0) {
@@ -51,24 +54,7 @@ app.post('/login', async (req, res) => {
 });
 // admin
 
-app.use('/products', productRouter);
 
-app.post('/editinfor', async (req, res) => {
-    const { id_account, full_name, image_data, gender, birthday } = req.body;
-    try {
-        let sql = `UPDATE accounts
-                    SET full_name=$2, image_data=$3, gender=$4, birthday=$5 
-                    WHERE id_account=$1;`;
-        await pool.query(sql, [id_account, full_name, image_data, gender, birthday]);
-        res.status(200).send({ message: "Update data into table accounts successfully" });
-    } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
-    }
-});
-
-app.use('/address', addressRouter);
-app.use('/review', reviewRouter);
 
 // API để tải ảnh lên
 // app.post('/upload', upload.single('image'), (req, res) => {
