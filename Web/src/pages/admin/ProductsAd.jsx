@@ -84,7 +84,26 @@ const ProductsAd = () => {
             ) : (
               products.map((product) => (
                 <div key={product.id_book} className="col-md-4 mb-4">
-                  <div className="card shadow-sm border-0 p-3 text-center">
+                  <div className="card shadow-sm border-0 p-3 text-center" style={{ position: "relative" }}>
+                    {/* Hiển thị discount ở góc phải trên nếu có */}
+                    {parseInt(product.discount, 10) > 0 && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "10px",
+                          right: "10px",
+                          backgroundColor: "#dc3545",
+                          color: "white",
+                          padding: "5px 10px",
+                          borderRadius: "12px",
+                          fontSize: "0.9rem",
+                          fontWeight: "bold"
+                        }}
+                      >
+                        -{parseInt(product.discount, 10)}%
+                      </div>
+                    )}
+
                     <img
                       src={`data:image/jpeg;base64,${product.image_data}`}
                       id="prodimg"
@@ -94,24 +113,34 @@ const ProductsAd = () => {
                     />
 
                     <div className="card-body">
-                      <h5 className="card-title text-truncate">{product.book_name.substring(0, 30)}{product.book_name.length > 30 ? "..." : ""}</h5>
+                      <h5 className="card-title text-truncate">
+                        {product.book_name.substring(0, 30)}
+                        {product.book_name.length > 30 ? "..." : ""}
+                      </h5>
                       <p className="fw-bold text-secondary">
-                        {parseInt((parseInt(product.price) * (100 - parseInt(product.discount)) / 100)).toLocaleString("vi-VN")} VNĐ
+                        {parseInt((parseInt(product.price) * (100 - parseInt(product.discount)) / 100)).toLocaleString("vi-VN")}
+                        <sup>₫</sup>
                         {parseInt(product.discount) > 0 && (
-                          <span className="text-danger text-decoration-line-through ms-2" style={{ fontSize: "1rem" }}>
-                            {parseInt(product.price).toLocaleString("vi-VN")} VNĐ
+                          <span
+                            className="text-danger text-decoration-line-through ms-2"
+                            style={{ fontSize: "0.9rem" }}
+                          >
+                            {parseInt(product.price).toLocaleString("vi-VN")}
+                            <sup>₫</sup>
                           </span>
                         )}
                       </p>
-
-
-
 
                       <div className="d-flex justify-content-center align-items-center">
                         <span className="text-warning me-2">★★★★☆</span>
                         <small className="text-muted">(131)</small>
                       </div>
-                      <button className="btn btn-outline-primary mt-2" onClick={() => handleEdit(product.id_book)} >Edit Product</button>
+                      <button
+                        className="btn btn-outline-primary mt-2"
+                        onClick={() => handleEdit(product.id_book)}
+                      >
+                        Edit Product
+                      </button>
                     </div>
                   </div>
                 </div>

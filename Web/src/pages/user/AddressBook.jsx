@@ -507,6 +507,7 @@ const AddressBook = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };
