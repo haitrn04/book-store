@@ -13,18 +13,51 @@ const Navbar = ({ user }) => {
     const [showResults, setShowResults] = useState(false);
 
     useEffect(() => {
+        const controller = new AbortController(); // Tạo controller để hủy request
+        const signal = controller.signal;
+    
         const fetchData = async () => {
-            if (searchTerm.trim()) {
-                const response = await findProduct(searchTerm);
-                setData(response.data);
-                setShowResults(true);
-            } else {
+            const trimmedSearchTerm = searchTerm.trim().toLowerCase();
+            if (!trimmedSearchTerm) {
                 setData([]);
                 setShowResults(false);
+                return;
+            }
+    
+            try {
+                const response = await findProduct(trimmedSearchTerm, { signal });
+                const filteredData = response.data.filter(item =>
+                    item.book_name.toLowerCase().includes(trimmedSearchTerm) ||
+                    item.author.toLowerCase().includes(trimmedSearchTerm)
+                );
+    
+                setData(filteredData);
+                setShowResults(filteredData.length > 0);
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    console.error("Lỗi khi tìm kiếm sản phẩm:", error);
+                }
             }
         };
-        fetchData();
+    
+        const debounce = setTimeout(fetchData, 100); // Chờ 300ms trước khi gọi API
+    
+        return () => {
+            clearTimeout(debounce); // Hủy timeout trước đó nếu `searchTerm` thay đổi
+            controller.abort(); // Hủy request API nếu có request cũ
+        };
     }, [searchTerm]);
+    
+    
+
+    // Hàm làm nổi bật từ khóa tìm kiếm
+    const highlightMatch = (text) => {
+        if (!searchTerm) return text;
+        const regex = new RegExp(`(${searchTerm})`, "gi");
+        return text.replace(regex, `<span class="text-primary">$1</span>`);
+    };
+    
+
 
     useEffect(() => {
         const handleClickOutside = () => setShowResults(false);
@@ -57,7 +90,6 @@ const Navbar = ({ user }) => {
                 </button>
 
                 <div className="collapse navbar-collapse" id="navbarContent">
-
                     {user && (
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             <li className="nav-item">
@@ -77,23 +109,35 @@ const Navbar = ({ user }) => {
 
                     {user && (
                         <div className="d-flex position-relative mx-auto" style={{ maxWidth: '500px' }} onClick={handleSearchContainerClick}>
-                            <div className="input-group">
-                                <span className="input-group-text bg-light border-end-0">
-                                    <FaSearch className="text-muted" />
-                                </span>
+                            <div className="position-relative w-100">
                                 <input
                                     type="text"
-                                    className="form-control bg-light border-start-0"
+                                    className="form-control bg-light"
                                     placeholder="Search products..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     aria-label="Search"
-                                    style={{ width: '400px' }}
+                                    style={{
+                                        borderRadius: '20px',
+                                        paddingLeft: '40px',
+                                        width: '400px',
+                                        height: '42px'
+                                    }}
                                 />
+                                <div className="position-absolute" style={{
+                                    top: '50%',
+                                    left: '15px',
+                                    transform: 'translateY(-50%)'
+                                }}>
+                                    <FaSearch className="text-muted" />
+                                </div>
                             </div>
 
                             {showResults && searchTerm && data.length > 0 && (
-                                <div className="position-absolute top-100 start-0 mt-1 w-400 bg-white border rounded shadow-sm" style={{ zIndex: 1000, width: '441px' }}>
+                                <div
+                                    className="position-absolute top-100 start-0 mt-1 w-100 bg-white border rounded shadow-sm custom-scrollbar"
+                                    style={{ zIndex: 1000, maxHeight: '500px', overflowY: 'auto' }}
+                                >
                                     <div className="list-group list-group-flush">
                                         {data.map(item => (
                                             <Link
@@ -110,9 +154,10 @@ const Navbar = ({ user }) => {
                                                         style={{ width: "50px", height: "70px", objectFit: "cover" }}
                                                     />
                                                     <div>
-                                                        <div className="fw-bold text-truncate" style={{ maxWidth: "250px" }}>
-                                                            {item.book_name.substring(0, 45)}{item.book_name.length > 45 ? "..." : ""}
-                                                        </div>
+                                                        {/* Hiển thị tên sách với từ khóa được làm nổi bật */}
+                                                        <div className="fw-bold text-truncate" style={{ maxWidth: "250px" }}
+                                                            dangerouslySetInnerHTML={{ __html: highlightMatch(item.book_name) }} />
+
                                                         <div className="text-primary">
                                                             {parseInt((parseInt(item.price) * (100 - parseInt(item.discount)) / 100)).toLocaleString("vi-VN")}<sup>₫</sup>
                                                             {parseInt(item.discount) > 0 && (
@@ -120,12 +165,15 @@ const Navbar = ({ user }) => {
                                                                     {parseInt(item.price).toLocaleString("vi-VN")}<sup>₫</sup>
                                                                 </span>
                                                             )}
+                                                            <span className="text-muted ms-2" style={{ fontSize: "0.8rem" }}
+                                                                dangerouslySetInnerHTML={{ __html: highlightMatch(item.author) }} />
                                                         </div>
                                                     </div>
                                                 </div>
                                             </Link>
                                         ))}
                                     </div>
+
                                 </div>
                             )}
                         </div>
@@ -166,8 +214,6 @@ const Navbar = ({ user }) => {
                                                     style={{ width: '40px', height: '40px', objectFit: 'cover' }}
                                                 />
                                             )}
-
-
                                         </div>
                                         <span className="fw-bold text-dark d-none d-md-block">{user.full_name}</span>
                                     </button>
@@ -207,7 +253,6 @@ const Navbar = ({ user }) => {
                 </div>
             </div>
 
-            {/* Add this custom CSS within your component file or in a separate CSS file */}
             <style jsx>{`
                 .dropdown-hover:hover .dropdown-menu {
                     display: block;
@@ -237,12 +282,30 @@ const Navbar = ({ user }) => {
                         margin: 0 10px;
                     }
 
-                    #navbarAccount{
+                    #navbarAccount {
                         align-items: center;
                         justify-content: center;
                     }
-
                 }
+                /* Tùy chỉnh thanh cuộn trên WebKit (Chrome, Safari) */
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 8px; /* Độ rộng thanh cuộn */
+                }
+
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: #f1f1f1; /* Màu nền track */
+                    border-radius: 5px;
+                }
+
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #888; /* Màu thanh cuộn */
+                    border-radius: 5px;
+                }
+
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #555; /* Màu khi hover */
+                }
+
             `}</style>
         </nav>
     );

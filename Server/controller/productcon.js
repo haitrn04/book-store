@@ -169,7 +169,10 @@ const productcon = {
     findProduct: async (req, res) => {
         const { book_name } = req.query;
         try {
-            const sql = `SELECT id_book, book_name, encode(image_data, 'base64') AS image_data, price, discount FROM books WHERE POSITION( $1 IN book_name)>0;`;
+            const sql = `SELECT id_book, book_name, encode(image_data, 'base64') AS image_data, price, discount, author 
+                FROM books 
+                WHERE book_name ILIKE '%' || $1 || '%' OR author ILIKE '%' || $1 || '%';`;
+
             const data = await pool.query(sql, [book_name]);
             res.status(200).json(data.rows);
 
