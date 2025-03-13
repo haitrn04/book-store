@@ -145,6 +145,116 @@ const Product = () => {
       </>
     );
   };
+  const reviews = [
+    {
+      user: "m*****o",
+      rating: 5,
+      date: "2024-09-15",
+      comment:
+        "Thiết kế bìa: đẹp, xem vd là biết. Đối tượng độc giả: sợ ma đừng đọc. Đọc đánh giá của bạn kia bảo in có mấy chỗ bị mờ, mik có chấp đặt thử mà thấy okela phết ấy chớ, in nét quá tr, giá gốc 102 đơ, thích thì tranh thủ tranh thủ đặt i mayni oi",
+      media: [
+        { type: "video", src: "../assets/video.mp4" },
+        { type: "image", src: "../assets/Fiction.png" },
+        { type: "image", src: "../assets/Education.png" },
+      ],
+      sellerReply:
+        "Seller Page cảm ơn bạn đã ủng hộ nhà sách. Seller Page mong mang lại cho bạn những trải nghiệm tốt nhất về sản phẩm ạ.",
+    },
+    {
+      user: "h**o",
+      rating: 1,
+      date: "2024-09-15",
+      comment:
+        "Thiết kế bìa: xấu. Đối tượng độc giả: sợ ma đừng đọc. Đọc đánh giá của bạn kia bảo in có mấy chỗ bị mờ, mik có chấp đặt thử mà thấy okela phết ấy chớ, in nét quá tr, giá gốc 102 đơ, thích thì tranh thủ tranh thủ đặt i mayni oi",
+      media: [
+        { type: "video", src: "../assets/video.mp4" },
+        { type: "image", src: "../assets/Fiction.png" },
+        { type: "image", src: "../assets/Education.png" },
+      ],
+      sellerReply:
+        "Seller Page cảm ơn bạn đã ủng hộ nhà sách. Seller Page mong mang lại cho bạn những trải nghiệm tốt nhất về sản phẩm ạ.",
+    },
+  ];
+  
+  
+  
+  const ShowReviews = () => (
+    <div className="my-5">
+      <h3 className="text-xl font-semibold mb-3">ĐÁNH GIÁ SẢN PHẨM</h3>
+  
+      <div className="border border-yellow-200 rounded p-4 mb-4">
+        <div className="flex items-center space-x-5">
+        <div className="flex flex-col items-center">
+      <p className="text-5xl font-bold text-red-500 leading-none">4.8 trên 5</p>
+      <div className="flex mt-1">
+        {Array.from({ length: 5 }).map((_, idx) => (
+          <i key={idx} className="fa fa-star text-2xl" style={{ color: '#FFD700' }}></i>
+        ))}
+      </div>
+      <br />
+    </div>
+    <div className="flex flex-wrap gap-2">
+      {['Tất Cả', '5 Sao (288)', '4 Sao (29)', '3 Sao (11)', '2 Sao (5)', '1 Sao (4)'].map((filter, idx) => (
+        <button key={idx} className="border rounded px-3 py-1 hover:bg-gray-200">
+          {filter}
+        </button>
+      ))}
+      <button className="border rounded px-3 py-1 hover:bg-gray-200">Có Bình Luận (130)</button>
+      <button className="border rounded px-3 py-1 hover:bg-gray-200">Có Hình Ảnh / Video (75)</button>
+    </div>
+  </div>
+</div>
+
+  
+      {reviews.length === 0 ? (
+        <p>Chưa có đánh giá nào.</p>
+      ) : (
+        reviews.map((review, idx) => (
+          <div key={idx} className="border p-4 rounded-lg mb-5">
+            <p className="font-semibold">
+              {review.user}
+              <div>
+                {Array.from({ length: 5 }).map((_, starIdx) => (
+                  <i
+                    key={starIdx}
+                    className="fa fa-star"
+                    style={{ color: starIdx < review.rating ? "#FFD700" : "#ccc" }}
+                  ></i>
+                ))}
+              </div>
+              <div className="text-gray-300 text-xs">{review.date}</div>
+            </p>
+            <p className="mt-2 whitespace-pre-wrap">{review.comment}</p>
+            <div className="flex gap-3 mt-3">
+              {review.media.map((media, mediaIdx) =>
+                media.type === 'image' ? (
+                  <img
+                    src={`data:image/jpeg;base64,${product.image_data}`}
+                    width="60"
+                    alt="review"
+                    className="w-24 h-24 object-cover rounded border border-gray-300 p-1"
+                  />
+                ) : (
+                  <img
+                    src={`data:image/jpeg;base64,${product.image_data}`}
+                    width="60"
+                    alt="review"
+                    className="w-24 h-24 object-cover rounded border border-gray-300 p-1"
+                  />
+                )
+              )}
+            </div>
+            <div className="bg-gray-100 p-3 mt-3 rounded">
+              <p><strong>Phản Hồi Của Người Bán:</strong> {review.sellerReply}</p>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  );
+  
+  
+
 
   const ShowSimilarProduct = () => {
     return (
@@ -208,6 +318,7 @@ const Product = () => {
             </Marquee>
           </div>
         </div>
+        <ShowReviews/>
       </div>
       <Footer />
     </>
