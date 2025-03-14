@@ -60,7 +60,7 @@ const Home = () => {
               <div
                 key={`slide-${slide.id}`}
                 className={`carousel-item ${index === 0 ? "active" : ""}`}
-                style={{ height: "500px" }}
+                style={{ height: "400px" }}
               >
                 <div className="card bg-dark text-white border-0 h-100">
                   <img

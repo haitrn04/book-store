@@ -104,11 +104,25 @@ const getBookReviewbyID = (id_book) => {
 const getBookReviewbyorderID = (id_order) => {
     return axios.get(`http://localhost:3005/review/getBookReviewbyorderID/?id_order=${id_order}`);
 }
-
+const getOrders = () => {
+    return axios.get('http://localhost:3005/order/getOrders');
+}
+const updateOrderStatus = async (id_order, status) => {
+    try {
+        const response = await axios.post(`http://localhost:3005/order/${id_order}/status`, {
+            order_status: status.order_status,
+            payment_status: status.payment_status,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error updating order status:", error.response?.data || error.message);
+        throw error;
+    }
+};
 export {
     postLogin, getImage, postRegister, postAddProduct, postEditProduct,
     getProducts, getProductbyID, getGenre, getInfor, deleteProductbyID,
     getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress,
     editInfor, addOrderAndOrderDetail, addreview, deleteReview, getBookReviewbyID,
-    getBookReviewbyorderID, findProduct, changePass
+    getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus
 };

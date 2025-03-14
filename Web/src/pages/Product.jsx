@@ -4,9 +4,12 @@ import { Link, useParams } from "react-router-dom";
 import Marquee from "react-fast-marquee";
 import { useDispatch } from "react-redux";
 import { addCart } from "../redux/action";
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { Footer, Navbar } from "../components";
 import { getProductbyID, getProductbyGenre } from "../services/apiService";
+import fiction from '../assets/images/Fiction.png';
+import education from '../assets/images/Education.png';
+
 const Product = () => {
   const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
   const { id } = useParams();
@@ -145,113 +148,204 @@ const Product = () => {
       </>
     );
   };
+
+  
   const reviews = [
     {
       user: "m*****o",
       rating: 5,
       date: "2024-09-15",
       comment:
-        "Thiết kế bìa: đẹp, xem vd là biết. Đối tượng độc giả: sợ ma đừng đọc. Đọc đánh giá của bạn kia bảo in có mấy chỗ bị mờ, mik có chấp đặt thử mà thấy okela phết ấy chớ, in nét quá tr, giá gốc 102 đơ, thích thì tranh thủ tranh thủ đặt i mayni oi",
+        "Cover design: beautiful, see the example to know. Target audience: don't read if you're afraid of ghosts. Read the other review mentioning some blurry print, I tried it and it was quite good actually, the print is very clear, original price is $102, if you like it, hurry up and order it now!",
       media: [
-        { type: "video", src: "../assets/video.mp4" },
-        { type: "image", src: "../assets/Fiction.png" },
-        { type: "image", src: "../assets/Education.png" },
+        { type: "image", src: "fiction" },
+        { type: "image", src: "education" },
       ],
       sellerReply:
-        "Seller Page cảm ơn bạn đã ủng hộ nhà sách. Seller Page mong mang lại cho bạn những trải nghiệm tốt nhất về sản phẩm ạ.",
+        "Seller Page thanks you for supporting our bookstore. We hope to provide you with the best product experience.",
     },
     {
       user: "h**o",
       rating: 1,
       date: "2024-09-15",
       comment:
-        "Thiết kế bìa: xấu. Đối tượng độc giả: sợ ma đừng đọc. Đọc đánh giá của bạn kia bảo in có mấy chỗ bị mờ, mik có chấp đặt thử mà thấy okela phết ấy chớ, in nét quá tr, giá gốc 102 đơ, thích thì tranh thủ tranh thủ đặt i mayni oi",
+        "Cover design: ugly. Target audience: don't read if you're afraid of ghosts. Read the other review mentioning some blurry print, I tried it and it was quite good actually, the print is very clear, original price is $102, if you like it, hurry up and order it now!",
       media: [
-        { type: "video", src: "../assets/video.mp4" },
-        { type: "image", src: "../assets/Fiction.png" },
-        { type: "image", src: "../assets/Education.png" },
+        { type: "image", src: "fiction" },
+        { type: "image", src: "education" },
       ],
       sellerReply:
-        "Seller Page cảm ơn bạn đã ủng hộ nhà sách. Seller Page mong mang lại cho bạn những trải nghiệm tốt nhất về sản phẩm ạ.",
+        "Seller Page thanks you for supporting our bookstore. We hope to provide you with the best product experience.",
     },
   ];
   
+  const renderStars = (rating) => {
+    return Array.from({ length: 5 }).map((_, idx) => (
+      <i
+        key={idx}
+        className={`bi ${idx < rating ? "bi-star-fill" : "bi-star"}`}
+        style={{ color: idx < rating ? "#FFC107" : "#ccc" }}
+      ></i>
+    ));
+  };
   
+  const ShowReviews = () => {
+    return (
+      <div className="my-5">
+        <h3 className="fw-bold mb-4">PRODUCT REVIEWS</h3>
   
-  const ShowReviews = () => (
-    <div className="my-5">
-      <h3 className="text-xl font-semibold mb-3">ĐÁNH GIÁ SẢN PHẨM</h3>
-  
-      <div className="border border-yellow-200 rounded p-4 mb-4">
-        <div className="flex items-center space-x-5">
-        <div className="flex flex-col items-center">
-      <p className="text-5xl font-bold text-red-500 leading-none">4.8 trên 5</p>
-      <div className="flex mt-1">
-        {Array.from({ length: 5 }).map((_, idx) => (
-          <i key={idx} className="fa fa-star text-2xl" style={{ color: '#FFD700' }}></i>
-        ))}
-      </div>
-      <br />
-    </div>
-    <div className="flex flex-wrap gap-2">
-      {['Tất Cả', '5 Sao (288)', '4 Sao (29)', '3 Sao (11)', '2 Sao (5)', '1 Sao (4)'].map((filter, idx) => (
-        <button key={idx} className="border rounded px-3 py-1 hover:bg-gray-200">
-          {filter}
-        </button>
-      ))}
-      <button className="border rounded px-3 py-1 hover:bg-gray-200">Có Bình Luận (130)</button>
-      <button className="border rounded px-3 py-1 hover:bg-gray-200">Có Hình Ảnh / Video (75)</button>
-    </div>
-  </div>
-</div>
-
-  
-      {reviews.length === 0 ? (
-        <p>Chưa có đánh giá nào.</p>
-      ) : (
-        reviews.map((review, idx) => (
-          <div key={idx} className="border p-4 rounded-lg mb-5">
-            <p className="font-semibold">
-              {review.user}
-              <div>
-                {Array.from({ length: 5 }).map((_, starIdx) => (
-                  <i
-                    key={starIdx}
-                    className="fa fa-star"
-                    style={{ color: starIdx < review.rating ? "#FFD700" : "#ccc" }}
-                  ></i>
-                ))}
+        <div className="card mb-4 border-warning">
+          <div className="card-body">
+            <div className="row">
+              <div className="col-md-4 text-center border-end">
+                <h2 className="display-4 fw-bold text-danger mb-0">4.8</h2>
+                <p className="text-muted">out of 5</p>
+                <div className="d-flex justify-content-center mb-2">
+                  {Array.from({ length: 5 }).map((_, idx) => (
+                    <i
+                      key={idx}
+                      className="bi bi-star-fill fs-4 me-1"
+                      style={{ color: "#FFC107" }}
+                    ></i>
+                  ))}
+                </div>
+                <p className="text-muted">337 reviews</p>
               </div>
-              <div className="text-gray-300 text-xs">{review.date}</div>
-            </p>
-            <p className="mt-2 whitespace-pre-wrap">{review.comment}</p>
-            <div className="flex gap-3 mt-3">
-              {review.media.map((media, mediaIdx) =>
-                media.type === 'image' ? (
-                  <img
-                    src={`data:image/jpeg;base64,${product.image_data}`}
-                    width="60"
-                    alt="review"
-                    className="w-24 h-24 object-cover rounded border border-gray-300 p-1"
-                  />
-                ) : (
-                  <img
-                    src={`data:image/jpeg;base64,${product.image_data}`}
-                    width="60"
-                    alt="review"
-                    className="w-24 h-24 object-cover rounded border border-gray-300 p-1"
-                  />
-                )
-              )}
-            </div>
-            <div className="bg-gray-100 p-3 mt-3 rounded">
-              <p><strong>Phản Hồi Của Người Bán:</strong> {review.sellerReply}</p>
+  
+              <div className="col-md-8">
+                <div className="row g-2">
+                  <div className="col-12">
+                    <div className="d-flex flex-wrap gap-2 mb-3">
+                      <button className="btn btn-outline-secondary btn-sm rounded-pill">
+                        All
+                      </button>
+                      <button className="btn btn-outline-secondary btn-sm rounded-pill">
+                        5 Stars (288)
+                      </button>
+                      <button className="btn btn-outline-secondary btn-sm rounded-pill">
+                        4 Stars (29)
+                      </button>
+                      <button className="btn btn-outline-secondary btn-sm rounded-pill">
+                        3 Stars (11)
+                      </button>
+                      <button className="btn btn-outline-secondary btn-sm rounded-pill">
+                        2 Stars (5)
+                      </button>
+                      <button className="btn btn-outline-secondary btn-sm rounded-pill">
+                        1 Star (4)
+                      </button>
+                    </div>
+                  </div>
+                  <div className="col-12">
+                    <div className="d-flex flex-wrap gap-2">
+                      <button className="btn btn-outline-secondary btn-sm rounded-pill">
+                        <i className="bi bi-chat-text me-1"></i>With Comments (130)
+                      </button>
+                      <button className="btn btn-outline-secondary btn-sm rounded-pill">
+                        <i className="bi bi-image me-1"></i>With Images / Videos (75)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        ))
-      )}
-    </div>
-  );
+        </div>
+  
+        {reviews.length === 0 ? (
+          <p>No reviews yet.</p>
+        ) : (
+          reviews.map((review, idx) => (
+            <div key={idx} className="card mb-4 shadow-sm">
+              <div className="card-header bg-white d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 className="mb-0">{review.user}</h6>
+                  <small className="text-muted">{review.date}</small>
+                </div>
+                <div>
+                  {review.rating === 5 && (
+                    <span className="badge bg-success me-2">Excellent</span>
+                  )}
+                  {review.rating === 1 && (
+                    <span className="badge bg-danger me-2">Unsatisfied</span>
+                  )}
+                  <span>{renderStars(review.rating)}</span>
+                </div>
+              </div>
+  
+              <div className="card-body">
+                <p className="card-text mb-3">{review.comment}</p>
+  
+                {review.media.length > 0 && (
+                  <div className="d-flex gap-2 mb-3">
+                    {review.media.map((media, mediaIdx) => (
+                      <div
+                        key={mediaIdx}
+                        className="position-relative"
+                        style={{ width: "80px", height: "80px" }}
+                      >
+                        {media.type === "image" ? (
+                          <img
+                            src={`data:image/jpeg;base64,${product.image_data}`}
+                            className="img-thumbnail"
+                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            alt="Review"
+                          />
+                        ) : (
+                          <div
+                            className="position-relative img-thumbnail"
+                            style={{ width: "100%", height: "100%" }}
+                          >
+                            <img
+                              src={`data:image/jpeg;base64,${product.image_data}`}
+                              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                              alt="Video thumbnail"
+                            />
+                            <i
+                              className="bi bi-play-circle position-absolute"
+                              style={{
+                                top: "50%",
+                                left: "50%",
+                                transform: "translate(-50%, -50%)",
+                                fontSize: "1.5rem",
+                                color: "white",
+                              }}
+                            ></i>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+  
+                {review.sellerReply && (
+                  <div className="card bg-light border-0">
+                    <div className="card-body py-2">
+                      <div className="d-flex align-items-center mb-2">
+                        <i className="bi bi-shop me-2"></i>
+                        <strong>Seller's Response:</strong>
+                      </div>
+                      <p className="mb-0 ms-4">{review.sellerReply}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+  
+              <div className="card-footer bg-white text-end border-top-0">
+                <button className="btn btn-outline-secondary btn-sm me-2">
+                  <i className="bi bi-hand-thumbs-up me-1"></i>Helpful
+                </button>
+                <button className="btn btn-outline-secondary btn-sm">
+                  <i className="bi bi-flag me-1"></i>Report
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    );
+  };
+
   
   
 

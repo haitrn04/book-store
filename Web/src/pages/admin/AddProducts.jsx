@@ -151,7 +151,23 @@ const AddProductForm = () => {
                   <input type="text" className="form-control" value={book_name} onChange={(e) => setBookName(e.target.value)} />
                 </div>
               </div>
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Genres</label>
+                  <select className="form-select" onChange={(e) => setIdGenre(e.target.value)} value={id_genre}>
+                    {genre.map((e, index) => (
+                      <option key={index} value={e.id_genre}>
+                        {e.genre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Stock</label>
+                  <input type="number" className="form-control" value={stock} onChange={(e) => setStock(e.target.value)} />
+                </div>
+              </div>
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label className="form-label">Author</label>
@@ -178,23 +194,7 @@ const AddProductForm = () => {
                 </div>
               </div>
 
-              <div className="row">
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">Stock</label>
-                  <input type="number" className="form-control" value={stock} onChange={(e) => setStock(e.target.value)} />
-                </div>
 
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">Genres</label>
-                  <select className="form-select" onChange={(e) => setIdGenre(e.target.value)} value={id_genre}>
-                    {genre.map((e, index) => (
-                      <option key={index} value={e.id_genre}>
-                        {e.genre}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
 
               <div className="mb-3">
                 <label className="form-label">Description</label>
