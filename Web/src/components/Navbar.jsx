@@ -96,7 +96,7 @@ const Navbar = ({ user }) => {
                                 <NavLink className="nav-link fw-semibold" activeClassName="active" to="/">Home</NavLink>
                             </li>
                             <li className="nav-item">
-                                <NavLink className="nav-link fw-semibold" activeClassName="active" to="/product">Products</NavLink>
+                                <NavLink className="nav-link fw-semibold" activeClassName="active" to="/product">Books</NavLink>
                             </li>
                             <li className="nav-item">
                                 <NavLink className="nav-link fw-semibold" activeClassName="active" to="/about">About</NavLink>

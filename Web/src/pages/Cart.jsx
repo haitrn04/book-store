@@ -31,16 +31,27 @@ const Cart = () => {
   };
 
   const ShowCart = () => {
-    let subtotal = 0;
+    let originalSubtotal = 0;
+    let discountedSubtotal = 0;
+    let totalSavings = 0;
     let shipping = 0;
     let totalItems = 0;
-    state.map((item) => {
-      return (subtotal += parseInt(item.price * item.qty *(1 - item.discount/100)));
-    });
+    const vatRate = 0.10; // 10% VAT
 
     state.map((item) => {
-      return (totalItems += item.qty);
+      const originalItemTotal = parseInt(item.price * item.qty);
+      const discountedItemTotal = parseInt(item.price * item.qty * (1 - item.discount / 100));
+
+      originalSubtotal += originalItemTotal;
+      discountedSubtotal += discountedItemTotal;
+      totalSavings += (originalItemTotal - discountedItemTotal);
+      return totalItems += item.qty;
     });
+
+    // Calculate VAT
+    const vatAmount = Math.round(discountedSubtotal * vatRate);
+    const finalTotal = discountedSubtotal + shipping + vatAmount;
+
     return (
       <>
         <section className="h-100 gradient-custom">
@@ -48,11 +59,16 @@ const Cart = () => {
             <div className="row d-flex justify-content-center my-4">
               <div className="col-md-8">
                 <div className="card mb-4">
-                  <div className="card-header py-3">
-                    <h5 className="mb-0">Item List</h5>
+                  <div className="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h5 className="mb-0">Your Cart</h5>
+                    <span className="badge bg-primary rounded-pill">{totalItems} items</span>
                   </div>
                   <div className="card-body">
                     {state.map((item) => {
+                      const originalPrice = parseInt(item.price);
+                      const discountedPrice = parseInt(item.price * (1 - item.discount / 100));
+                      const savedAmount = originalPrice - discountedPrice;
+
                       return (
                         <div key={item.id_book}>
                           <div className="row d-flex align-items-center">
@@ -63,7 +79,7 @@ const Cart = () => {
                               >
                                 <img
                                   src={`data:image/jpeg;base64,${item.image_data}`}
-                                  // className="w-100"
+                                  className="img-fluid"
                                   alt={item.book_name}
                                   width={75}
                                   height={125}
@@ -75,17 +91,23 @@ const Cart = () => {
                               <p>
                                 <strong>{item.book_name}</strong>
                               </p>
-                              {/* <p>Color: blue</p>
-                              <p>Size: M</p> */}
+                              {item.discount > 0 && (
+                                <div className="d-flex align-items-center">
+                                  <span className="badge bg-danger me-2">-{item.discount}%</span>
+                                  <span className="text-success small">
+                                    <i className="fas fa-tag me-1"></i>
+                                    Save {savedAmount.toLocaleString("vi-VN")}<sup>₫</sup>
+                                  </span>
+                                </div>
+                              )}
                             </div>
 
                             <div className="col-lg-4 col-md-6">
                               <div
-                                className="d-flex mb-4"
-                                style={{ maxWidth: "300px" }}
+                                className="d-flex mb-3 justify-content-center"
                               >
                                 <button
-                                  className="btn px-3"
+                                  className="btn btn-outline-secondary px-3"
                                   onClick={() => {
                                     removeItem(item);
                                   }}
@@ -93,10 +115,24 @@ const Cart = () => {
                                   <i className="fas fa-minus"></i>
                                 </button>
 
-                                <p className="mx-5">{item.qty}</p>
+                                <div className="form-outline mx-3">
+                                  <input
+                                    type="number"
+                                    id={`quantity-${item.id_book}`}
+                                    name="quantity"
+                                    className="form-control text-center"
+                                    value={item.qty}
+                                    readOnly
+                                    style={{
+                                      width: "60px",
+                                      fontWeight: "bold",
+                                      textAlign: "center"
+                                    }}
+                                  />
+                                </div>
 
                                 <button
-                                  className="btn px-3"
+                                  className="btn btn-outline-secondary px-3"
                                   onClick={() => {
                                     addItem(item);
                                   }}
@@ -105,15 +141,44 @@ const Cart = () => {
                                 </button>
                               </div>
 
-                              <p className="text-start text-md-center">
-                                <strong>
-                                  <span className="text-muted">{item.qty}</span>{" "}
-                                  x {parseInt(item.price *(1 - item.discount/100)).toLocaleString("vi-VN")} VNĐ
-                                </strong>
-                              </p>
+                              <div className="text-center">
+                                {item.discount > 0 ? (
+                                  <>
+                                    <p className="mb-1">
+                                      <span className="text-muted text-decoration-line-through">
+                                        {originalPrice.toLocaleString("vi-VN")}<sup>₫</sup>
+                                      </span>
+                                    </p>
+                                    <p className="mb-0">
+                                      <strong className="text-danger">
+                                        {discountedPrice.toLocaleString("vi-VN")}<sup>₫</sup>
+                                      </strong>
+                                      <span className="text-muted ms-2">x {item.qty}</span>
+                                    </p>
+                                    <p className="mb-0 small text-danger">
+                                      <strong>
+                                        = {(discountedPrice * item.qty).toLocaleString("vi-VN")}<sup>₫</sup>
+                                      </strong>
+                                    </p>
+                                  </>
+                                ) : (
+                                  <>
+                                    <p className="mb-0">
+                                      <strong>
+                                        {originalPrice.toLocaleString("vi-VN")}<sup>₫</sup>
+                                      </strong>
+                                      <span className="text-muted ms-2">x {item.qty}</span>
+                                    </p>
+                                    <p className="mb-0 small">
+                                      <strong>
+                                        = {(originalPrice * item.qty).toLocaleString("vi-VN")}<sup>₫</sup>
+                                      </strong>
+                                    </p>
+                                  </>
+                                )}
+                              </div>
                             </div>
                           </div>
-
                           <hr className="my-4" />
                         </div>
                       );
@@ -129,27 +194,50 @@ const Cart = () => {
                   <div className="card-body">
                     <ul className="list-group list-group-flush">
                       <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                        Products ({totalItems})<span>{Math.round(subtotal).toLocaleString("vi-VN")} VNĐ</span>
+                        Subtotal ({totalItems} items)
+                        <span>{originalSubtotal.toLocaleString("vi-VN")}<sup>₫</sup></span>
                       </li>
+
+                      {totalSavings > 0 && (
+                        <li className="list-group-item d-flex justify-content-between align-items-center text-success px-0">
+                          Discount
+                          <span>-{totalSavings.toLocaleString("vi-VN")}<sup>₫</sup></span>
+                        </li>
+                      )}
+
                       <li className="list-group-item d-flex justify-content-between align-items-center px-0">
                         Shipping
-                        <span>{shipping.toLocaleString("vi-VN")} VNĐ</span>
+                        <span>{shipping.toLocaleString("vi-VN")}<sup>₫</sup></span>
                       </li>
+
+                      <li className="list-group-item d-flex justify-content-between align-items-center px-0">
+                        VAT (10%)
+                        <span>{vatAmount.toLocaleString("vi-VN")}<sup>₫</sup></span>
+                      </li>
+
                       <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+
                         <div>
-                          <strong>Total amount</strong>
+                          <strong>Total</strong>
                         </div>
                         <span>
-                          <strong>{Math.round(subtotal + shipping).toLocaleString("vi-VN")} VNĐ</strong>
+                          <strong className="text-danger h5">{finalTotal.toLocaleString("vi-VN")}<sup>₫</sup></strong>
                         </span>
                       </li>
                     </ul>
 
                     <Link
                       to="/checkout"
-                      className="btn btn-dark btn-lg btn-block"
+                      className="btn btn-danger btn-lg btn-block w-100 mb-2"
                     >
-                      Go to checkout
+                      <i className="fas fa-lock me-2"></i>Proceed to Checkout
+                    </Link>
+
+                    <Link
+                      to="/product"
+                      className="btn btn-outline-secondary btn-block w-100"
+                    >
+                      <i className="fas fa-arrow-left me-2"></i>Continue Shopping
                     </Link>
                   </div>
                 </div>

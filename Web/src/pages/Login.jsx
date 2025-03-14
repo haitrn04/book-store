@@ -93,7 +93,6 @@ const Login = () => {
           </div>
         </div>
       </div>
-      <Footer />
       <ToastContainer
         position="bottom-right"
         autoClose={3000}
@@ -105,6 +104,9 @@ const Login = () => {
         draggable
         pauseOnHover
       />
+      <Footer />
+
+
     </>
   );
 };

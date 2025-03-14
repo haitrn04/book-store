@@ -31,14 +31,26 @@ const Checkout = () => {
   );
 
   const ShowCheckout = () => {
-    let subtotal = 0;
+    let originalSubtotal = 0;
+    let discountedSubtotal = 0;
+    let totalSavings = 0;
     let shipping = 0;
     let totalItems = 0;
+    const vatRate = 0.10; // 10% VAT
 
-    state.forEach((item) => {
-      subtotal += parseInt(item.price * item.qty * (1 - item.discount / 100));
-      totalItems += item.qty;
+    state.map((item) => {
+      const originalItemTotal = parseInt(item.price * item.qty);
+      const discountedItemTotal = parseInt(item.price * item.qty * (1 - item.discount / 100));
+
+      originalSubtotal += originalItemTotal;
+      discountedSubtotal += discountedItemTotal;
+      totalSavings += (originalItemTotal - discountedItemTotal);
+      return totalItems += item.qty;
     });
+
+    // Calculate VAT
+    const vatAmount = Math.round(discountedSubtotal * vatRate);
+    const finalTotal = discountedSubtotal + shipping + vatAmount;
 
     const handleSubmit = (event) => {
       event.preventDefault();
@@ -72,27 +84,7 @@ const Checkout = () => {
     return (
       <div className="container py-5">
         <div className="row my-4">
-          <div className="col-md-5 col-lg-4 order-md-last">
-            <div className="card mb-4">
-              <div className="card-header py-3 bg-light">
-                <h5 className="mb-0">Order Summary</h5>
-              </div>
-              <div className="card-body">
-                <ul className="list-group list-group-flush">
-                  <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                    Products ({totalItems}) <span>{Math.round(subtotal).toLocaleString("vi-VN")} VNĐ</span>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                    Shipping <span>{shipping.toLocaleString("vi-VN")} VNĐ</span>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                    <strong>Total amount</strong>
-                    <strong>{Math.round(subtotal + shipping).toLocaleString("vi-VN")} VNĐ</strong>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+
           <div className="col-md-7 col-lg-8">
             <div className="card mb-4">
               <div className="card-header py-3">
@@ -181,6 +173,50 @@ const Checkout = () => {
               </div>
             </div>
           </div>
+
+          <div className="col-md-4">
+            <div className="card mb-4">
+              <div className="card-header py-3 bg-light">
+                <h5 className="mb-0">Order Summary</h5>
+              </div>
+              <div className="card-body">
+                <ul className="list-group list-group-flush">
+                  <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+                    Subtotal ({totalItems} items)
+                    <span>{originalSubtotal.toLocaleString("vi-VN")}<sup>₫</sup></span>
+                  </li>
+
+                  {totalSavings > 0 && (
+                    <li className="list-group-item d-flex justify-content-between align-items-center text-success px-0">
+                      Discount
+                      <span>-{totalSavings.toLocaleString("vi-VN")}<sup>₫</sup></span>
+                    </li>
+                  )}
+
+                  <li className="list-group-item d-flex justify-content-between align-items-center px-0">
+                    Shipping
+                    <span>{shipping.toLocaleString("vi-VN")}<sup>₫</sup></span>
+                  </li>
+
+                  <li className="list-group-item d-flex justify-content-between align-items-center px-0">
+                    VAT (10%)
+                    <span>{vatAmount.toLocaleString("vi-VN")}<sup>₫</sup></span>
+                  </li>
+
+                  <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+
+                    <div>
+                      <strong>Total</strong>
+                    </div>
+                    <span>
+                      <strong className="text-danger h5">{finalTotal.toLocaleString("vi-VN")}<sup>₫</sup></strong>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     );
