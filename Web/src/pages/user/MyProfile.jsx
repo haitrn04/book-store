@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
-import { getInfor, editInfor } from "../../services/apiService";
+import { getInfor, editInfor, changePass } from "../../services/apiService";
 import avt from '../../assets/images/avt_default.jpg';
 
 const moment = require('moment');
@@ -197,6 +197,55 @@ const MyProfile = () => {
     }
   };
 
+ 
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleChangePasswordClick = () => setShowChangePassword(true);
+
+  const handleCancelChangePassword = () => {
+    setShowChangePassword(false);
+    setErrorMessage(""); // Xóa lỗi khi hủy
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmNewPassword("");
+  };
+
+  const handleSavePassword = async () => {
+    // Kiểm tra mật khẩu mới không được trống
+    if (!newPassword || !confirmNewPassword) {
+      setErrorMessage("New password fields cannot be empty.");
+      return;
+    }
+
+    // Kiểm tra mật khẩu mới nhập lại phải khớp
+    if (newPassword !== confirmNewPassword) {
+      setErrorMessage("New passwords do not match.");
+      return;
+    }
+
+    try {
+      const response = await changePass({
+        id_account: storedUser.id_account,
+        oldPass: currentPassword,
+        newPass: newPassword,
+      });
+
+      if (response.status === 200) {
+        alert("Password changed successfully!");
+        handleCancelChangePassword();
+      } else {
+        setErrorMessage(response.data.error || "Failed to update password.");
+      }
+    } catch (error) {
+      setErrorMessage("Error updating password. Please try again.");
+    }
+  };
+  
+ 
 
   return (
     <>
@@ -395,7 +444,47 @@ const MyProfile = () => {
                         </div>
                       </div>
                     )
-                  ) : (
+                  ) : showChangePassword ? (
+                    <div className="card border-0 bg-light p-4">
+                      <h5 className="mb-3">Change Password</h5>
+                      {errorMessage && <p className="text-danger">{errorMessage}</p>}
+                      <div className="mb-3">
+                        <label className="form-label">Current Password</label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">New Password</label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">Confirm New Password</label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          value={confirmNewPassword}
+                          onChange={(e) => setConfirmNewPassword(e.target.value)}
+                        />
+                      </div>
+                      <div className="d-flex">
+                        <button className="btn btn-primary me-2" onClick={handleSavePassword}>
+                          Save
+                        </button>
+                        <button className="btn btn-outline-secondary" onClick={handleCancelChangePassword}>
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ): (
                     // Security tab
                     <div>
                       <div className="card border-0 bg-light p-4 mb-4">
@@ -406,6 +495,7 @@ const MyProfile = () => {
                           </div>
                           <button
                             className="btn btn-primary"
+                           onClick={handleChangePasswordClick}
                           >
                             <FaLock className="me-2" /> Change Password
                           </button>
@@ -427,6 +517,7 @@ const MyProfile = () => {
                       </div>
 
                     </div>
+                    
                   )}
                 </div>
               </div>
