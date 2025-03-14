@@ -105,11 +105,14 @@ const getBookReviewbyorderID = (id_order) => {
     return axios.get(`http://localhost:3005/review/getBookReviewbyorderID/?id_order=${id_order}`);
 }
 
-const sendmail = (email,subject,msg) => {
-    return axios.post(`http://localhost:3005/sendmail`,email,subject,msg);
+const sendmail = (to,subject,html) => {
+    return axios.post(`http://localhost:3005/sendmail`,to,subject,html);
 }
 const getOrders = () => {
     return axios.get('http://localhost:3005/order/getOrders');
+}
+const getOrderByID = (id_order) => {
+    return axios.get(`http://localhost:3005/order/getOrderByID/${id_order}`);
 }
 const updateOrderStatus = async (id_order, status) => {
     try {
@@ -128,5 +131,5 @@ export {
     getProducts, getProductbyID, getGenre, getInfor, deleteProductbyID,
     getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress,
     editInfor, addOrderAndOrderDetail, addreview, deleteReview, getBookReviewbyID, sendmail,
-    getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus
+    getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus,getOrderByID
 };

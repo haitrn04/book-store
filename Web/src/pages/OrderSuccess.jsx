@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { Navbar } from "../components";
 import { useDispatch } from "react-redux";
 import { clearCart } from "../redux/action";
+import OrderConfirmationEmail from "../pages/mail";
+import {sendmail} from "../services/apiService";
 
 const OrderSuccess = () => {
     const storedUser = JSON.parse(sessionStorage.getItem("user"))?.data;
@@ -13,6 +15,8 @@ const OrderSuccess = () => {
         localStorage.setItem("cart", JSON.stringify([])); 
         dispatch(clearCart()); 
     }, [dispatch]);
+    let mail =OrderConfirmationEmail(orderInfo.id_order);
+    sendmail(storedUser.email,"Đơn hàng của bạn đã được thanh toán thành công!",mail);
     return (
         <>
             <Navbar user={storedUser} />

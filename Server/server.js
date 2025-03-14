@@ -55,7 +55,7 @@ app.post('/login', async (req, res) => {
 });
 // admin
 app.post('/sendmail', async(req,res)=> {
-    const { email,subject, msg } = req.body;
+    const { email,subject, html } = req.body;
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -68,7 +68,7 @@ app.post('/sendmail', async(req,res)=> {
         from: process.env.Email_User,
         to: email,
         subject: subject,
-        text: msg
+        html: html
     }
     transporter.sendMail(mailOptions, (err, result) => {
         if (err){
