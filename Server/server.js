@@ -1,7 +1,8 @@
 const express = require('express');
 const pool = require('./db');
 const http = require('http');
-
+require('dotenv').config();
+const nodemailer = require('nodemailer');
 const userRouter = require('./routes/user');
 const productRouter = require('./routes/product');
 const addressRouter = require('./routes/address');
@@ -53,7 +54,31 @@ app.post('/login', async (req, res) => {
     }
 });
 // admin
-
+app.post('/sendmail', async(req,res)=> {
+    const { email,subject, msg } = req.body;
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.Email_User,
+            pass: process.env.Email_Password
+        
+        }
+    })
+    const mailOptions = {
+        from: process.env.Email_User,
+        to: email,
+        subject: subject,
+        text: msg
+    }
+    transporter.sendMail(mailOptions, (err, result) => {
+        if (err){
+        console.log(err)
+            res.json('Opps error occured')
+        } else{
+            res.json('thanks for e-mailing me');
+        }
+    })
+});
 
 // API để tải ảnh lên
 // app.post('/upload', upload.single('image'), (req, res) => {

@@ -104,6 +104,10 @@ const getBookReviewbyID = (id_book) => {
 const getBookReviewbyorderID = (id_order) => {
     return axios.get(`http://localhost:3005/review/getBookReviewbyorderID/?id_order=${id_order}`);
 }
+
+const sendmail = (email,subject,msg) => {
+    return axios.post(`http://localhost:3005/sendmail`,email,subject,msg);
+}
 const getOrders = () => {
     return axios.get('http://localhost:3005/order/getOrders');
 }
@@ -123,6 +127,6 @@ export {
     postLogin, getImage, postRegister, postAddProduct, postEditProduct,
     getProducts, getProductbyID, getGenre, getInfor, deleteProductbyID,
     getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress,
-    editInfor, addOrderAndOrderDetail, addreview, deleteReview, getBookReviewbyID,
+    editInfor, addOrderAndOrderDetail, addreview, deleteReview, getBookReviewbyID, sendmail,
     getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus
 };
