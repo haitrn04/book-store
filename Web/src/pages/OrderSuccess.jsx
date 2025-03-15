@@ -1,22 +1,56 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Navbar } from "../components";
 import { useDispatch } from "react-redux";
 import { clearCart } from "../redux/action";
-import OrderConfirmationEmail from "../pages/mail";
-import {sendmail} from "../services/apiService";
+import  OrderConfirmationEmail  from "../pages/mail";
+import {sendmail, getOrderByID} from "../services/apiService";
+import ReactDOMServer from "react-dom/server";
 
 const OrderSuccess = () => {
-    const storedUser = JSON.parse(sessionStorage.getItem("user"))?.data;
-    const orderInfo = JSON.parse(sessionStorage.getItem("order")) || {id_order: null, total_price: 0};
+    const storedUser = JSON.parse(sessionStorage.getItem("user")).data;
+    const orderInfo = JSON.parse(sessionStorage.getItem("order")) || { data: { id_order: null, total_price: 0 } };
     const dispatch = useDispatch();
-
+    const [order, setOrder] = useState([]);
+    const [orderDetails, setOrderDetails] = useState([]);
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify([])); 
         dispatch(clearCart()); 
+
     }, [dispatch]);
-    let mail =OrderConfirmationEmail(orderInfo.id_order);
-    sendmail(storedUser.email,"Đơn hàng của bạn đã được thanh toán thành công!",mail);
+
+useEffect(() => {
+    const fetchOrderDetails = async () => {
+        try {
+            const response = await getOrderByID(orderInfo.id_order);
+            console.log("API Response:", response.data);
+            
+            // Process order details with image data
+            const processedOrderDetails = Array.isArray(response.data.order_details) 
+                ? response.data.order_details.map(detail => ({
+                    ...detail,
+                    // Keep the raw image data, it will be formatted in the email template
+                }))
+                : [];
+
+            const mail = ReactDOMServer.renderToStaticMarkup(
+                <OrderConfirmationEmail 
+                    order={response.data.order} 
+                    orderDetails={processedOrderDetails} 
+                />
+            );
+
+            const email = storedUser.email.toString();
+            await sendmail(email, "Đơn hàng của bạn đã được thanh toán thành công!", mail);
+        } catch (error) {
+            console.error("Error fetching order details or sending email:", error);
+        }
+    };
+
+    if (orderInfo.id_order) {
+        fetchOrderDetails();
+    }
+}, [orderInfo.id_order, storedUser.email]);
     return (
         <>
             <Navbar user={storedUser} />

@@ -105,8 +105,8 @@ const getBookReviewbyorderID = (id_order) => {
     return axios.get(`http://localhost:3005/review/getBookReviewbyorderID/?id_order=${id_order}`);
 }
 
-const sendmail = (to,subject,html) => {
-    return axios.post(`http://localhost:3005/sendmail`,to,subject,html);
+const sendmail = (emailadd,subject, htmlcontent) => {
+    return axios.post(`http://localhost:3005/sendmail`, { emailadd,subject, htmlcontent });
 }
 const getOrders = () => {
     return axios.get('http://localhost:3005/order/getOrders');
