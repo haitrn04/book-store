@@ -150,14 +150,6 @@ const AddressBook = () => {
       district: `${address[index]?.district_code || ""},${address[index]?.district || ""}`.replace(/^,|,$/g, ""),
       ward: `${address[index]?.ward_code || ""},${address[index]?.ward || ""}`.replace(/^,|,$/g, ""),
     });
-    console.log("Edited Address:", {
-      full_name: address[index]?.full_name || "",
-      phone_number: address[index]?.phone_number || "",
-      detailed_address: address[index]?.detailed_address || "",
-      province: `${address[index]?.province_code || ""},${address[index]?.province || ""}`.replace(/^,|,$/g, ""),
-      district: `${address[index]?.district_code || ""},${address[index]?.district || ""}`.replace(/^,|,$/g, ""),
-      ward: `${address[index]?.ward_code || ""},${address[index]?.ward || ""}`.replace(/^,|,$/g, ""),
-    });
   };
 
 
@@ -267,6 +259,8 @@ const AddressBook = () => {
     } catch (error) {
       console.error("Lỗi khi cập nhật địa chỉ:", error);
     }
+   
+
   };
 
 

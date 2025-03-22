@@ -20,38 +20,41 @@ const Sidebar = () => {
   return (
     <div
       className="d-flex flex-column p-3 bg-white shadow rounded"
-      style={{
-        width: "250px",
-        height: "calc(100vh - 100px)",
-        position: "sticky",
-        top: "100px"
+      style={{ 
+        width: "250px", 
+        height: "calc(100vh - 100px)", 
+        position: "sticky", 
+        top: "100px" 
       }}
     >
-      <ul className="nav flex-column">
-        <li className="nav-item mb-2">
-          <Link to="/managemyaccount" className="nav-link text-dark hover-bg-light rounded p-2">
+      <ul className="nav flex-column mt-3">
+        <li className="nav-item">
+          <Link to="/managemyaccount" className="nav-link text-dark">
             <FaUsers className="me-2" /> Manage my account
           </Link>
         </li>
-        <li className="nav-item mb-2">
-          <Link
-            to="/myprofile"
-            className="nav-link text-white fw-bold bg-primary p-2 rounded"
-          >
+        <li className="nav-item">
+          <Link to="/myprofile" className="nav-link text-white fw-bold bg-primary p-2 rounded">
             <FaUser className="me-2" /> My Profile
           </Link>
         </li>
-        <li className="nav-item mb-2">
-          <Link to="/addressbook" className="nav-link text-dark hover-bg-light rounded p-2">
+        <li className="nav-item">
+          <Link
+            to="/addressbook"
+            className="nav-link text-dark"
+          >
             <FaAddressCard className="me-2" /> Address Book
           </Link>
         </li>
-        <li className="nav-item mb-2">
-          <Link to="/myorder" className="nav-link text-dark hover-bg-light rounded p-2">
-            <FaCartPlus className="me-2" /> My Orders
+        <li className="nav-item">
+          <Link to="/myorder" className="nav-link text-dark">
+            <FaCartPlus className="me-2" /> My order
           </Link>
         </li>
+
       </ul>
+
+
     </div>
   );
 };

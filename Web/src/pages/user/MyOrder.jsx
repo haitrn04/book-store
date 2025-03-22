@@ -17,11 +17,11 @@ const Sidebar = () => {
   return (
     <div
       className="d-flex flex-column p-3 bg-white shadow rounded"
-      style={{
-        width: "250px",
-        height: "calc(100vh - 100px)",
-        position: "sticky",
-        top: "100px"
+      style={{ 
+        width: "250px", 
+        height: "calc(100vh - 100px)", 
+        position: "sticky", 
+        top: "100px" 
       }}
     >
       <ul className="nav flex-column mt-3">
@@ -36,22 +36,26 @@ const Sidebar = () => {
           </Link>
         </li>
         <li className="nav-item">
-          <Link to="/addressbook" className="nav-link text-dark">
+          <Link
+            to="/addressbook"
+            className="nav-link text-dark"
+          >
             <FaAddressCard className="me-2" /> Address Book
           </Link>
         </li>
         <li className="nav-item">
-          <Link
-            to="/myorder"
-            className="nav-link text-white fw-bold bg-primary p-2 rounded"
-          >
+          <Link to="/myorder" className="nav-link text-white fw-bold bg-primary p-2 rounded">
             <FaCartPlus className="me-2" /> My order
           </Link>
         </li>
+
       </ul>
+
+
     </div>
   );
 };
+
 
 // Thanh menu đơn giản
 const Mitem = () => {
@@ -190,6 +194,8 @@ const OrderDetailModal = ({ order, onClose }) => {
     </div>
   );
 };
+
+// Component hiển thị modal đánh giá
 const ReviewModal = ({ order, onClose, onSubmit }) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -321,103 +327,162 @@ const ReviewModal = ({ order, onClose, onSubmit }) => {
 
 
 // Component đơn hàng item, nhận vào hàm callback onView
-const OrderItem = ({ order, onView,onReview }) => (
-  <div
-    style={{
-      backgroundColor: "#f5f5fa",
-      padding: "15px",
-      margin: "20px 0",
-      borderRadius: "8px",
-    }}
-  >
+const OrderItem = ({ order, onView,onReview }) => {
+
+  const [showModal , setShowModal] = useState(false);
+
+  const handleReviewClick = () => {
+    if (order.status === "Delivered") {
+      onReview(order);
+    } else {
+      setShowModal(true);
+    }
+  };
+
+
+  return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        borderBottom: "1px solid #ddd",
-        paddingBottom: "10px",
+        backgroundColor: "#f5f5fa",
+        padding: "15px",
+        margin: "20px 0",
+        borderRadius: "8px",
       }}
     >
-      <p style={{ fontWeight: "bold" }}>{order.storeName}</p>
-      <button
+      <div
         style={{
-          backgroundColor: "#f0f0f0",
-          border: "none",
-          padding: "5px 10px",
-          borderRadius: "15px",
-          color: "gray",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          borderBottom: "1px solid #ddd",
+          paddingBottom: "10px",
         }}
       >
-        {order.status}
-      </button>
-    </div>
-    <div style={{ display: "flex", alignItems: "center", marginTop: "15px" }}>
-      <img
-        src={order.imageUrl}
-        alt="Product"
-        style={{
-          width: "100px",
-          height: "100px",
-          borderRadius: "8px",
-          objectFit: "cover",
-        }}
-      />
-      <div style={{ marginLeft: "15px", flex: 1 }}>
-        <p style={{ margin: "0", fontWeight: "bold" }}>({order.date})</p>
-        <p style={{ margin: "5px 0" }}>{order.productName}</p>
-        <p style={{ color: "gray", fontSize: "12px" }}>{order.variant}</p>
-      </div>
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <p style={{ fontWeight: "bold", marginRight: "150px" }}>
-          {order.price.toLocaleString()} VND
-        </p>
-        <p style={{ fontWeight: "bold", marginRight: "150px" }}>Qty: {order.quantity}</p>
-      </div>
-    </div>
-    <div className="khoi" style={{ display: "flex" }}>
-    <button
-        className="btn btn-secondary"
-        style={{
-          border: "none",
-          padding: "5px 10px",
-          borderRadius: "15px",
-          marginLeft: "10px",
-        }}
-        onClick={() => onReview(order)}
-      >
-        <FaCommentDots className="me-2" /> Comment
-      </button>
-      <div>
+        <p style={{ fontWeight: "bold" }}>{order.storeName}</p>
         <button
-          className="btn btn-primary"
           style={{
+            backgroundColor: 
+            order.status === "Delivered" ? "#99FF99" : 
+            order.status === "Cancelled" ? "#CCCC00" : "#f0f0f0",
             border: "none",
             padding: "5px 10px",
             borderRadius: "15px",
-            marginLeft: "600px",
+          
           }}
-          onClick={() => onView(order)}
         >
-          View order
+          {order.status}
         </button>
       </div>
-      <div>
-        <button
-          className="btn btn-danger"
+      <div style={{ display: "flex", alignItems: "center", marginTop: "15px" }}>
+        <img
+          src={order.imageUrl}
+          alt="Product"
           style={{
-            border: "none",
-            padding: "5px 10px",
-            borderRadius: "15px",
-            marginLeft: "10px",
-          }}>
-          Delete order
-        </button>
+            width: "100px",
+            height: "100px",
+            borderRadius: "8px",
+            objectFit: "cover",
+          }}
+        />
+        <div style={{ marginLeft: "15px", flex: 1 }}>
+          <p style={{ margin: "0", fontWeight: "bold" }}>({order.date})</p>
+          <p style={{ margin: "5px 0" }}>{order.productName}</p>
+          <p style={{ color: "gray", fontSize: "12px" }}>{order.variant}</p>
+        </div>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <p style={{ fontWeight: "bold", marginRight: "150px" }}>
+            {order.price.toLocaleString()} VND
+          </p>
+          <p style={{ fontWeight: "bold", marginRight: "150px" }}>Qty: {order.quantity}</p>
+        </div>
       </div>
-      
+      <div className="khoi" style={{ display: "flex" ,justifyContent: "flex-end" , gap: "20px"}} >
+        <div>
+          <button
+            className="btn btn-secondary"
+            style={{
+              border: "none",
+              padding: "5px 10px",
+              borderRadius: "15px",
+            }}
+            onClick={handleReviewClick}
+            >
+              <FaCommentDots className="me-2" /> Comment
+            </button>
+        </div>
+        <div >
+          <button
+            className="btn btn-primary"
+            style={{
+              border: "none",
+              padding: "5px 10px",
+              borderRadius: "15px",
+              
+            }}
+            onClick={() => onView(order)}
+          >
+            View order
+          </button>
+        </div>
+        <div>
+          <button
+            className="btn btn-danger"
+            style={{
+              border: "none",
+              padding: "5px 10px",
+              borderRadius: "15px",
+              marginLeft: "10px",
+            }}>
+            Cancel order
+          </button>
+        </div>
+      </div>
+
+      {/* Hiểm thị chắc năng comment, nếu chưa mua hàng thì không được comment  */}
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "white",
+            padding: "20px",
+            borderRadius: "10px",
+            boxShadow: "0px 0px 10px rgba(0,0,0,0.2)",
+            zIndex: 1000,
+            textAlign: "center",
+          }}
+        >
+          <p style = {{fontWeight: "bold"}}>You can only review delivered orders!</p> 
+          <button
+          className="btn btn-primary"
+          onClick ={() => setShowModal(false)}
+          style={{marginTop: "10px", 
+            width: "100px",
+          }}>
+          OK 
+          </button>
+        </div>
+      )}
+      {/* làm màn hình mờ */}
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 999,
+          }}
+          onClick={() => setShowModal(false)}
+        ></div>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 
 // Component MyOrder chính, quản lý trạng thái modal
@@ -442,6 +507,8 @@ const MyOrder = () => {
   const onReview = (order) => {
     setReviewOrder(order);
   };
+
+ 
   // Lọc dữ liệu dựa trên searchQuery (seller name, order ID, product name)
   const filteredOrders = orderData.filter((order) => {
     const lowerQuery = searchQuery.toLowerCase();
