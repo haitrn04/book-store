@@ -114,6 +114,9 @@ const getOrders = () => {
 const getOrderByID = (id_order) => {
     return axios.get(`http://localhost:3005/order/getOrderByID/${id_order}`);
 }
+const getOrderByAccountID = (id_account) => {
+    return axios.get(`http://localhost:3005/order/getOrderByAccountID/${id_account}`);
+}
 const updateOrderStatus = async (id_order, status) => {
     try {
         const response = await axios.post(`http://localhost:3005/order/${id_order}/status`, {
@@ -131,5 +134,5 @@ export {
     getProducts, getProductbyID, getGenre, getInfor, deleteProductbyID,
     getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress,
     editInfor, addOrderAndOrderDetail, addreview, deleteReview, getBookReviewbyID, sendmail,
-    getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus,getOrderByID
+    getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus,getOrderByID, getOrderByAccountID
 };
