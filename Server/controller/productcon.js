@@ -136,7 +136,7 @@ const productcon = {
     },
 
     getProductByGenre: async (req, res) => {
-        const { id_genre } = req.query;  // Use req.query instead of req.body
+        const { id_genre } = req.query; 
         try {
             const sql = `
                 SELECT 

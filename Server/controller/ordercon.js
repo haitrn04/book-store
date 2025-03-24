@@ -131,7 +131,57 @@ const ordercon = {
             client.release(); // Đảm bảo client được giải phóng dù có lỗi hay không
         }
     },
-
+    getOrderByAccountID: async (req, res) => {
+        const client = await pool.connect();
+        try {
+            const { id_account } = req.params;
+    
+            // Kiểm tra đầu vào
+            if (!id_account || isNaN(id_account)) {
+                return res.status(400).json({ error: "Invalid account ID" });
+            }
+    
+            // Truy vấn thông tin đơn hàng
+            const orderQuery = `
+                SELECT o.id_order, o.id_account, o.total_price, o.address_id, o.payment_status, o.order_status, o.created_at, 
+                       a.full_name, a.phone_number, a.detailed_address, a.province, a.district, a.ward
+                FROM public.orders o
+                JOIN public.address a ON o.address_id = a.address_id
+                WHERE o.id_account = $1;
+            `;
+            const orderResult = await client.query(orderQuery, [id_account]);
+    
+            if (orderResult.rowCount === 0) {
+                return res.status(404).json({ error: "Order not found" });
+            }
+    
+            // Lấy danh sách đơn hàng
+            const orders = orderResult.rows;
+            const result = [];
+    
+            // Lấy chi tiết cho từng đơn hàng
+            for (const order of orders) {
+                const orderDetailQuery = `
+                    SELECT od.id_book, b.book_name, b.author, b.price, b.discount, od.quantity, 
+                           encode(b.image_data, 'base64') AS image_data, b.description
+                    FROM public.order_details od
+                    JOIN public.books b ON od.id_book = b.id_book
+                    WHERE od.id_order = $1;
+                `;
+                const orderDetailResult = await client.query(orderDetailQuery, [order.id_order]);
+                const order_details = orderDetailResult.rows;
+    
+                result.push({ order, order_details });
+            }
+    
+            return res.status(200).json(result);
+        } catch (error) {
+            console.error("Error getting order:", error.message, error.stack);
+            return res.status(500).json({ error: "Internal Server Error", message: error.message });
+        } finally {
+            client.release();
+        }
+    },
     updateOrderStatus: async (req, res) => {
         const client = await pool.connect();
         try {
