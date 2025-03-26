@@ -108,8 +108,7 @@ const productcon = {
             }
         }
     ],
-
-
+    
     getProducts: async (req, res) => {
         try {
             const sql = `SELECT id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, encode(image_data, 'base64') AS image_data, description, is_active FROM books;`;
