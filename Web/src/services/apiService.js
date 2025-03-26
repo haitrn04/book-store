@@ -4,6 +4,14 @@ const postLogin = (email, password) => {
     return axios.post('http://localhost:3005/login', { email, password });
 };
 
+const postPayment = (user_name, total_price, items) => {
+    return axios.post('http://localhost:3005/payment', { user_name, total_price, items });
+};
+
+const postOrderStatus = (app_trans_id) => {
+    return axios.post(`http://localhost:3005/order-status/${app_trans_id}`, { app_trans_id });
+};
+
 const postRegister = (full_name, email, password, mobile, gender, birthday) => {
     return axios.post('http://localhost:3005/accounts/register', { full_name, email, password, mobile, gender, birthday });
 };
@@ -105,8 +113,8 @@ const getBookReviewbyorderID = (id_order) => {
     return axios.get(`http://localhost:3005/review/getBookReviewbyorderID/?id_order=${id_order}`);
 }
 
-const sendmail = (emailadd,subject, htmlcontent) => {
-    return axios.post(`http://localhost:3005/sendmail`, { emailadd,subject, htmlcontent });
+const sendmail = (emailadd, subject, htmlcontent) => {
+    return axios.post(`http://localhost:3005/sendmail`, { emailadd, subject, htmlcontent });
 }
 const getOrders = () => {
     return axios.get('http://localhost:3005/order/getOrders');
@@ -134,5 +142,6 @@ export {
     getProducts, getProductbyID, getGenre, getInfor, deleteProductbyID,
     getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress,
     editInfor, addOrderAndOrderDetail, addreview, deleteReview, getBookReviewbyID, sendmail,
-    getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus,getOrderByID, getOrderByAccountID
+    getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus, getOrderByID, getOrderByAccountID,
+    postPayment, postOrderStatus
 };

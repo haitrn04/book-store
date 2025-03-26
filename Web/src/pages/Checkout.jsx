@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Footer, Navbar } from "../components";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { getAddress, addOrderAndOrderDetail } from "../services/apiService";
+import { getAddress, addOrderAndOrderDetail, postPayment, postOrderStatus } from "../services/apiService";
 
 const Checkout = () => {
   const state = useSelector((state) => state.handleCart);
@@ -52,34 +52,108 @@ const Checkout = () => {
     const vatAmount = Math.round(discountedSubtotal * vatRate);
     const finalTotal = discountedSubtotal + shipping + vatAmount;
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
       event.preventDefault();
+
+      const order = {
+        id_account: storedUser.id_account,
+        address_id: selectedAddress.address_id,
+        payment_status: 'pending',
+        order_status: 'pending',
+        order_details: state.map((item) => ({
+          id_book: item.id_book,
+          qty: item.qty,
+          price: item.price,
+          discount: item.discount,
+        })),
+      };
+
       if (selectedPayment === 'cod') {
-        const order = {
-          id_account: storedUser.id_account,
-          address_id: selectedAddress.address_id,
-          payment_status: 'pending',
-          order_status: 'pending',
-          order_details: state.map((item) => ({
-            id_book: item.id_book,
-            qty: item.qty,
-            price: item.price,
-            discount: item.discount
-          }))
-        };
         addOrderAndOrderDetail(order).then((response) => {
           if (response.status === 200) {
-            sessionStorage.setItem("order", JSON.stringify(response.data));
-            navigate("/OrderSuccess", { state: { order: order } });
+            sessionStorage.setItem('order', JSON.stringify(response.data));
+            navigate('/OrderSuccess', { state: { order: order } });
           } else {
-            navigate("/OrderFail");
+            navigate('/OrderFail');
+          }
+        });
+      } else if (selectedPayment === 'zalopay') {
+        const user_name = storedUser.full_name;
+        const total_price = finalTotal;
+        const items = order.order_details;
+        let app_trans_id = null;
+        let paymentWindow = null;
+
+        postPayment(user_name, total_price, items).then((response) => {
+          if (response.status === 200 && response.data.data.return_code === 1) {
+            // window.location.href = response.data.data.order_url;
+            paymentWindow = window.open(response.data.data.order_url, '_blank');
+            app_trans_id = response.data.app_trans_id;
+          } else {
+            navigate('/OrderFail');
           }
         });
 
-      } else if (selectedPayment === 'momo') {
-        alert('Chức năng thanh toán qua MoMo đang được phát triển');
+        const checkOrderStatus = () => {
+          postOrderStatus(app_trans_id).then((response) => {
+            const { return_code } = response.data;
+
+            switch (return_code) {
+              case 1: // Thành công
+                addOrderAndOrderDetail(order).then((orderResponse) => {
+                  sessionStorage.setItem('order', JSON.stringify(orderResponse.data));
+                  setTimeout(() => {
+                    if (typeof paymentWindow !== 'undefined' && !paymentWindow.closed) {
+                      paymentWindow.close();
+                    }
+                  }, 4100);
+                  navigate('/OrderSuccess', { state: { order: order } });
+                })
+                  .catch((error) => {
+                    console.error('Failed to add order details:', error);
+                  });
+                clearInterval(orderCheckInterval);
+                break;
+
+              case 2: // Thất bại
+                clearInterval(orderCheckInterval);
+                setTimeout(() => {
+                  if (typeof paymentWindow !== 'undefined' && !paymentWindow.closed) {
+                    paymentWindow.close();
+                  }
+                }, 4100);
+                navigate('/OrderFail');
+                break;
+
+              case 3: // Đang chờ xử lý
+                // Kiểm tra xem giao dịch đã được xử lý hay chưa
+                if (typeof polling === 'undefined') {
+                  const polling = setInterval(() => {
+                    if (typeof paymentWindow !== 'undefined' && paymentWindow.closed) {
+                      // Kiểm tra lại trạng thái giao dịch trước khi navigate đến OrderFail
+                      postOrderStatus(app_trans_id).then((latestResponse) => {
+                        const { return_code: latestReturnCode } = latestResponse.data;
+                        if (latestReturnCode === 3) {
+                          navigate('/OrderFail');
+                        }
+                      });
+                      clearInterval(orderCheckInterval);
+                      clearInterval(polling);
+                    }
+                  }, 200);
+                }
+                break;
+            }
+          })
+            .catch((error) => {
+              console.error('Error checking order status:', error);
+            });
+        };
+
+        const orderCheckInterval = setInterval(checkOrderStatus, 1001);
       }
     };
+
 
     return (
       <div className="container py-5">
@@ -144,16 +218,16 @@ const Checkout = () => {
                           Cash on Delivery
                         </label>
 
-                        <label className={`list-group-item list-group-item-action ${selectedPayment === 'momo' ? 'active' : ''}`} style={{ cursor: "pointer" }}>
+                        <label className={`list-group-item list-group-item-action ${selectedPayment === 'zalopay' ? 'active' : ''}`} style={{ cursor: "pointer" }}>
                           <input
                             type="radio"
                             name="payment"
-                            value="momo"
+                            value="zalopay"
                             className="d-none"
-                            checked={selectedPayment === 'momo'}
-                            onChange={() => setSelectedPayment('momo')}
+                            checked={selectedPayment === 'zalopay'}
+                            onChange={() => setSelectedPayment('zalopay')}
                           />
-                          MoMo Payment
+                          ZaloPay Payment
                         </label>
                       </div>
 
