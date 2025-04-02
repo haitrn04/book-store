@@ -127,6 +127,19 @@ const usercon = {
             }
         }
     ],
+    getAccountbyName: async (req, res) => {
+        const { full_name } = req.query;
+        try {
+            let sql = `SELECT id_account, email, encode(image_data, 'base64') AS image_data, role, full_name, phone_num, gender, birthday 
+                      FROM accounts 
+                      WHERE full_name ILIKE '%' || $1 || '%';`;
+            const data = await pool.query(sql, [full_name]);
+            res.status(200).json(data.rows);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
     changePass: async (req, res) => {
         const { id_account, oldPass, newPass } = req.body;
         try {
