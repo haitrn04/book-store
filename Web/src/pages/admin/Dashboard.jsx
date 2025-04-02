@@ -1,10 +1,10 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { FaUsers,FaUber, FaShoppingCart, FaDollarSign, FaClock, FaBox, FaList, FaChartBar, FaSignOutAlt, FaHome } from "react-icons/fa";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 import { HeaderAdmin } from "../../components";
-
+import { getOrders } from "../../services/apiService";
 const salesData = {
   "January": [
     { name: "5k", sales: 10 },
@@ -83,6 +83,29 @@ const Sidebar = () => {
 
 const Dashboard = () => {
   const [selectedMonth, setSelectedMonth] = useState("January");
+  const [stats, setStats] = useState({ users: 0, orders: 0, sales: 0, pending: 0 });
+  const [salesData, setSalesData] = useState({});
+  const [transactionsData, setTransactionsData] = useState({});
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const ordersResponse = await getOrders();
+      const orders = ordersResponse.data;
+      const totalOrders = orders.length;
+      const pendingOrders = orders.filter(order => order.status === "Pending").length;
+      const totalSales = orders.reduce((acc, order) => acc + order.total_price, 0);
+      const usersCount = new Set(orders.map(order => order.id_account)).size;
+      
+      setStats({ users: usersCount, orders: totalOrders, sales: totalSales, pending: pendingOrders });
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    }
+  };
+
   return (
     <div className="d-flex">
       <Sidebar />
@@ -93,13 +116,13 @@ const Dashboard = () => {
           <br />
           <div className="row text-center">
             {[{
-              icon: <FaUsers className="text-primary" size={24} />, label: "Total Users", value: "40,689", trend: "⬆ 8.5%", color: "text-success"
+              icon: <FaUsers className="text-primary" size={24} />, label: "Total Users", value: stats.users, trend: "⬆ 8.5%", color: "text-success"
             }, {
-              icon: <FaShoppingCart className="text-warning" size={24} />, label: "Total Orders", value: "10,293", trend: "⬆ 1.3%", color: "text-success"
+              icon: <FaShoppingCart className="text-warning" size={24} />, label: "Total Orders", value: stats.orders, trend: "⬆ 1.3%", color: "text-success"
             }, {
-              icon: <FaDollarSign className="text-success" size={24} />, label: "Total Sales", value: "$89,000", trend: "⬇ 4.3%", color: "text-danger"
+              icon: <FaDollarSign className="text-success" size={24} />, label: "Total Sales", value: `$${stats.sales.toFixed(2)}`, trend: "⬇ 4.3%", color: "text-danger"
             }, {
-              icon: <FaClock className="text-danger" size={24} />, label: "Pending Orders", value: "2040", trend: "⬆ 1.8%", color: "text-success"
+              icon: <FaClock className="text-danger" size={24} />, label: "Pending Orders", value: stats.pending, trend: "⬆ 1.8%", color: "text-success"
             }].map((stat, index) => (
               <div key={index} className="col-md-3 mb-3">
                 <div className="card shadow-sm p-3">
@@ -168,5 +191,6 @@ const Dashboard = () => {
     </div>
   );
 };
+
 
 export default Dashboard;

@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Footer, Navbar } from "../components";
 import { useSelector, useDispatch } from "react-redux";
 import { addCart, delCart } from "../redux/action";
 import { Link } from "react-router-dom";
-
+import toast from "react-hot-toast";
 const Cart = () => {
   const state = useSelector((state) => state.handleCart);
   const dispatch = useDispatch();
@@ -24,8 +24,27 @@ const Cart = () => {
   };
 
   const addItem = (product) => {
+    let cartMsg = localStorage.getItem("cart-msg") || "0"; 
+    cartMsg = parseInt(cartMsg); 
+
+    let exist = state.find((item) => item.id_book === product.id_book);
+    
+    if (exist) {
+      if (exist.qty >= product.stock) {
+        cartMsg += 1;
+        localStorage.setItem("cart-msg", cartMsg.toString());
+        if (cartMsg >= 1) {
+          toast.error("Out of stock");
+        }
+        return;
+      }
+    }
     dispatch(addCart(product));
+    localStorage.setItem("cart-msg", "0"); 
+    toast.success("Added to cart");
   };
+  
+
   const removeItem = (product) => {
     dispatch(delCart(product));
   };

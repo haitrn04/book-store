@@ -18,12 +18,12 @@ const handleCart = (state = getInitialCart(), action) => {
           return state
         } else {
           updatedCart = state.map((x) =>
-            x.id_book === product.id_book ? { ...x, qty: x.qty + 1 } : x
+            x.id_book === product.id_book ? { ...x, qty: x.qty + 1, price: product.price } : x
           );
           localStorage.setItem("cart-msg", "0");
         }
       } else {
-        updatedCart = [...state, { ...product, qty: 1 }];
+        updatedCart = [...state, { ...product, qty: 1, price: product.price  }];
         localStorage.setItem("cart-msg", "0");
       }
       localStorage.setItem("cart", JSON.stringify(updatedCart));
@@ -35,10 +35,10 @@ const handleCart = (state = getInitialCart(), action) => {
         updatedCart = state.filter((x) => x.id_book !== exist2.id_book);
       } else {
         updatedCart = state.map((x) =>
-          x.id_book === product.id_book ? { ...x, qty: x.qty - 1 } : x
+          x.id_book === product.id_book ? { ...x, qty: x.qty - 1, price: product.price  } : x
         );
       }
-      // Update localStorage
+      localStorage.setItem("cart-msg", "0");
       localStorage.setItem("cart", JSON.stringify(updatedCart));
       return updatedCart;
     
