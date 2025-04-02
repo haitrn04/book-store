@@ -19,8 +19,14 @@ const Products = () => {
   const dispatch = useDispatch();
 
   const addProduct = (product) => {
+    const cartMsg = localStorage.getItem("cart-msg");  
     dispatch(addCart(product));
-  };
+    if (cartMsg === "1") {
+      toast.error("Out of stock");
+      return;
+    } else if (cartMsg === "0") {
+    toast.success("Added to cart");
+  }};
 
   useEffect(() => {
     const getListProducts = async () => {
@@ -161,7 +167,6 @@ const Products = () => {
                 <button
                   className="btn btn-dark m-1"
                   onClick={() => {
-                    toast.success("Added to cart");
                     addProduct(product);
                   }}
                 >
