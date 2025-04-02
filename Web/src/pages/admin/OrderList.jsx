@@ -362,7 +362,6 @@ console.log(filteredOrders);
                                         <th>Discount</th>
                                         <th>Final Price</th>
                                         <th>Quantity</th>
-                                        <th>VAT (10%)</th>
                                         <th>Total</th>
                                       </tr>
                                     </thead>
@@ -387,8 +386,7 @@ console.log(filteredOrders);
                                             <td>{item.discount}%</td>
                                             <td>{finalPrice?.toLocaleString() || "0"} đ</td>
                                             <td>{item.quantity}</td>
-                                            <td>{parseInt(itemTotal * 0.1).toLocaleString() || "0"} đ</td>
-                                            <td>{parseInt(itemTotal * 1.1)?.toLocaleString() || "0"} đ</td>
+                                            <td>{parseInt(itemTotal)?.toLocaleString() || "0"} đ</td>
                                           </tr>
                                         );
                                       })}

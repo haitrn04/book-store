@@ -36,7 +36,7 @@ const Checkout = () => {
     let totalSavings = 0;
     let shipping = 0;
     let totalItems = 0;
-    const vatRate = 0.10; // 10% VAT
+
 
     state.map((item) => {
       const originalItemTotal = parseInt(item.price * item.qty);
@@ -49,8 +49,8 @@ const Checkout = () => {
     });
 
     // Calculate VAT
-    const vatAmount = Math.round(discountedSubtotal * vatRate);
-    const finalTotal = discountedSubtotal + shipping + vatAmount;
+
+    const finalTotal = discountedSubtotal + shipping;
 
     const handleSubmit = async (event) => {
       event.preventDefault();
@@ -275,10 +275,7 @@ const Checkout = () => {
                     <span>{shipping.toLocaleString("vi-VN")}<sup>₫</sup></span>
                   </li>
 
-                  <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                    VAT (10%)
-                    <span>{vatAmount.toLocaleString("vi-VN")}<sup>₫</sup></span>
-                  </li>
+
 
                   <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
 
