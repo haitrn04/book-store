@@ -1,6 +1,6 @@
 import React from "react";
 // import { Link } from "react-router-dom";
-
+import { getGenre } from "../services/apiService";
 const Home = () => {
   const slides = [
     {
@@ -28,7 +28,7 @@ const Home = () => {
       link: "/sale"
     }
   ];
-
+  
   return (
     <>
       <div className="hero">

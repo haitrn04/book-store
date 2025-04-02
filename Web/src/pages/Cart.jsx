@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Footer, Navbar } from "../components";
 import { useSelector, useDispatch } from "react-redux";
 import { addCart, delCart } from "../redux/action";
 import { Link } from "react-router-dom";
-
+import toast from "react-hot-toast";
 const Cart = () => {
   const state = useSelector((state) => state.handleCart);
   const dispatch = useDispatch();
@@ -24,8 +24,27 @@ const Cart = () => {
   };
 
   const addItem = (product) => {
+    let cartMsg = localStorage.getItem("cart-msg") || "0"; 
+    cartMsg = parseInt(cartMsg); 
+
+    let exist = state.find((item) => item.id_book === product.id_book);
+    
+    if (exist) {
+      if (exist.qty >= product.stock) {
+        cartMsg += 1;
+        localStorage.setItem("cart-msg", cartMsg.toString());
+        if (cartMsg >= 1) {
+          toast.error("Out of stock");
+        }
+        return;
+      }
+    }
     dispatch(addCart(product));
+    localStorage.setItem("cart-msg", "0"); 
+    toast.success("Added to cart");
   };
+  
+
   const removeItem = (product) => {
     dispatch(delCart(product));
   };
@@ -36,7 +55,6 @@ const Cart = () => {
     let totalSavings = 0;
     let shipping = 0;
     let totalItems = 0;
-    const vatRate = 0.10; // 10% VAT
 
     state.map((item) => {
       const originalItemTotal = parseInt(item.price * item.qty);
@@ -49,8 +67,8 @@ const Cart = () => {
     });
 
     // Calculate VAT
-    const vatAmount = Math.round(discountedSubtotal * vatRate);
-    const finalTotal = discountedSubtotal + shipping + vatAmount;
+
+    const finalTotal = discountedSubtotal + shipping ;
 
     return (
       <>
@@ -210,10 +228,6 @@ const Cart = () => {
                         <span>{shipping.toLocaleString("vi-VN")}<sup>₫</sup></span>
                       </li>
 
-                      <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                        VAT (10%)
-                        <span>{vatAmount.toLocaleString("vi-VN")}<sup>₫</sup></span>
-                      </li>
 
                       <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
 
