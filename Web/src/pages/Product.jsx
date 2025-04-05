@@ -2,15 +2,17 @@ import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { Link, useParams } from "react-router-dom";
 import Marquee from "react-fast-marquee";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { addCart } from "../redux/action";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Footer, Navbar } from "../components";
 import { getProductbyID, getProductbyGenre } from "../services/apiService";
 import fiction from '../assets/images/Fiction.png';
 import education from '../assets/images/Education.png';
+import toast from "react-hot-toast";
 
 const Product = () => {
+  const state = useSelector((state) => state.handleCart);
   const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
   const { id } = useParams();
   const [product, setProduct] = useState([]);
@@ -21,7 +23,24 @@ const Product = () => {
   const dispatch = useDispatch();
 
   const addProduct = (product) => {
+    let cartMsg = localStorage.getItem("cart-msg") || "0"; 
+    cartMsg = parseInt(cartMsg); 
+
+    let exist = state.find((item) => item.id_book === product.id_book);
+    
+    if (exist) {
+      if (exist.qty >= product.stock) {
+        cartMsg += 1;
+        localStorage.setItem("cart-msg", cartMsg.toString());
+        if (cartMsg >= 1) {
+          toast.error("Out of stock");
+        }
+        return;
+      }
+    }
     dispatch(addCart(product));
+    localStorage.setItem("cart-msg", "0"); 
+    toast.success("Added to cart");
   };
 
   useEffect(() => {
@@ -80,6 +99,8 @@ const Product = () => {
       <div className="col-md-6 py-5">
         <h4 className="text-uppercase text-muted">{product.genre}</h4>
         <h1 className="display-5">{product.book_name}</h1>
+        <p className="lead fw-bold text-secondary">Author: {product.author}</p>
+        <p className="lead fw-bold text-secondary">Stock: {product.stock}</p>
         <p className="lead">
           {product.rating && product.rating.rate}{" "}
           <i className="fa fa-star text-warning"></i> 4.5 (10)

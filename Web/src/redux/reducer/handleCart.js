@@ -13,14 +13,19 @@ const handleCart = (state = getInitialCart(), action) => {
       // Check if product already in cart
       const exist = state.find((x) => x.id_book === product.id_book);
       if (exist) {
-        // Increase the quantity
-        updatedCart = state.map((x) =>
-          x.id_book === product.id_book ? { ...x, qty: x.qty + 1 } : x
-        );
+        if(exist.qty >= product.stock) { 
+          localStorage.setItem("cart-msg", "1");
+          return state
+        } else {
+          updatedCart = state.map((x) =>
+            x.id_book === product.id_book ? { ...x, qty: x.qty + 1, price: product.price } : x
+          );
+          localStorage.setItem("cart-msg", "0");
+        }
       } else {
-        updatedCart = [...state, { ...product, qty: 1 }];
+        updatedCart = [...state, { ...product, qty: 1, price: product.price  }];
+        localStorage.setItem("cart-msg", "0");
       }
-      // Update localStorage
       localStorage.setItem("cart", JSON.stringify(updatedCart));
       return updatedCart;
 
@@ -30,10 +35,10 @@ const handleCart = (state = getInitialCart(), action) => {
         updatedCart = state.filter((x) => x.id_book !== exist2.id_book);
       } else {
         updatedCart = state.map((x) =>
-          x.id_book === product.id_book ? { ...x, qty: x.qty - 1 } : x
+          x.id_book === product.id_book ? { ...x, qty: x.qty - 1, price: product.price  } : x
         );
       }
-      // Update localStorage
+      localStorage.setItem("cart-msg", "0");
       localStorage.setItem("cart", JSON.stringify(updatedCart));
       return updatedCart;
     
