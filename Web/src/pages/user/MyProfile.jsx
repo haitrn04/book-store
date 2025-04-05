@@ -270,8 +270,6 @@ const MyProfile = () => {
     }
   };
   
- 
-
   return (
     <>
       <style>{`
