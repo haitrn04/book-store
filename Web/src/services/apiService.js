@@ -49,6 +49,25 @@ const getProducts = () => {
     return axios.get('http://localhost:3005/products/getproducts');
 };
 
+const getCountUser = () => {
+    return axios.get('http://localhost:3005/accounts/getCountUser');
+};
+const getTotalOrders = () => {
+    return axios.get('http://localhost:3005/order/getTotalOrders');
+}
+const getTotalSales = () => {
+    return axios.get('http://localhost:3005/order/getTotalSales');
+}
+
+const getPendingOrders = () => {
+    return axios.get('http://localhost:3005/order/getPendingOrders');
+}
+
+const getRecentTransactions = () =>{
+    return axios.get('http://localhost:3005/order/getRecentTransactions');
+}
+
+
 const getProductbyID = (id_book) => {
     return axios.get(`http://localhost:3005/products/getproductbyid/?id_book=${id_book}`);
 }
@@ -143,5 +162,5 @@ export {
     getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress,
     editInfor, addOrderAndOrderDetail, addreview, deleteReview, getBookReviewbyID, sendmail,
     getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus, getOrderByID, getOrderByAccountID,
-    postPayment, postOrderStatus
+    postPayment, postOrderStatus, getCountUser, getTotalOrders, getTotalSales, getPendingOrders, getRecentTransactions
 };

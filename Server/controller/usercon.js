@@ -27,7 +27,8 @@ pool.connect((err, connection) => {
 const usercon = {
     getAccounts: async (req, res) => {
         try {
-            let sql = `SELECT id_account, email, encode(image_data, 'base64') AS image_data, role, full_name, phone_num, gender, birthday FROM accounts;`;
+            let sql = `SELECT id_account, email, encode(image_data, 'base64') AS image_data, role, full_name, phone_num, gender, birthday
+             FROM accounts;`;
             const data = await pool.query(sql);
             res.status(200).json(data.rows);
         } catch (err) {
@@ -43,6 +44,19 @@ const usercon = {
         } catch (err) {
             console.error(err);
             res.sendStatus(500);
+        }
+    },
+    getCountUser: async (req, res) => {
+        const client = await pool.connect();
+        try {
+            const result = await client.query(`SELECT count(id_account) FROM accounts;`);
+            const total_user = parseInt(result.rows[0].count, 10);
+            res.status(200).json({ total_user });
+        } catch (error) {
+            console.error("Error getting total orders:", error);
+            res.status(500).json({ error: "Internal Server Error" });
+        } finally {
+            client.release();
         }
     },
     insertAccounts: async (req, res) => {

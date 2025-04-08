@@ -131,6 +131,85 @@ const ordercon = {
             client.release(); // Đảm bảo client được giải phóng dù có lỗi hay không
         }
     },
+    getTotalOrders: async (req, res) => {
+        const client = await pool.connect();
+        try {
+            const result = await client.query(`SELECT COUNT(*) FROM public.orders`);
+            const total = parseInt(result.rows[0].count, 10);
+            res.status(200).json({ total });
+        } catch (error) {
+            console.error("Error getting total orders:", error);
+            res.status(500).json({ error: "Internal Server Error" });
+        } finally {
+            client.release();
+        }
+    },
+    getTotalSales: async (req, res) => {
+        const client = await pool.connect();
+        try {
+            const result = await client.query(`SELECT SUM(total_price) AS total_sales FROM public.orders`);
+            const total_sales = parseInt(result.rows[0].total_sales, 10);
+            res.status(200).json({ total_sales });
+        } catch (error) {
+            console.error("Error getting total sales:", error);
+            res.status(500).json({ error: "Internal Server Error" });
+        } finally {
+            client.release();
+        }
+    },        
+    getPendingOrders: async (req, res) => {
+        const client = await pool.connect();
+        try {
+            const result = await client.query(`
+                SELECT COUNT(*) AS total_pending_orders
+                FROM public.orders
+                WHERE payment_status = 'pending'
+            `);  
+            const total_pending_orders = parseInt(result.rows[0].total_pending_orders, 10);
+            if (isNaN(total_pending_orders)) {
+                return res.status(500).json({ error: "Invalid data returned from database" });
+            }
+    
+            res.status(200).json({ total_pending_orders });
+        } catch (error) {
+            console.error("Error getting pending orders:", error);
+            res.status(500).json({ error: "Internal Server Error" });
+        } finally {
+            client.release();
+        }
+    },
+    
+    getRecentTransactions: async (req, res) => {
+        const client = await pool.connect();
+        try {
+            const sql = `
+                SELECT 
+                b.book_name as product,
+                ad.detailed_address AS location,
+                TO_CHAR(o.created_at, 'YYYY-MM-DD') AS date,
+                od.quantity,
+                o.total_price AS amount,
+                o.payment_status as status
+            FROM 
+                orders o
+            JOIN 
+                order_details od ON o.id_order = od.id_order
+ 			JOIN
+			 	books b ON b.id_book = od.id_book
+			JOIN
+				address ad ON ad.address_id = o. address_id
+            ;
+            `;
+    
+            const result = await client.query(sql);
+            res.status(200).json(result.rows);
+        } catch (error) {
+            console.error('Error fetching transactions:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            client.release();
+        }
+    },
     getOrderByAccountID: async (req, res) => {
         const client = await pool.connect();
         try {
