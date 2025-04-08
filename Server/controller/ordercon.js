@@ -14,7 +14,6 @@ const ordercon = {
             for (const detail of order_details) {
                 total_price += parseInt(detail.qty * detail.price * (100 - detail.discount) / 100, 10);
             }
-            total_price = parseInt(total_price * 1.1);
             const orderQuery = `
                 INSERT INTO public.orders (id_account, total_price, address_id, payment_status, order_status, created_at)
                 VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING id_order;
@@ -26,9 +25,16 @@ const ordercon = {
                 INSERT INTO public.order_details (id_order, id_book, quantity)
                 VALUES ($1, $2, $3);
             `;
+            const updateStockQuery = `
+            UPDATE public.books 
+            SET stock = stock - $1
+            WHERE id_book = $2 AND stock >= $1;
+        `;
             for (const detail of order_details) {
                 const detailValues = [id_order, detail.id_book, detail.qty];
                 await client.query(orderDetailQuery, detailValues);
+                const updateValues = [detail.qty, detail.id_book];
+                const updateResult = await client.query(updateStockQuery, updateValues);
             }
             await client.query("COMMIT");
             res.status(200).json({ message: "Order added successfully", id_order, total_price });

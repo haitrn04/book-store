@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { addCart } from "../redux/action";
 
 import Skeleton from "react-loading-skeleton";
@@ -7,9 +7,10 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { getProducts, getGenre } from "../services/apiService";
+import { getProductsIfExist, getGenre } from "../services/apiService";
 
 const Products = () => {
+  const state = useSelector((state) => state.handleCart);
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState(data);
   const [loading, setLoading] = useState(false);
@@ -19,21 +20,36 @@ const Products = () => {
   const dispatch = useDispatch();
 
   const addProduct = (product) => {
+    let cartMsg = localStorage.getItem("cart-msg") || "0"; 
+    cartMsg = parseInt(cartMsg); 
+
+    let exist = state.find((item) => item.id_book === product.id_book);
+    
+    if (exist) {
+      if (exist.qty >= product.stock) {
+        cartMsg += 1;
+        localStorage.setItem("cart-msg", cartMsg.toString());
+        if (cartMsg >= 1) {
+          toast.error("Out of stock");
+        }
+        return;
+      }
+    }
     dispatch(addCart(product));
+    localStorage.setItem("cart-msg", "0"); 
+    toast.success("Added to cart");
   };
 
   useEffect(() => {
     const getListProducts = async () => {
       setLoading(true);
-      const response = await getProducts(); // Assuming getProducts returns an axios response
+      const response = await getProductsIfExist(); 
       if (componentMounted) {
-        setData(response.data);  // No need to use response.json(), just use response.data
-        setFilter(response.data); // Same here, use response.data
+        setData(response.data);  
+        setFilter(response.data); 
         setLoading(false);
       }
-
       return () => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         componentMounted = false;
       };
     };
@@ -161,7 +177,6 @@ const Products = () => {
                 <button
                   className="btn btn-dark m-1"
                   onClick={() => {
-                    toast.success("Added to cart");
                     addProduct(product);
                   }}
                 >

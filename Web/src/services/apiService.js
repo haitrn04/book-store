@@ -48,6 +48,9 @@ const getProductbyGenre = (id_genre) => {
 const getProducts = () => {
     return axios.get('http://localhost:3005/products/getproducts');
 };
+const getProductsIfExist = () => {
+    return axios.get('http://localhost:3005/products/getProductsIfExist');
+};
 
 const getCountUser = () => {
     return axios.get('http://localhost:3005/accounts/getCountUser');
@@ -87,6 +90,9 @@ const editInfor = (formData) => {
         }
     });
 };
+const getAccountbyName = (full_name) => {
+    return axios.get(`http://localhost:3005/accounts/getusername/?full_name=${full_name}`);
+}
 const postAddress = (formData) => {
     return axios.post('http://localhost:3005/address/addaddress', formData, {
         headers: {
@@ -162,5 +168,5 @@ export {
     getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress,
     editInfor, addOrderAndOrderDetail, addreview, deleteReview, getBookReviewbyID, sendmail,
     getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus, getOrderByID, getOrderByAccountID,
-    postPayment, postOrderStatus, getCountUser, getTotalOrders, getTotalSales, getPendingOrders, getRecentTransactions
+    postPayment, postOrderStatus
 };

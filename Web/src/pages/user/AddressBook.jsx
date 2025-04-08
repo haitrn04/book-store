@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Footer, Navbar } from "../../components";
 import {
   FaUsers,
-  FaSignOutAlt,
   FaAddressCard,
   FaCartPlus,
   FaUser,

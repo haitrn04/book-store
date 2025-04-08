@@ -19,8 +19,6 @@ const axios = require('axios').default; // npm install axios
 const CryptoJS = require('crypto-js'); // npm install crypto-js
 const moment = require('moment'); // npm install moment
 const qs = require('qs');
-const { log } = require('console');
-const { json } = require('stream/consumers');
 
 //routes
 app.use(express.json({ limit: '50mb' }));
