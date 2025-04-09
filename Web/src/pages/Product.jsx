@@ -81,7 +81,13 @@ const Product = () => {
       </>
     );
   };
-
+  const isactive = (is_active) => {
+    if (is_active){
+      return product.stock;
+    } else {
+      return "Out of stock";
+    }
+  }
   const ShowProduct = () => {
     return (
 <>
@@ -100,7 +106,7 @@ const Product = () => {
         <h4 className="text-uppercase text-muted">{product.genre}</h4>
         <h1 className="display-5">{product.book_name}</h1>
         <p className="lead fw-bold text-secondary">Author: {product.author}</p>
-        <p className="lead fw-bold text-secondary">Stock: {product.stock}</p>
+        <p className="lead fw-bold text-secondary">Stock: {isactive(product.is_active)}</p>
         <p className="lead">
           {product.rating && product.rating.rate}{" "}
           <i className="fa fa-star text-warning"></i> 4.5 (10)
@@ -133,7 +139,11 @@ const Product = () => {
         <p className="lead">{product.description}</p>
         <button
           className="btn btn-outline-dark me-3"
-          onClick={() => addProduct(product)}
+          onClick={() => {if (product.is_active){
+            addProduct(product); 
+          }else {
+            toast.error("Out of stock");
+          }}}
         >
           Add to Cart
         </button>

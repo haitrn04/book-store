@@ -168,5 +168,5 @@ export {
     getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress,
     editInfor, addOrderAndOrderDetail, addreview, deleteReview, getBookReviewbyID, sendmail,
     getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus, getOrderByID, getOrderByAccountID,
-    postPayment, postOrderStatus
+    postPayment, postOrderStatus, getProductsIfExist, getCountUser, getTotalOrders, getTotalSales, getPendingOrders, getAccountbyName, getRecentTransactions
 };
