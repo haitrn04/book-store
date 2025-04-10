@@ -9,7 +9,7 @@ let sslConfig = {
     },
 };
 
-const caPath = path.join(__dirname, 'ca.pem');
+const caPath = path.join(__dirname, 'cacert.pem');
 
 try {
     if (fs.existsSync(caPath)) {
