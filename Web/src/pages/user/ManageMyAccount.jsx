@@ -120,7 +120,12 @@ const ManageMyAccount = () => {
     getin4();
     const getaddress = async () => {
       const res = await getAddress(storedUser.id_account);
-      setAddress(res.data[0]);
+      if (res.data) {
+        return null;
+      } else{
+        setAddress(res.data[0]);
+      }
+      
     }
     getaddress();
   }, [storedUser.id_account]);
