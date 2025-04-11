@@ -108,37 +108,22 @@ const Sidebar = () => {
 };
 
 const ManageMyAccount = () => {
-  const [user, setUser] = useState(null); 
-  const [address, setAddress] = useState(null); 
-  const storedUser = JSON.parse(sessionStorage.getItem("user"))?.data;
-
+  const [user, setUser] = useState([]);
+  const [address, setAddress] = useState([])
+  const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
   useEffect(() => {
     const getin4 = async () => {
-      try {
-        const response = await getInfor(storedUser.id_account);
-        setUser(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching user info:", error);
+      const response = await getInfor(storedUser.id_account);
+      setUser(response.data[0]);
       }
-    };
-
-    const getaddress = async () => {
-      try {
+      getin4();
+      const getaddress = async () => {
         const res = await getAddress(storedUser.id_account);
         setAddress(res.data[0]);
-      } catch (error) {
-        console.error("Error fetching address:", error);
       }
-    };
-
-    if (storedUser?.id_account) {
-      getin4();
       getaddress();
-    }
-  }, [storedUser?.id_account]); // Added optional chaining for safety
-
-  // Only format birthday if user data is available
-  const formatbth = user?.birthday ? moment(user.birthday).format("DD/MM/YYYY") : "N/A";
+    }, [storedUser.id_account]);
+  const formatbth = moment(user.birthday).format("DD/MM/YYYY")
 
   return (
     <>
