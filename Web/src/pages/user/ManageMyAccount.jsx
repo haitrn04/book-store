@@ -4,7 +4,7 @@ import { FaUsers, FaAddressCard, FaCartPlus, FaUser } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 import { getInfor, getAddress } from "../../services/apiService";
-const moment = require('moment');
+const moment = require("moment");
 
 const Sidebar = () => {
   return (
@@ -108,70 +108,40 @@ const Sidebar = () => {
 };
 
 const ManageMyAccount = () => {
-  const [user, setUser] = useState([]);
-  const [address, setAddress] = useState([]);
-  const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
+  const [user, setUser] = useState(null); 
+  const [address, setAddress] = useState(null); 
+  const storedUser = JSON.parse(sessionStorage.getItem("user"))?.data;
 
   useEffect(() => {
     const getin4 = async () => {
-      const response = await getInfor(storedUser.id_account);
-      setUser(response.data[0]);
-    }
-    getin4();
-    const getaddress = async () => {
-      const res = await getAddress(storedUser.id_account);
-      setAddress(res.data[0]);
-    }
-    getaddress();
-  }, [storedUser.id_account]);
+      try {
+        const response = await getInfor(storedUser.id_account);
+        setUser(response.data[0]);
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
+    };
 
-  const formatbth = moment(user.birthday).format("DD/MM/YYYY");
+    const getaddress = async () => {
+      try {
+        const res = await getAddress(storedUser.id_account);
+        setAddress(res.data[0]);
+      } catch (error) {
+        console.error("Error fetching address:", error);
+      }
+    };
+
+    if (storedUser?.id_account) {
+      getin4();
+      getaddress();
+    }
+  }, [storedUser?.id_account]); // Added optional chaining for safety
+
+  // Only format birthday if user data is available
+  const formatbth = user?.birthday ? moment(user.birthday).format("DD/MM/YYYY") : "N/A";
 
   return (
     <>
-      <style>{`
-        /* Sidebar responsive */
-        @media (max-width: 768px) {
-          .Sidebar {
-            width: 100%;
-            height: auto;
-            position: relative;
-            top: 0;
-            margin-bottom: 20px;
-          }
-
-          .nav-link {
-            padding: 10px 0;
-          }
-
-          .col-md-3, .col-md-9 {
-            flex: 0 0 100%;
-            max-width: 100%;
-          }
-
-          /* Đảm bảo Footer không bị che bởi sidebar trên mobile */
-          footer {
-            margin-bottom: 70px !important;
-          }
-
-          /* Remove any default body margin/padding that might cause whitespace */
-          body {
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-
-          /* Stack Personal Profile and Address Book vertically on mobile */
-          .profile-address-container {
-            flex-direction: column !important;
-          }
-
-          .personal-profile-card, .address-book-card {
-            width: 100% !important; /* Full width on mobile */
-            margin-left: 0 !important; /* Remove left margin */
-            margin-bottom: 20px; /* Add spacing between cards */
-          }
-        }
-      `}</style>
       <Navbar user={storedUser} />
       <div className="container py-4" style={{ paddingBottom: "100px" }}>
         <div className="row">
@@ -181,20 +151,32 @@ const ManageMyAccount = () => {
           <div className="col-md-9">
             <h2 style={{ marginTop: "30px" }}>Manage My Account</h2>
             <br />
-            <div className="profile-address-container" style={{ display: "flex" ,  gap: "50px" }}>
+            <div className="profile-address-container" style={{ display: "flex", gap: "50px" }}>
               <div className="personal-profile-card card shadow-sm p-3" style={{ width: "35%" }}>
                 <p style={{ fontSize: "23px" }}>Personal Profile</p>
-                <div><p><strong>Name: </strong> {user.full_name}</p></div>
-                <div><p><strong>Email: </strong> {user.email}</p></div>
-                <div><p><strong>Phone Number: </strong>0{user.phone_num} </p></div>
-                <div><p><strong>Birthday: </strong>{formatbth}</p></div>
+                {user ? (
+                  <>
+                    <div><p><strong>Name: </strong> {user.full_name || "N/A"}</p></div>
+                    <div><p><strong>Email: </strong> {user.email || "N/A"}</p></div>
+                    <div><p><strong>Phone Number: </strong> {user.phone_num ? `0${user.phone_num}` : "N/A"}</p></div>
+                    <div><p><strong>Birthday: </strong> {formatbth}</p></div>
+                  </>
+                ) : (
+                  <p>Loading profile...</p>
+                )}
               </div>
               <div className="address-book-card card shadow-sm p-3" style={{ width: "60%" }}>
                 <p style={{ fontSize: "23px" }}>Address Book</p>
                 <p style={{ fontSize: "14px" }}>DEFAULT SHIPPING ADDRESS</p>
-                <p><strong>Name: </strong> {address.full_name}</p>
-                <p><strong>Address: </strong> {address.detailed_address}</p>
-                <p><strong>Phone Number: </strong> 0{address.phone_number}</p>
+                {address ? (
+                  <>
+                    <p><strong>Name: </strong> {address.full_name || "N/A"}</p>
+                    <p><strong>Address: </strong> {address.detailed_address || "N/A"}</p>
+                    <p><strong>Phone Number: </strong> {address.phone_number ? `0${address.phone_number}` : "N/A"}</p>
+                  </>
+                ) : (
+                  <p>Loading address...</p>
+                )}
               </div>
             </div>
             <div className="card shadow-sm p-4 mt-4">
