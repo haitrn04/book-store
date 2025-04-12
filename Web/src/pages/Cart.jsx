@@ -272,6 +272,7 @@ const Cart = () => {
         {state.length > 0 ? <ShowCart /> : <EmptyCart />}
       </div>
       <Footer />
+      
     </>
   );
 };

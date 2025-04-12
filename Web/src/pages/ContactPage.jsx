@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React from "react";
-import { Footer, Navbar } from "../components";
+import { Footer, Navbar, Chat } from "../components";
 
 const ContactPage = () => {
   const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data || null;
@@ -132,6 +132,7 @@ const ContactPage = () => {
         </div>
       </div>
       <Footer />
+      <Chat/>
     </>
   );
 };

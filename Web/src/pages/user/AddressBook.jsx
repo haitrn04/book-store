@@ -83,6 +83,7 @@ const Sidebar = () => {
 const AddressBook = () => {
   const [address, setAddress] = useState([]);
   const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
+  // Lấy thông tin địa chỉ từ API
 
   useEffect(() => {
     const getaddress = async () => {
@@ -157,6 +158,8 @@ const AddressBook = () => {
       phone_number: address[index]?.phone_number || "",
       detailed_address: address[index]?.detailed_address || "",
       province: `${address[index]?.province_code || ""},${address[index]?.province || ""}`.replace(/^,|,$/g, ""),
+      // province: `${address[index]?.province_code || ""},${address[index]?.province || ""}`.replace(/^,|,$/g, "") 
+      // ý nghiã là nếu province_code hoặc province là undefined thì sẽ trả về "" và nếu không thì sẽ trả về giá trị của nó
       district: `${address[index]?.district_code || ""},${address[index]?.district || ""}`.replace(/^,|,$/g, ""),
       ward: `${address[index]?.ward_code || ""},${address[index]?.ward || ""}`.replace(/^,|,$/g, ""),
     });
@@ -223,7 +226,10 @@ const AddressBook = () => {
       const response = await postAddress(newAddress);
       if (response.data && response.data.address_id) {
         setAddress([...address, { ...newAddress, address_id: response.data.address_id }]);
-      } else {
+      }
+      // Kiểm tra xem response.data có chứa address_id không
+      // tiếp theo là thêm địa chỉ mới vào danh sách địa chỉ
+       else {
         console.error("Error: API response does not contain address_id");
       }
 
@@ -252,12 +258,17 @@ const AddressBook = () => {
 
       const updatedData = {
         ...address[editingIndex],
-        // ...address[editingIndex] // Giữ nguyên các trường không thay đổi
+        // Giữ nguyên các trường không thay đổi
         ...editedAddress,
+        // Thay thế các trường đã chỉnh sửa 
 
         id_account: storedUser?.id_account || address[editingIndex].id_account,
+        // id_account: storedUser.id_account lưu là id_account của người dùng hiện tại
+        // address_id: address[editingIndex].address_id, // Không cần thay đổi
         address_id: address[editingIndex].address_id,
         full_name: editedAddress.full_name || address[editingIndex].full_name,
+        // editedAddress.full_name là tên đầy đủ của địa chỉ hiện tại        
+        // address[editingIndex].full_name là tên đầy đủ của địa chỉ hiện tại
         phone_number: editedAddress.phone_number || address[editingIndex].phone_number,
         detailed_address: editedAddress.detailed_address || address[editingIndex].detailed_address,
         province: editedAddress.province.split(',')[1] || address[editingIndex].province,
