@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Footer, Navbar } from "../../components";
+import { Footer, Navbar,Loading } from "../../components";
 import {
   FaUsers,
   FaSearch,
@@ -355,14 +355,14 @@ const OrderItem = ({ order, onView, onReview, onCancel }) => {
               orderInfo.order_status === "processing"
                 ? "#99FF99"
                 : orderInfo.order_status === "shipped"
-                ? "#CCCC00"
-                : orderInfo.order_status === "pending"
-                ? "#99FF99"
-                : orderInfo.order_status === "delivered"
-                ? "#00FFFF"
-                : orderInfo.order_status === "cancelled"
-                ? "#FAEBD7"
-                : "#f0f0f0",
+                  ? "#CCCC00"
+                  : orderInfo.order_status === "pending"
+                    ? "#99FF99"
+                    : orderInfo.order_status === "delivered"
+                      ? "#00FFFF"
+                      : orderInfo.order_status === "cancelled"
+                        ? "#FAEBD7"
+                        : "#f0f0f0",
             border: "none",
             padding: "5px 10px",
             borderRadius: "15px",
@@ -371,14 +371,14 @@ const OrderItem = ({ order, onView, onReview, onCancel }) => {
           {orderInfo.order_status === "processing"
             ? "processing"
             : orderInfo.order_status === "shipped"
-            ? "shipped"
-            : orderInfo.order_status === "pending"
-            ? "pending"
-            : orderInfo.order_status === "delivered"
-            ? "delivered"
-            : orderInfo.order_status === "cancelled"
-            ? "cancelled"
-            : "unknown"}
+              ? "shipped"
+              : orderInfo.order_status === "pending"
+                ? "pending"
+                : orderInfo.order_status === "delivered"
+                  ? "delivered"
+                  : orderInfo.order_status === "cancelled"
+                    ? "cancelled"
+                    : "unknown"}
         </button>
       </div>
 
@@ -478,6 +478,7 @@ const MyOrder = () => {
   const [reviewOrder, setReviewOrder] = useState(null); // Đơn hàng được chọn để đánh giá
   const [loading, setLoading] = useState(true); // Trạng thái loading
   const [showConfirmCancel, setShowConfirmCancel] = useState(null); // Trạng thái hiển thị modal xác nhận hủy
+  const [isLoading, setIsLoading] = useState(false);
 
   // --- Lấy thông tin người dùng từ sessionStorage ---
   const storedUser = JSON.parse(sessionStorage.getItem("user"))?.data;
@@ -485,13 +486,9 @@ const MyOrder = () => {
 
   // --- Hàm lấy dữ liệu đơn hàng từ API ---
   const fetchOrders = async () => {
-    if (!accountId) {
-      console.error("Không tìm thấy ID tài khoản trong session storage");
-      setLoading(false);
-      return;
-    }
 
     try {
+      setIsLoading(true);
       const response = await getOrderByAccountID(accountId);
       console.log("Dữ liệu thô từ API:", response);
 
@@ -513,14 +510,14 @@ const MyOrder = () => {
       console.error("Lỗi khi lấy danh sách đơn hàng:", error);
       setOrders([]);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   // --- Gọi API khi component mount ---
   useEffect(() => {
     fetchOrders();
-  }, [accountId, fetchOrders]);
+  }, []);
 
   // --- Hàm xử lý hủy đơn hàng ---
   const handleCancelOrder = (orderId) => {
@@ -591,14 +588,14 @@ const MyOrder = () => {
   // --- Lọc đơn hàng theo từ khóa tìm kiếm ---
   const filteredOrders = Array.isArray(orders)
     ? orders.filter((order) => {
-        const lowerQuery = searchQuery.toLowerCase();
-        const firstDetail = order.order_details?.[0] || {};
-        return (
-          "Book Store".toLowerCase().includes(lowerQuery) ||
-          (order.order?.id_order?.toString().toLowerCase() || "").includes(lowerQuery) ||
-          (firstDetail.book_name || "").toLowerCase().includes(lowerQuery)
-        );
-      })
+      const lowerQuery = searchQuery.toLowerCase();
+      const firstDetail = order.order_details?.[0] || {};
+      return (
+        "Book Store".toLowerCase().includes(lowerQuery) ||
+        (order.order?.id_order?.toString().toLowerCase() || "").includes(lowerQuery) ||
+        (firstDetail.book_name || "").toLowerCase().includes(lowerQuery)
+      );
+    })
     : [];
 
   // --- Giao diện chính ---
@@ -913,8 +910,12 @@ const MyOrder = () => {
             </div>
 
             {/* Hiển thị danh sách đơn hàng */}
-            {loading ? (
-              <p>Loading...</p>
+            {isLoading ? (
+              <tr style={{ position: "relative" }}>
+                <td colSpan="8" className="text-center py-4 text-muted">
+                  <Loading isLoading={isLoading} />
+                </td>
+              </tr>
             ) : reviewOrder ? (
               <ReviewModal
                 order={reviewOrder}
