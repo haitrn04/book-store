@@ -8,13 +8,13 @@ const IsAdmin = ({ children }) => {
     useEffect(() => {
         if (!user) {
             navigate("/login");
-        } else if (user.role !== "1") {
+        } else if (user.role !== 1) {
             alert("Không có quyền truy cập");
             navigate("/");
         }
     }, [user, navigate]);
 
-    if (!user || user.role !== "1") return null; // Trả về null nếu không có quyền truy cập
+    if (!user) return null; 
 
     return children;
 };

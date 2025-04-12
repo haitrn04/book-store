@@ -223,7 +223,7 @@ const Navbar = ({ user }) => {
                                                 <FaUser className="me-2" /> My Profile
                                             </NavLink>
                                         </li>
-                                        {user.role === "1" && (
+                                        {user.role == 1 && (
                                             <li>
                                                 <NavLink className="dropdown-item" to="/dashboard">
                                                     <FaStore className="me-2" /> Seller Dashboard
