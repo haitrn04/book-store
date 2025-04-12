@@ -1,5 +1,5 @@
 
-import { Navbar, Main, Product, Footer } from "../components";
+import { Navbar, Main, Product, Footer,Chat } from "../components";
 
 function Home() {
   const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
@@ -13,6 +13,7 @@ function Home() {
       <Main />
       <Product />
       <Footer />
+      <Chat/>
     </>
   );
 }

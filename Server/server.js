@@ -53,6 +53,9 @@ app.use('/order', orderRouter);
 app.use('/products', productRouter);
 app.use('/address', addressRouter);
 app.use('/review', reviewRouter);
+
+
+
 /////////////////////// POST
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
@@ -194,4 +197,48 @@ app.post("/order-status/:app_trans_id", async (req, res) => {
 //     });
 // });
 
+
+// API để gọi Gemini API
+app.post('/api/gemini', async (req, res) => {
+    try {
+        const { prompt } = req.body;
+        const apiKey = process.env.GEMINI_API_KEY; // Lấy API Key từ .env
+
+        const data = {
+            contents: [
+                {
+                    parts: [
+                        {
+                            text: prompt,
+                        },
+                    ],
+                },
+            ],
+        };
+
+        const response = await axios({
+            method: "POST",
+            url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent`,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            params: {
+                key: apiKey,
+            },
+            data: data,
+        });
+
+        res.json(response.data);
+    } catch (error) {
+        console.error("Lỗi khi gọi Gemini API:", error);
+        res.status(500).json({ error: "Lỗi khi tạo phản hồi từ Gemini" });
+    }
+});
+
+
+
 server.listen(port, () => console.log(`Server has started on port: ${port}`));
+
+
+
+

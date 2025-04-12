@@ -240,7 +240,9 @@ const AddressBook = () => {
       console.error("Error saving new address:", error);
     }
   };
+  
 
+  // hàm xử lý cập nhật địa chỉ
   const handleUpdateAddress = async () => {
     try {
       if (editingIndex === null || editingIndex < 0) {
@@ -250,7 +252,9 @@ const AddressBook = () => {
 
       const updatedData = {
         ...address[editingIndex],
+        // ...address[editingIndex] // Giữ nguyên các trường không thay đổi
         ...editedAddress,
+
         id_account: storedUser?.id_account || address[editingIndex].id_account,
         address_id: address[editingIndex].address_id,
         full_name: editedAddress.full_name || address[editingIndex].full_name,
@@ -473,7 +477,7 @@ const AddressBook = () => {
                   </button>
                   <button
                     className="btn btn-primary"
-                    style={{ width: "100px", backgroundColor: "#ff7a00", color: "#fff" }}
+                    style={{ width: "100px", backgroundColor: "007fff", color: "007fff" }}
                     onClick={handleSaveClick}
                   >
                     Save
