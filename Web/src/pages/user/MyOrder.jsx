@@ -154,7 +154,7 @@ const OrderDetailModal = ({ order, onClose }) => {
                           />
                         </td>
                         <td>{item.book_name}</td>
-                        <td>{item.price.toLocaleString()} $</td>
+                        <td>{item.price.toLocaleString()} VND</td>
                         <td>{item.quantity}</td>
                         <td>{(item.price * item.quantity).toLocaleString()} VND</td>
                       </tr>
@@ -620,7 +620,9 @@ const MyOrder = () => {
           return (
             "Book Store".toLowerCase().includes(lowerQuery) ||
             (order.order?.id_order?.toString().toLowerCase() || "").includes(lowerQuery) ||
-            (firstDetail.book_name || "").toLowerCase().includes(lowerQuery)
+            (firstDetail.book_name || "").toLowerCase().includes(lowerQuery) ||
+            // Tìm kiếm theo tổng giá đơn hàng
+            (order.order?.total_price?.toString().toLowerCase() || "").includes(lowerQuery)
           );
         })
         .filter((order) => {
