@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Footer, Navbar,Loading } from "../../components";
+import { Footer, Navbar } from "../../components";
 import {
   FaUsers,
   FaSearch,
@@ -78,7 +78,8 @@ const Sidebar = () => {
       </div>
     </>
   );
-}
+};
+
 // === Component OrderDetailModal (Modal hiển thị chi tiết đơn hàng) ===
 const OrderDetailModal = ({ order, onClose }) => {
   const orderInfo = order.order;
@@ -284,11 +285,7 @@ const ReviewModal = ({ order, onClose, onSubmit }) => {
             <button type="button" className="btn btn-secondary" onClick={onClose}>
               Đóng
             </button>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleSubmit}
-            >
+            <button type="button" className="btn btn-primary" onClick={handleSubmit}>
               Gửi
             </button>
           </div>
@@ -299,86 +296,68 @@ const ReviewModal = ({ order, onClose, onSubmit }) => {
 };
 
 // === Component Mitem (Thanh menu lọc đơn hàng) ===
-// const Mitem = () => {
-//   return (
-//     <div className="thanh-menu" style={{ display: "flex", width: "100%" }}>
-//       <div className="menu1 tr1" style={{ marginRight: "25px" }}>
-//         <p style={{ fontWeight: "bold", borderBottom: "2px solid black" }}>All</p>
-//       </div>
-//       <div className="menu1 tr2" style={{ marginRight: "25px" }}>
-//         <p style={{ fontWeight: "bold" }}>To ship</p>
-//       </div>
-//       <div className="menu1 tr1" style={{ marginRight: "25px" }}>
-//         <p style={{ fontWeight: "bold" }}>To recelve</p>
-//       </div>
-//       <div className="menu1 tr1" style={{ marginRight: "25px" }}>
-//         <p style={{ fontWeight: "bold" }}>To review</p>
-//       </div>
-//     </div>
-//   );
-// };
-
-
-
 const Mitem = ({ activeTab, setActiveTab }) => {
   return (
     <div className="thanh-menu" style={{ display: "flex", width: "100%" }}>
-      <div 
+      <div
         className={`menu1 tr1 ${activeTab === "tr1" ? "active" : ""}`}
-        style={{ marginRight: "25px" }}
-        onClick ={() => setActiveTab("tr1")}
-        >
-        <p 
+        style={{ marginRight: "25px", cursor: "pointer" }}
+        onClick={() => setActiveTab("tr1")}
+      >
+        <p
           style={{
             fontWeight: "bold",
             borderBottom: activeTab === "tr1" ? "2px solid black" : "none",
           }}
-        >All</p>
-      </div>
-      <div 
-        className={`menu1 tr2 ${activeTab === "tr2" ? "active" : ""}`}
-        style={{ marginRight: "25px" }}
-        onClick ={() => setActiveTab("tr2")}
         >
-        <p 
+          All
+        </p>
+      </div>
+      <div
+        className={`menu1 tr2 ${activeTab === "tr2" ? "active" : ""}`}
+        style={{ marginRight: "25px", cursor: "pointer" }}
+        onClick={() => setActiveTab("tr2")}
+      >
+        <p
           style={{
             fontWeight: "bold",
             borderBottom: activeTab === "tr2" ? "2px solid black" : "none",
           }}
-        >To Ship</p>
-      </div>
-      <div 
-        className={`menu1 tr3 ${activeTab === "tr3" ? "active" : ""}`}
-        style={{ marginRight: "25px" }}
-        onClick ={() => setActiveTab("tr3")}
         >
-        <p 
+          To Ship
+        </p>
+      </div>
+      <div
+        className={`menu1 tr3 ${activeTab === "tr3" ? "active" : ""}`}
+        style={{ marginRight: "25px", cursor: "pointer" }}
+        onClick={() => setActiveTab("tr3")}
+      >
+        <p
           style={{
             fontWeight: "bold",
             borderBottom: activeTab === "tr3" ? "2px solid black" : "none",
           }}
-        >To recelve</p>
-      </div>
-      <div 
-        className={`menu1 tr3 ${activeTab === "tr4" ? "active" : ""}`}
-        style={{ marginRight: "25px" }}
-        onClick ={() => setActiveTab("tr4")}
         >
-        <p 
+          To Receive
+        </p>
+      </div>
+      <div
+        className={`menu1 tr4 ${activeTab === "tr4" ? "active" : ""}`}
+        style={{ marginRight: "25px", cursor: "pointer" }}
+        onClick={() => setActiveTab("tr4")}
+      >
+        <p
           style={{
             fontWeight: "bold",
             borderBottom: activeTab === "tr4" ? "2px solid black" : "none",
           }}
-        >To Cancel</p>
+        >
+          To Cancell
+        </p>
       </div>
     </div>
   );
 };
-
-
-
-
-
 
 // === Component OrderItem (Hiển thị từng đơn hàng) ===
 const OrderItem = ({ order, onView, onReview, onCancel }) => {
@@ -416,14 +395,14 @@ const OrderItem = ({ order, onView, onReview, onCancel }) => {
               orderInfo.order_status === "processing"
                 ? "#99FF99"
                 : orderInfo.order_status === "shipped"
-                  ? "#CCCC00"
-                  : orderInfo.order_status === "pending"
-                    ? "#99FF99"
-                    : orderInfo.order_status === "delivered"
-                      ? "#00FFFF"
-                      : orderInfo.order_status === "cancelled"
-                        ? "#FAEBD7"
-                        : "#f0f0f0",
+                ? "#CCCC00"
+                : orderInfo.order_status === "pending"
+                ? "#99FF99"
+                : orderInfo.order_status === "delivered"
+                ? "#00FFFF"
+                : orderInfo.order_status === "cancelled"
+                ? "#FAEBD7"
+                : "#f0f0f0",
             border: "none",
             padding: "5px 10px",
             borderRadius: "15px",
@@ -432,14 +411,14 @@ const OrderItem = ({ order, onView, onReview, onCancel }) => {
           {orderInfo.order_status === "processing"
             ? "processing"
             : orderInfo.order_status === "shipped"
-              ? "shipped"
-              : orderInfo.order_status === "pending"
-                ? "pending"
-                : orderInfo.order_status === "delivered"
-                  ? "delivered"
-                  : orderInfo.order_status === "cancelled"
-                    ? "cancelled"
-                    : "unknown"}
+            ? "shipped"
+            : orderInfo.order_status === "pending"
+            ? "pending"
+            : orderInfo.order_status === "delivered"
+            ? "delivered"
+            : orderInfo.order_status === "cancelled"
+            ? "cancelled"
+            : "unknown"}
         </button>
       </div>
 
@@ -539,11 +518,7 @@ const MyOrder = () => {
   const [reviewOrder, setReviewOrder] = useState(null); // Đơn hàng được chọn để đánh giá
   const [loading, setLoading] = useState(true); // Trạng thái loading
   const [showConfirmCancel, setShowConfirmCancel] = useState(null); // Trạng thái hiển thị modal xác nhận hủy
-<<<<<<< HEAD
-  const [activeTab, setActiveTab] = useState("tr1"); // Tab hiện tại (Tất cả, Đang xử lý, Đã giao, Đã hủy)
-=======
-  const [isLoading, setIsLoading] = useState(false);
->>>>>>> 640178cb32538d409808dc8f930081952da68713
+  const [activeTab, setActiveTab] = useState("tr1"); // Thêm state activeTab để quản lý tab đang chọn
 
   // --- Lấy thông tin người dùng từ sessionStorage ---
   const storedUser = JSON.parse(sessionStorage.getItem("user"))?.data;
@@ -551,21 +526,21 @@ const MyOrder = () => {
 
   // --- Hàm lấy dữ liệu đơn hàng từ API ---
   const fetchOrders = async () => {
+    if (!accountId) {
+      console.error("Không tìm thấy ID tài khoản trong session storage");
+      setLoading(false);
+      return;
+    }
 
     try {
-      setIsLoading(true);
       const response = await getOrderByAccountID(accountId);
       console.log("Dữ liệu thô từ API:", response);
 
       let ordersArray = [];
       if (Array.isArray(response)) {
         ordersArray = response;
-      }
-      //  else if (response && response.data && Array.isArray(response.data)) {
-      //   ordersArray = response.data;
-      // }
-      else{
-        ordersArray = response.data;
+      } else {
+        ordersArray = response.data || [];
       }
 
       setOrders(ordersArray);
@@ -573,16 +548,15 @@ const MyOrder = () => {
       console.error("Lỗi khi lấy danh sách đơn hàng:", error);
       setOrders([]);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   // --- Gọi API khi component mount ---
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [accountId]);
 
-  
   const handleCancelOrder = (orderId) => {
     if (!orderId) {
       alert("Không thể hủy đơn hàng: ID đơn hàng không hợp lệ.");
@@ -590,14 +564,14 @@ const MyOrder = () => {
     }
     setShowConfirmCancel(orderId);
   };
-  
+
   const confirmCancelOrder = async (orderId) => {
     if (!orderId) {
       alert("Không thể hủy đơn hàng: ID đơn hàng không hợp lệ.");
       setShowConfirmCancel(null);
       return;
     }
-  
+
     try {
       await updateOrderStatus(orderId, { order_status: "cancelled" });
       setOrders((prev) =>
@@ -626,49 +600,36 @@ const MyOrder = () => {
   };
 
   const onReview = (order) => {
-    setReviewOrder(order); // Mở modal đánh giá
+    setReviewOrder(order);
   };
 
-  // --- Hàm xử lý xem chi tiết đơn hàng ---
   const onView = (order) => {
-    setSelectedOrder(order); // Mở modal chi tiết đơn hàng
+    setSelectedOrder(order);
   };
 
   const onClose = () => {
-    setSelectedOrder(null); // Đóng modal chi tiết đơn hàng
+    setSelectedOrder(null);
   };
 
-  // --- Lọc đơn hàng theo từ khóa tìm kiếm ---
+  // --- Lọc đơn hàng theo từ khóa tìm kiếm và tab đang chọn ---
   const filteredOrders = Array.isArray(orders)
-<<<<<<< HEAD
     ? orders
-      .filter((order) => {
-        const lowerQuery = searchQuery.toLowerCase();
-        const firstDetail = order.order_details?.[0] || {};
-        return (
-          "Book Store".toLowerCase().includes(lowerQuery) ||
-          (order.order?.id_order?.toString().toLowerCase() || "").includes(lowerQuery) ||
-          (firstDetail.book_name || "").toLowerCase().includes(lowerQuery)
-        );
-      })
-      .filter((order) => {
-        if (activeTab === "tr1") return true; // Tất cả đơn hàng
-        if (activeTab === "tr2") return order.order.order_status === "shipped"; // Đơn hàng đang xử lý
-        if (activeTab === "tr3") return order.order.order_status === "delivered"; // Đơn hàng đã giao
-        if (activeTab === "tr4") return order.order.order_status === "cancelled"; // Đơn hàng đã giao
-        return true;
-      })
-=======
-    ? orders.filter((order) => {
-      const lowerQuery = searchQuery.toLowerCase();
-      const firstDetail = order.order_details?.[0] || {};
-      return (
-        "Book Store".toLowerCase().includes(lowerQuery) ||
-        (order.order?.id_order?.toString().toLowerCase() || "").includes(lowerQuery) ||
-        (firstDetail.book_name || "").toLowerCase().includes(lowerQuery)
-      );
-    })
->>>>>>> 640178cb32538d409808dc8f930081952da68713
+        .filter((order) => {
+          const lowerQuery = searchQuery.toLowerCase();
+          const firstDetail = order.order_details?.[0] || {};
+          return (
+            "Book Store".toLowerCase().includes(lowerQuery) ||
+            (order.order?.id_order?.toString().toLowerCase() || "").includes(lowerQuery) ||
+            (firstDetail.book_name || "").toLowerCase().includes(lowerQuery)
+          );
+        })
+        .filter((order) => {
+          if (activeTab === "tr1") return true; // Tất cả đơn hàng
+          if (activeTab === "tr2") return order.order.order_status === "shipped"; // Đơn hàng đang xử lý
+          if (activeTab === "tr3") return order.order.order_status === "delivered"; // Đơn hàng đã giao
+          if (activeTab === "tr4") return order.order.order_status === "cancelled"; // Đơn hàng đã giao
+          return true;
+        })
     : [];
 
   // --- Giao diện chính ---
@@ -940,7 +901,7 @@ const MyOrder = () => {
           <div className="col-md-9">
             <h2 style={{ marginTop: "30px" }}>My Order</h2>
             <br />
-            <Mitem activeTab = {activeTab} setActiveTab = {setActiveTab}/>
+            <Mitem activeTab={activeTab} setActiveTab={setActiveTab} />
             <br />
 
             {/* Thanh tìm kiếm */}
@@ -983,20 +944,8 @@ const MyOrder = () => {
             </div>
 
             {/* Hiển thị danh sách đơn hàng */}
-<<<<<<< HEAD
             {loading ? (
-              <p style={{
-                marginLeft: "50%",
-                width: "1000%"
-              }}>Loading...</p>
-=======
-            {isLoading ? (
-              <tr style={{ position: "relative" }}>
-                <td colSpan="8" className="text-center py-4 text-muted">
-                  <Loading isLoading={isLoading} />
-                </td>
-              </tr>
->>>>>>> 640178cb32538d409808dc8f930081952da68713
+              <p style={{ marginLeft: "50%", width: "1000%" }}>Loading...</p>
             ) : reviewOrder ? (
               <ReviewModal
                 order={reviewOrder}
