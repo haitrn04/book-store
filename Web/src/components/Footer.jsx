@@ -76,24 +76,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Newsletter */}
-          <div className="col-md-12 col-lg-4">
-            <h5 className="mb-3 fw-bold text-uppercase text-primary">Stay Updated</h5>
-            <p className="text-light opacity-75 mb-3">
-              Join our community for exclusive offers and the latest book releases.
-            </p>
-            <form className="d-flex gap-2">
-              <input
-                type="email"
-                className="form-control rounded-pill py-2 px-3"
-                placeholder="Enter your email"
-                aria-label="Email for newsletter"
-              />
-              <button className="btn btn-primary rounded-pill px-4" type="submit">
-                Join
-              </button>
-            </form>
-          </div>
+        
         </div>
 
         <hr className="my-4 border-light opacity-25" />

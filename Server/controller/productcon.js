@@ -122,10 +122,9 @@ const productcon = {
     },
     getProductsIfExist: async (req, res) => {
         try {
-            const sql = `SELECT id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, encode(image_data, 'base64') AS image_data, description, is_active FROM books where stock > 0;`;
+            const sql = `SELECT id_book, book_name, id_genre, author, publisher, yopublication, price, discount, stock, encode(image_data, 'base64') AS image_data, description, is_active FROM books where stock > 0 and is_active=True;`;
             const data = await pool.query(sql);
             res.status(200).json(data.rows);
-
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -137,7 +136,6 @@ const productcon = {
             const sql = `SELECT  id_book, book_name, b.id_genre, author, publisher, yopublication, price, discount, stock, genre, encode(image_data, 'base64') AS image_data, description, is_active FROM books as b join genre as g on b.id_genre = g.id_genre WHERE id_book=$1;`;
             const data = await pool.query(sql, [parseInt(id_book)]);
             res.status(200).json(data.rows);
-
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -166,7 +164,7 @@ const productcon = {
     deleteProductbyID: async (req, res) => {
         const { id_book } = req.query;
         try {
-            const sql = `DELETE FROM books WHERE id_book=$1;`;
+            const sql = `UPDATE books SET is_active=False WHERE id_book=$1;`;
             await pool.query(sql, [parseInt(id_book)]);
             res.status(200).json({ message: "Book deleted successfully" });
 

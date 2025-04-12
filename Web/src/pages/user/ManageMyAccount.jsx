@@ -123,7 +123,7 @@ const ManageMyAccount = () => {
       }
       getaddress();
     }, [storedUser.id_account]);
-  const formatbth = moment(user.birthday).format("DD/MM/YYYY")
+  let formatbth = moment(user.birthday).format("DD/MM/YYYY")
 
   return (
     <>
@@ -157,7 +157,7 @@ const ManageMyAccount = () => {
                   <>
                     <p><strong>Name: </strong> {address.full_name || "N/A"}</p>
                     <p><strong>Address: </strong> {address.detailed_address || "N/A"}</p>
-                    <p><strong>Phone Number: </strong> {address.phone_number ? `0${address.phone_number}` : "N/A"}</p>
+                    <p><strong>Phone Number: </strong> {address.phone_number ? `${address.phone_number}` : "N/A"}</p>
                   </>
                 ) : (
                   <p>Loading address...</p>
