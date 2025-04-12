@@ -122,7 +122,7 @@ const getAddress = (id_account) => {
     return axios.get(`http://localhost:3005/address/getaddress/?id_account=${id_account}`);
 }
 const deleteProductbyID = (id_book) => {
-    return axios.delete(`http://localhost:3005/products/deleteproduct/?id_book=${id_book}`)
+    return axios.post(`http://localhost:3005/products/deleteproduct/?id_book=${id_book}`)
 }
 
 const deleteAddress = (address_id) => {
