@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Footer, Navbar } from "../../components";
+import { Footer, Navbar, Loading } from "../../components";
 import {
   FaUsers,
   FaSearch,
@@ -395,14 +395,14 @@ const OrderItem = ({ order, onView, onReview, onCancel }) => {
               orderInfo.order_status === "processing"
                 ? "#99FF99"
                 : orderInfo.order_status === "shipped"
-                ? "#CCCC00"
-                : orderInfo.order_status === "pending"
-                ? "#99FF99"
-                : orderInfo.order_status === "delivered"
-                ? "#00FFFF"
-                : orderInfo.order_status === "cancelled"
-                ? "#FAEBD7"
-                : "#f0f0f0",
+                  ? "#CCCC00"
+                  : orderInfo.order_status === "pending"
+                    ? "#99FF99"
+                    : orderInfo.order_status === "delivered"
+                      ? "#00FFFF"
+                      : orderInfo.order_status === "cancelled"
+                        ? "#FAEBD7"
+                        : "#f0f0f0",
             border: "none",
             padding: "5px 10px",
             borderRadius: "15px",
@@ -411,14 +411,14 @@ const OrderItem = ({ order, onView, onReview, onCancel }) => {
           {orderInfo.order_status === "processing"
             ? "processing"
             : orderInfo.order_status === "shipped"
-            ? "shipped"
-            : orderInfo.order_status === "pending"
-            ? "pending"
-            : orderInfo.order_status === "delivered"
-            ? "delivered"
-            : orderInfo.order_status === "cancelled"
-            ? "cancelled"
-            : "unknown"}
+              ? "shipped"
+              : orderInfo.order_status === "pending"
+                ? "pending"
+                : orderInfo.order_status === "delivered"
+                  ? "delivered"
+                  : orderInfo.order_status === "cancelled"
+                    ? "cancelled"
+                    : "unknown"}
         </button>
       </div>
 
@@ -519,6 +519,7 @@ const MyOrder = () => {
   const [loading, setLoading] = useState(true); // Trạng thái loading
   const [showConfirmCancel, setShowConfirmCancel] = useState(null); // Trạng thái hiển thị modal xác nhận hủy
   const [activeTab, setActiveTab] = useState("tr1"); // Thêm state activeTab để quản lý tab đang chọn
+  const [isLoading, setIsLoading] = useState(true); // Sửa: Khởi tạo true để loading ngay
 
   // --- Lấy thông tin người dùng từ sessionStorage ---
   const storedUser = JSON.parse(sessionStorage.getItem("user"))?.data;
@@ -526,13 +527,8 @@ const MyOrder = () => {
 
   // --- Hàm lấy dữ liệu đơn hàng từ API ---
   const fetchOrders = async () => {
-    if (!accountId) {
-      console.error("Không tìm thấy ID tài khoản trong session storage");
-      setLoading(false);
-      return;
-    }
-
     try {
+      setIsLoading(true); // Bật loading khi bắt đầu fetch
       const response = await getOrderByAccountID(accountId);
       console.log("Dữ liệu thô từ API:", response);
 
@@ -548,7 +544,7 @@ const MyOrder = () => {
       console.error("Lỗi khi lấy danh sách đơn hàng:", error);
       setOrders([]);
     } finally {
-      setLoading(false);
+      setIsLoading(false); // Tắt loading sau khi fetch xong
     }
   };
 
@@ -614,24 +610,24 @@ const MyOrder = () => {
   // --- Lọc đơn hàng theo từ khóa tìm kiếm và tab đang chọn ---
   const filteredOrders = Array.isArray(orders)
     ? orders
-        .filter((order) => {
-          const lowerQuery = searchQuery.toLowerCase();
-          const firstDetail = order.order_details?.[0] || {};
-          return (
-            "Book Store".toLowerCase().includes(lowerQuery) ||
-            (order.order?.id_order?.toString().toLowerCase() || "").includes(lowerQuery) ||
-            (firstDetail.book_name || "").toLowerCase().includes(lowerQuery) ||
-            // Tìm kiếm theo tổng giá đơn hàng
-            (order.order?.total_price?.toString().toLowerCase() || "").includes(lowerQuery)
-          );
-        })
-        .filter((order) => {
-          if (activeTab === "tr1") return true; // Tất cả đơn hàng
-          if (activeTab === "tr2") return order.order.order_status === "shipped"; // Đơn hàng đang xử lý
-          if (activeTab === "tr3") return order.order.order_status === "delivered"; // Đơn hàng đã giao
-          if (activeTab === "tr4") return order.order.order_status === "cancelled"; // Đơn hàng đã giao
-          return true;
-        })
+      .filter((order) => {
+        const lowerQuery = searchQuery.toLowerCase();
+        const firstDetail = order.order_details?.[0] || {};
+        return (
+          "Book Store".toLowerCase().includes(lowerQuery) ||
+          (order.order?.id_order?.toString().toLowerCase() || "").includes(lowerQuery) ||
+          (firstDetail.book_name || "").toLowerCase().includes(lowerQuery) ||
+          // Tìm kiếm theo tổng giá đơn hàng
+          (order.order?.total_price?.toString().toLowerCase() || "").includes(lowerQuery)
+        );
+      })
+      .filter((order) => {
+        if (activeTab === "tr1") return true; // Tất cả đơn hàng
+        if (activeTab === "tr2") return order.order.order_status === "shipped"; // Đơn hàng đang xử lý
+        if (activeTab === "tr3") return order.order.order_status === "delivered"; // Đơn hàng đã giao
+        if (activeTab === "tr4") return order.order.order_status === "cancelled"; // Đơn hàng đã giao
+        return true;
+      })
     : [];
 
   // --- Giao diện chính ---
@@ -946,8 +942,16 @@ const MyOrder = () => {
             </div>
 
             {/* Hiển thị danh sách đơn hàng */}
-            {loading ? (
-              <p style={{ marginLeft: "50%", width: "1000%" }}>Loading...</p>
+            {isLoading ? (
+              <div style={{ marginLeft: "50%", width: "1000%", padding: "60px 0" }}>
+                <tr style={{ position: "relative", }} >
+                  <td colSpan="8" className="text-center py-4 text-muted">
+                    <div style={{ position: "absolute", left: "100%", top: "100%", transform: "translate(-100%, -100%)", padding: "40px 0" }}>
+                      <Loading isLoading={isLoading} />
+                    </div>
+                  </td>
+                </tr>
+              </div>
             ) : reviewOrder ? (
               <ReviewModal
                 order={reviewOrder}
@@ -969,31 +973,33 @@ const MyOrder = () => {
             )}
           </div>
         </div>
-      </div>
+      </div >
 
       {/* Modal xác nhận hủy đơn hàng */}
-      {showConfirmCancel !== null && (
-        <div className="overlay" onClick={() => setShowConfirmCancel(null)}>
-          <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
-            <p>Are you sure you want to cancel this order?</p>
-            <div className="modal-buttons">
-              <button
-                className="btn btn-danger"
-                onClick={() => confirmCancelOrder(showConfirmCancel)}
-              >
-                Yes
-              </button>
-              <button
-                className="btn btn-light"
-                onClick={() => setShowConfirmCancel(null)}
-                style={{ backgroundColor: "#f2f2f2" }}
-              >
-                No
-              </button>
+      {
+        showConfirmCancel !== null && (
+          <div className="overlay" onClick={() => setShowConfirmCancel(null)}>
+            <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+              <p>Are you sure you want to cancel this order?</p>
+              <div className="modal-buttons">
+                <button
+                  className="btn btn-danger"
+                  onClick={() => confirmCancelOrder(showConfirmCancel)}
+                >
+                  Yes
+                </button>
+                <button
+                  className="btn btn-light"
+                  onClick={() => setShowConfirmCancel(null)}
+                  style={{ backgroundColor: "#f2f2f2" }}
+                >
+                  No
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Modal chi tiết đơn hàng */}
       {selectedOrder && <OrderDetailModal order={selectedOrder} onClose={onClose} />}
