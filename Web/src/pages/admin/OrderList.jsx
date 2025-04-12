@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaUsers, FaBox, FaUber, FaList, FaChartBar, FaSignOutAlt, FaFilter, FaHome, FaEdit, FaSave, FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { HeaderAdmin } from "../../components";
+import { HeaderAdmin, Loading } from "../../components";
 import { getOrders, updateOrderStatus } from "../../services/apiService";
 
 const Sidebar = () => {
@@ -45,6 +45,7 @@ const Sidebar = () => {
     </div>
   );
 };
+
 const OrderList = () => {
   const [selectedOrderStatus, setSelectedOrderStatus] = useState([]);
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState([]);
@@ -56,6 +57,7 @@ const OrderList = () => {
   const [editingOrderId, setEditingOrderId] = useState(null);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
   const [editingValues, setEditingValues] = useState({ order_status: "", payment_status: "" });
+  const [isLoading, setIsLoading] = useState(true); // Sửa: Khởi tạo true để loading ngay
 
   const orderStatuses = ["pending", "processing", "shipped", "delivered", "cancelled"];
   const paymentStatuses = ["pending", "paid", "failed", "refunded"];
@@ -85,11 +87,14 @@ const OrderList = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        setIsLoading(true); // Bật loading khi bắt đầu fetch
         const res = await getOrders();
         setOrders(res.data || []);
       } catch (error) {
         console.error("Error fetching orders:", error);
         setOrders([]);
+      } finally {
+        setIsLoading(false); // Tắt loading sau khi fetch xong
       }
     };
     fetchOrders();
@@ -106,6 +111,7 @@ const OrderList = () => {
 
   const saveChanges = async (orderId) => {
     try {
+      setIsLoading(true); // Bật loading khi lưu
       await updateOrderStatus(orderId, editingValues);
       setOrders((prev) =>
         prev.map((order) =>
@@ -115,6 +121,8 @@ const OrderList = () => {
       setEditingOrderId(null);
     } catch (error) {
       console.error("Error updating order status:", error);
+    } finally {
+      setIsLoading(false); // Tắt loading sau khi lưu
     }
   };
 
@@ -136,7 +144,9 @@ const OrderList = () => {
 
     return dateFilter && orderStatusFilter && paymentStatusFilter;
   });
-console.log(filteredOrders);
+
+  console.log(filteredOrders);
+
   const getBadgeClass = (status) => {
     const classes = {
       pending: "bg-warning text-dark",
@@ -156,7 +166,7 @@ console.log(filteredOrders);
       <Sidebar />
       <div className="flex-grow-1" style={{ marginLeft: "250px" }}>
         <HeaderAdmin />
-        <div className="p-4">
+        <div className="p-4" > {/* Thêm position: relative */}
           <h2 className="fw-bold mb-4" style={{ color: "#1a3c61" }}>Order Lists</h2>
           <div className="d-flex align-items-center gap-3 p-3 bg-white rounded shadow-sm mb-4 flex-wrap">
             <FaFilter size={20} className="text-primary" />
@@ -202,42 +212,38 @@ console.log(filteredOrders);
               Reset
             </button>
             {showOrderFilterBox && (
-            <div className="bg-white shadow p-3 rounded mt-2 position-absolute" style={{ zIndex: 1000 }}>
-              <h6 className="fw-bold mb-3">Select Order Status</h6>
-              <div className="d-flex flex-wrap gap-2">
-                {orderStatuses.map((status) => (
-                  <button
-                    key={status}
-                    className={`btn btn-sm ${selectedOrderStatus.includes(status) ? "btn-primary" : "btn-outline-primary"}`}
-                    onClick={() => toggleOrderStatus(status)}
-                  >
-                    {status}
-                  </button>
-                ))}
+              <div className="bg-white shadow p-3 rounded mt-2 position-absolute" style={{ zIndex: 1000 }}>
+                <h6 className="fw-bold mb-3">Select Order Status</h6>
+                <div className="d-flex flex-wrap gap-2">
+                  {orderStatuses.map((status) => (
+                    <button
+                      key={status}
+                      className={`btn btn-sm ${selectedOrderStatus.includes(status) ? "btn-primary" : "btn-outline-primary"}`}
+                      onClick={() => toggleOrderStatus(status)}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-
-          {showPaymentFilterBox && (
-            <div className="bg-white shadow p-3 rounded mt-2 position-absolute" style={{ zIndex: 1000, left: "450px" }}>
-              <h6 className="fw-bold mb-3">Select Payment Status</h6>
-              <div className="d-flex flex-wrap gap-2">
-                {paymentStatuses.map((status) => (
-                  <button
-                    key={status}
-                    className={`btn btn-sm ${selectedPaymentStatus.includes(status) ? "btn-primary" : "btn-outline-primary"}`}
-                    onClick={() => togglePaymentStatus(status)}
-                  >
-                    {status}
-                  </button>
-                ))}
+            )}
+            {showPaymentFilterBox && (
+              <div className="bg-white shadow p-3 rounded mt-2 position-absolute" style={{ zIndex: 1000, left: "450px" }}>
+                <h6 className="fw-bold mb-3">Select Payment Status</h6>
+                <div className="d-flex flex-wrap gap-2">
+                  {paymentStatuses.map((status) => (
+                    <button
+                      key={status}
+                      className={`btn btn-sm ${selectedPaymentStatus.includes(status) ? "btn-primary" : "btn-outline-primary"}`}
+                      onClick={() => togglePaymentStatus(status)}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
           </div>
-
-
-
           <div className="card shadow-sm border-0">
             <div className="card-body p-0">
               <table className="table table-hover mb-0">
@@ -346,7 +352,6 @@ console.log(filteredOrders);
                                   </div>
                                   <div className="col-md-6">
                                     <p><strong>Order Date:</strong> {formatDate(order.created_at)}</p>
-
                                     <p><strong>Order Status:</strong> <span className={`badge ${getBadgeClass(order.order_status)} p-2`}>{order.order_status}</span></p>
                                     <p><strong>Payment Status:</strong> <span className={`badge ${getBadgeClass(order.payment_status)} p-2`}>{order.payment_status}</span></p>
                                   </div>
@@ -366,7 +371,6 @@ console.log(filteredOrders);
                                       </tr>
                                     </thead>
                                     <tbody>
-                            
                                       {order.order_details?.map((item, index) => {
                                         const finalPrice = calculateFinalPrice(item.price, item.discount);
                                         const itemTotal = finalPrice * item.quantity;
@@ -400,9 +404,9 @@ console.log(filteredOrders);
                       </React.Fragment>
                     ))
                   ) : (
-                    <tr>
+                    <tr style={{ position: "relative" }}>
                       <td colSpan="8" className="text-center py-4 text-muted">
-                        No orders found
+                        <Loading isLoading={isLoading} />
                       </td>
                     </tr>
                   )}

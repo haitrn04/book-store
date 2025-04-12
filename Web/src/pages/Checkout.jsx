@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Footer, Navbar } from "../components";
+import { Footer, Navbar, Loading } from "../components";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { getAddress, addOrderAndOrderDetail, postPayment, postOrderStatus } from "../services/apiService";
@@ -10,6 +10,9 @@ const Checkout = () => {
   const [address, setAddress] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState('cod');
+  const [paymentWindow, setPaymentWindow] = useState(null);
+  const [appTransId, setAppTransId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,8 +51,6 @@ const Checkout = () => {
       return totalItems += item.qty;
     });
 
-    // Calculate VAT
-
     const finalTotal = discountedSubtotal + shipping;
 
     const handleSubmit = async (event) => {
@@ -69,6 +70,7 @@ const Checkout = () => {
       };
 
       if (selectedPayment === 'cod') {
+        setIsLoading(true);
         addOrderAndOrderDetail(order).then((response) => {
           if (response.status === 200) {
             sessionStorage.setItem('order', JSON.stringify(response.data));
@@ -76,84 +78,86 @@ const Checkout = () => {
           } else {
             navigate('/OrderFail');
           }
+          setIsLoading(false);
         });
       } else if (selectedPayment === 'zalopay') {
         const user_name = storedUser.full_name;
         const total_price = finalTotal;
         const items = order.order_details;
-        let app_trans_id = null;
-        let paymentWindow = null;
-        order = {
-          ...order,
-          payment_status: 'paid',
-        }
-        postPayment(user_name, total_price, items).then((response) => {
+        setIsLoading(true);
+
+        try {
+          const response = await postPayment(user_name, total_price, items);
           if (response.status === 200 && response.data.data.return_code === 1) {
-            // window.location.href = response.data.data.order_url;
-            paymentWindow = window.open(response.data.data.order_url, '_blank');
-            app_trans_id = response.data.app_trans_id;
-          } else {
-            navigate('/OrderFail');
-          }
-        });
+            // setIsLoading(true);
+            const newWindow = window.open(response.data.data.order_url, '_blank');
+            setPaymentWindow(newWindow);
+            setAppTransId(response.data.app_trans_id);
 
-        const checkOrderStatus = () => {
-          postOrderStatus(app_trans_id).then((response) => {
-            const { return_code } = response.data;
+            const orderCheckInterval = setInterval(async () => {
+              try {
+                const statusResponse = await postOrderStatus(response.data.app_trans_id);
+                const { return_code } = statusResponse.data;
+                console.log('Checking order status:', statusResponse.data);
 
-            switch (return_code) {
-              case 1: // Thành công
-                addOrderAndOrderDetail(order).then((orderResponse) => {
-                  sessionStorage.setItem('order', JSON.stringify(orderResponse.data));
-                  setTimeout(() => {
-                    if (typeof paymentWindow !== 'undefined' && !paymentWindow.closed) {
-                      paymentWindow.close();
+                switch (return_code) {
+                  case 1: // Success
+                    clearInterval(orderCheckInterval);
+                    await new Promise(resolve => setTimeout(resolve, 999));
+                    order.payment_status = 'paid';
+                    order.order_status = 'pending';
+                    const orderR1 = await addOrderAndOrderDetail(order);
+                    sessionStorage.setItem('order', JSON.stringify(orderR1.data));
+                    setIsLoading(false);
+                    navigate('/OrderSuccess', { state: { order: order } });
+                    if (newWindow && !newWindow.closed) {
+                      newWindow.close();
                     }
-                  }, 4100);
-                  navigate('/OrderSuccess', { state: { order: order } });
-                })
-                  .catch((error) => {
-                    console.error('Failed to add order details:', error);
-                  });
-                clearInterval(orderCheckInterval);
-                break;
+                    return; // Add return to stop function execution
+                  case 2: // Failed
+                    clearInterval(orderCheckInterval);
+                    await new Promise(resolve => setTimeout(resolve, 999));
+                    order.payment_status = 'failed';
+                    order.order_status = 'cancelled';
+                    const orderR2 = await addOrderAndOrderDetail(order);
+                    sessionStorage.setItem('order', JSON.stringify(orderR2.data));
+                    setIsLoading(false);
+                    navigate('/OrderFail');
+                    if (newWindow && !newWindow.closed) {
+                      newWindow.close();
+                    }
+                    return; // Add return to stop function execution
 
-              case 2: // Thất bại
-                clearInterval(orderCheckInterval);
-                setTimeout(() => {
-                  if (typeof paymentWindow !== 'undefined' && !paymentWindow.closed) {
-                    paymentWindow.close();
-                  }
-                }, 4100);
-                navigate('/OrderFail');
-                break;
-
-              case 3: // Đang chờ xử lý
-                // Kiểm tra xem giao dịch đã được xử lý hay chưa
-                if (typeof polling === 'undefined') {
-                  const polling = setInterval(() => {
-                    if (typeof paymentWindow !== 'undefined' && paymentWindow.closed) {
-                      // Kiểm tra lại trạng thái giao dịch trước khi navigate đến OrderFail
-                      postOrderStatus(app_trans_id).then((latestResponse) => {
-                        const { return_code: latestReturnCode } = latestResponse.data;
-                        if (latestReturnCode === 3) {
-                          navigate('/OrderFail');
-                        }
-                      });
+                  case 3: // Processing
+                    if (newWindow.closed) {
                       clearInterval(orderCheckInterval);
-                      clearInterval(polling);
+                      const finalCheck = await postOrderStatus(response.data.app_trans_id);
+                      if (finalCheck.data.return_code === 3) {
+                        order.payment_status = 'failed';
+                        order.order_status = 'cancelled';
+                        const orderR3 = await addOrderAndOrderDetail(order);
+                        sessionStorage.setItem('order', JSON.stringify(orderR3.data));
+                        setIsLoading(false);
+                        navigate('/OrderFail');
+                        return; // Add return to stop function execution
+                      }
                     }
-                  }, 200);
+                    break;
                 }
-                break;
-            }
-          })
-            .catch((error) => {
-              console.error('Error checking order status:', error);
-            });
-        };
-
-        const orderCheckInterval = setInterval(checkOrderStatus, 1001);
+              } catch (error) {
+                console.error('Error checking order status:', error);
+                clearInterval(orderCheckInterval);
+                setIsLoading(false);
+                navigate('/OrderFail');
+                return; // Add return to stop function execution
+              }
+            }, 321);
+          }
+        } catch (error) {
+          console.error('Payment error:', error);
+          setIsLoading(false);
+          navigate('/OrderFail');
+        }
       }
     };
 
@@ -298,13 +302,16 @@ const Checkout = () => {
 
   return (
     <>
-      <Navbar user={storedUser} />
-      <div className="container my-3 py-3">
-        <h1 className="text-center">Checkout</h1>
-        <hr />
-        {state.length ? <ShowCheckout /> : <EmptyCart />}
+      <div style={{ position: "relative" }}>
+        <Navbar user={storedUser} />
+        <div className="container my-3 py-3">
+          <h1 className="text-center">Checkout</h1>
+          <hr />
+          {state.length ? <ShowCheckout /> : <EmptyCart />}
+        </div>
+        <Footer />
+        <Loading isLoading={isLoading} />
       </div>
-      <Footer />
     </>
   );
 };

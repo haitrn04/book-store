@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "react-loading-skeleton/dist/skeleton.css";
-import { FaUsers, FaBox, FaUber, FaList, FaChartBar, FaSignOutAlt, FaFilter, FaHome, FaEdit, FaSave, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaUsers, FaBox, FaUber, FaList, FaHome, FaInfoCircle, FaSignOutAlt, FaChartBar, FaFilter, FaEdit, FaSave, FaChevronDown, FaChevronUp, FaTrash } from "react-icons/fa";
 import { HeaderAdmin } from "../../components";
+import { getAccounts, getOrders } from "../../services/apiService";
 
 const Sidebar = () => {
   return (
@@ -47,85 +48,61 @@ const Sidebar = () => {
 };
 
 const Customer = () => {
-  // State variables
   const [customers, setCustomers] = useState([]);
   const [filteredCustomers, setFilteredCustomers] = useState([]);
-  const [editingCustomerId, setEditingCustomerId] = useState(null);
-  const [editingValues, setEditingValues] = useState({ name: "", email: "", status: "" });
-  const [showFilterBox, setShowFilterBox] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [orderDetails, setOrderDetails] = useState({}); // Lưu thông tin đơn hàng của khách hàng
 
-  const customerStatuses = ["active", "inactive", "suspended"];
+  const [selectedOrderStatus, setSelectedOrderStatus] = useState([]);
+  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState([]);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [orders, setOrders] = useState([]);
+  const [expandedAccountId, setExpandedAccountId] = useState(null);
+  const calculateFinalPrice = (price, discount) => price - (price * discount) / 100;
 
-  // // Lấy dữ liệu khách hàng
-  // useEffect(() => {
-  //   const fetchCustomers = async () => {
-  //     try {
-  //       const res = await getCustomers(); // Giả lập API call
-  //       setCustomers(res.data || []);
-  //       setFilteredCustomers(res.data || []);
-  //     } catch (error) {
-  //       console.error("Error fetching customers:", error);
-  //       setCustomers([]);
-  //       setFilteredCustomers([]);
-  //     }
-  //   };
-  //   fetchCustomers();
-  // }, []);
-
-  // Định dạng trạng thái badge
-  const getBadgeClass = (status) => {
-    const classes = {
-      active: "bg-success text-white",
-      inactive: "bg-warning text-dark",
-      suspended: "bg-danger text-white",
+  // Lấy danh sách khách hàng
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const res = await getAccounts();
+        res.data.sort((a, b) => a.id_account - b.id_account);
+        setCustomers(res.data || []);
+        setFilteredCustomers(res.data || []);
+      } catch (error) {
+        console.error("Error fetching customers:", error);
+      }
     };
-    return classes[status] || "bg-secondary text-white";
-  };
+    fetchCustomers();
+  }, []);
 
-  // Lọc khách hàng theo từ khóa và trạng thái
+  // Lọc khách hàng theo từ khóa, xử lý giá trị undefined
   useEffect(() => {
     const filtered = customers.filter((customer) => {
-      const keywordMatch =
-        !searchKeyword || customer.name.toLowerCase().includes(searchKeyword.toLowerCase());
-      const statusFilter =
-        selectedStatus.length === 0 || selectedStatus.includes(customer.status);
-      return keywordMatch && statusFilter;
+      const customerName = customer.full_name || ""; // Xử lý nếu name bị undefined
+      const keyword = searchKeyword || ""; // Xử lý nếu searchKeyword bị undefined
+      return customerName.toLowerCase().includes(keyword.toLowerCase());
     });
     setFilteredCustomers(filtered);
-  }, [searchKeyword, selectedStatus, customers]);
+  }, [searchKeyword, customers]);
 
-  // Xử lý chỉnh sửa khách hàng
-  const startEditing = (customer) => {
-    setEditingCustomerId(customer.id);
-    setEditingValues({ name: customer.name, email: customer.email, status: customer.status });
-  };
+  const filteredOrders = orders.filter((order) => {
+    const orderDate = new Date(order.created_at);
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
 
-  const handleFieldChange = (field, value) => {
-    setEditingValues({ ...editingValues, [field]: value });
-  };
+    const dateFilter =
+      (!start || orderDate >= start) && (!end || orderDate <= end);
+    const orderStatusFilter =
+      selectedOrderStatus.length === 0 || selectedOrderStatus.includes(order.order_status);
+    const paymentStatusFilter =
+      selectedPaymentStatus.length === 0 || selectedPaymentStatus.includes(order.payment_status);
 
-  // const saveChanges = async (customerId) => {
-  //   try {
-  //     await updateCustomerDetails(customerId, editingValues); // Giả lập API call
-  //     setCustomers((prev) =>
-  //       prev.map((customer) =>
-  //         customer.id === customerId ? { ...customer, ...editingValues } : customer
-  //       )
-  //     );
-  //     setEditingCustomerId(null);
-  //   } catch (error) {
-  //     console.error("Error updating customer details:", error);
-  //   }
-  // };
+    return dateFilter && orderStatusFilter && paymentStatusFilter;
+  });
 
-  const cancelEditing = () => setEditingCustomerId(null);
-
-  const toggleStatus = (status) => {
-    setSelectedStatus((prev) =>
-      prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status]
-    );
+  const totalOrderDetails = (id_account) => {
+    setExpandedAccountId(expandedAccountId === id_account ? null : id_account);
   };
 
   return (
@@ -136,127 +113,259 @@ const Customer = () => {
         <div className="p-4">
           <h2 className="fw-bold mb-4" style={{ color: "#1a3c61" }}>Customer Management</h2>
           <div className="d-flex align-items-center gap-3 p-3 bg-white rounded shadow-sm mb-4 flex-wrap">
-            <FaFilter size={20} className="text-primary" />
-            <span className="fw-medium">Filter By</span>
             <input
               type="text"
-              className="form-control w-auto shadow-sm"
+              className="form-control"
+              placeholder="Search by name..."
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
-              placeholder="Search by name"
             />
-            <button
-              className="btn btn-primary shadow-sm"
-              onClick={() => setShowFilterBox(!showFilterBox)}
-            >
-              Status
-            </button>
-            <button
-              className="btn btn-outline-danger shadow-sm"
-              onClick={() => {
-                setSearchKeyword("");
-                setSelectedStatus([]);
-              }}
-            >
-              Reset
-            </button>
-            {showFilterBox && (
-              <div className="bg-white shadow p-3 rounded mt-2 position-absolute" style={{ zIndex: 1000 }}>
-                <h6 className="fw-bold mb-3">Select Status</h6>
-                <div className="d-flex flex-wrap gap-2">
-                  {customerStatuses.map((status) => (
-                    <button
-                      key={status}
-                      className={`btn btn-sm ${selectedStatus.includes(status) ? "btn-primary" : "btn-outline-primary"}`}
-                      onClick={() => toggleStatus(status)}
-                    >
-                      {status}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
-          <div className="card shadow-sm border-0">
+          {/* <div className="card shadow-sm border-0">
             <div className="card-body p-0">
               <table className="table table-hover mb-0">
                 <thead className="bg-primary text-white">
                   <tr>
                     <th className="p-3">ID</th>
                     <th className="p-3">NAME</th>
-                    <th className="p-3">EMAIL</th>
-                    <th className="p-3">STATUS</th>
+                    <th className="p-3">ADDRESS</th>
+                    <th className="p-3">DATE</th>
+                    <th className="p-3">TOTAL</th>
+                    <th className="p-3">ORDER STATUS</th>
+                    <th className="p-3">PAYMENT STATUS</th>
                     <th className="p-3">ACTIONS</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredCustomers.length > 0 ? (
-                    filteredCustomers.map((customer) => (
-                      <React.Fragment key={customer.id}>
+                  {filteredOrders.length > 0 ? (
+                    filteredOrders.map((order) => (
+                      <React.Fragment key={order.id_order}>
                         <tr className="align-middle">
-                          <td className="p-3">{customer.id}</td>
-                          <td className="p-3">{customer.name}</td>
-                          <td className="p-3">{customer.email}</td>
+                          <td className="p-3">{order.id_order}</td>
+                          <td className="p-3">{order.full_name}</td>
+                          <td className="p-3">{`${order.province}`}</td>
+                          <td className="p-3">{formatDate(order.created_at)}</td>
+                          <td className="p-3">{order.total_price?.toLocaleString() || "0"} đ</td>
                           <td className="p-3">
-                            {editingCustomerId === customer.id ? (
+                            {editingOrderId === order.id_order ? (
                               <select
                                 className="form-select form-select-sm shadow-sm"
-                                value={editingValues.status}
-                                onChange={(e) => handleFieldChange("status", e.target.value)}
+                                value={editingValues.order_status}
+                                onChange={(e) => handleStatusChange("order_status", e.target.value)}
                               >
-                                {customerStatuses.map((status) => (
+                                {orderStatuses.map((status) => (
                                   <option key={status} value={status}>
                                     {status}
                                   </option>
                                 ))}
                               </select>
                             ) : (
-                              <span className={`badge ${getBadgeClass(customer.status)} p-2`}>
-                                {customer.status}
+                              <span className={`badge ${getBadgeClass(order.order_status)} p-2`}>
+                                {order.order_status}
+                              </span>
+                            )}
+                          </td>
+                          <td className="p-3">
+                            {editingOrderId === order.id_order ? (
+                              <select
+                                className="form-select form-select-sm shadow-sm"
+                                value={editingValues.payment_status}
+                                onChange={(e) => handleStatusChange("payment_status", e.target.value)}
+                              >
+                                {paymentStatuses.map((status) => (
+                                  <option key={status} value={status}>
+                                    {status}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <span className={`badge ${getBadgeClass(order.payment_status)} p-2`}>
+                                {order.payment_status}
                               </span>
                             )}
                           </td>
                           <td className="p-3">
                             <div className="d-flex gap-2">
-                              {editingCustomerId === customer.id ? (
+                              {editingOrderId === order.id_order ? (
                                 <>
-                                  {/* <button
+                                  <button
                                     className="btn btn-success btn-sm shadow-sm"
-                                    onClick={() => saveChanges(customer.id)}
+                                    onClick={() => saveChanges(order.id_order)}
                                   >
                                     <FaSave /> Save
-                                  </button> */}
-                                  <button
-                                    className="btn btn-secondary btn-sm shadow-sm"
-                                    onClick={cancelEditing}
-                                  >
+                                  </button>
+                                  <button className="btn btn-secondary btn-sm shadow-sm" onClick={cancelEditing}>
                                     Cancel
                                   </button>
                                 </>
                               ) : (
                                 <button
                                   className="btn btn-primary btn-sm shadow-sm"
-                                  onClick={() => startEditing(customer)}
+                                  onClick={() => startEditing(order)}
                                 >
                                   <FaEdit /> Edit
                                 </button>
                               )}
+                              <button
+                                className="btn btn-info btn-sm shadow-sm text-white"
+                                onClick={() => toggleOrderDetails(order.id_order)}
+                              >
+                                {expandedOrderId === order.id_order ? <FaChevronUp /> : <FaChevronDown />}
+                              </button>
                             </div>
                           </td>
                         </tr>
+                        {expandedOrderId === order.id_order && (
+                          <tr>
+                            <td colSpan="8" className="p-0">
+                              <div className="bg-light p-4 mx-2 mb-3 rounded shadow-sm">
+                                <h5 className="fw-bold mb-3" style={{ color: "#1a3c61" }}>Order Details</h5>
+                                <div className="row mb-3">
+                                  <div className="col-md-6">
+                                    <p><strong>Customer:</strong> {order.full_name}</p>
+                                    <p><strong>Phone:</strong> {order.phone_number}</p>
+                                    <p><strong>Address:</strong> {`${order.ward}, ${order.district}, ${order.province}`}</p>
+                                    <p><strong>Detailed Address:</strong> {`${order.detailed_address}`}</p>
+                                  </div>
+                                  <div className="col-md-6">
+                                    <p><strong>Order Date:</strong> {formatDate(order.created_at)}</p>
+
+                                    <p><strong>Order Status:</strong> <span className={`badge ${getBadgeClass(order.order_status)} p-2`}>{order.order_status}</span></p>
+                                    <p><strong>Payment Status:</strong> <span className={`badge ${getBadgeClass(order.payment_status)} p-2`}>{order.payment_status}</span></p>
+                                  </div>
+                                </div>
+                                <div className="table-responsive">
+                                  <table className="table table-bordered table-striped">
+                                    <thead className="bg-primary text-white">
+                                      <tr>
+                                        <th>Image</th>
+                                        <th>Book</th>
+                                        <th>Author</th>
+                                        <th>Price</th>
+                                        <th>Discount</th>
+                                        <th>Final Price</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+
+                                      {order.order_details?.map((item, index) => {
+                                        const finalPrice = calculateFinalPrice(item.price, item.discount);
+                                        const itemTotal = finalPrice * item.quantity;
+                                        return (
+                                          <tr key={index}>
+                                            <td className="text-center">
+                                              <img
+                                                src={`data:image/jpeg;base64,${item.image_data}`}
+                                                alt={item.book_name}
+                                                className="img-thumbnail"
+                                                style={{ width: "50px", height: "70px", objectFit: "cover" }}
+                                              />
+                                            </td>
+                                            <td>{item.book_name}</td>
+                                            <td>{item.author}</td>
+                                            <td>{item.price?.toLocaleString() || "0"} đ</td>
+                                            <td>{item.discount}%</td>
+                                            <td>{finalPrice?.toLocaleString() || "0"} đ</td>
+                                            <td>{item.quantity}</td>
+                                            <td>{parseInt(itemTotal)?.toLocaleString() || "0"} đ</td>
+                                          </tr>
+                                        );
+                                      })}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
                       </React.Fragment>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="5" className="text-center py-4 text-muted">
-                        No customers found
+                      <td colSpan="8" className="text-center py-4 text-muted">
+                        No orders found
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
             </div>
-          </div>
+          </div> */}
+          <table className="table table-hover">
+            <thead className="bg-primary text-white">
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Phone Number</th>
+                <th>Email</th>
+                <th>Order Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredCustomers.map((customer) => (
+                <React.Fragment key={customer.id_order}>
+                  <tr className="align-middle">
+                    <td>{customer.id_account}</td>
+                    <td>{customer.full_name}</td>
+                    <td>{customer.phone_num}</td>
+                    <td>{customer.email}</td>
+                    <td>
+                      <button className="btn btn-info" onClick={() => totalOrderDetails(customer.id_account)}>
+                        {expandedAccountId === customer.id_account ? "Hide Orders" : "View Orders"}
+                      </button>
+                      {expandedAccountId === customer.id_account && (
+                        <div className="table-responsive">
+                          <table className="table table-bordered table-striped">
+                            <thead className="bg-primary text-white">
+                              <tr>
+                                <th>Image</th>
+                                <th>Book</th>
+                                <th>Author</th>
+                                <th>Price</th>
+                                <th>Discount</th>
+                                <th>Final Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+
+                              {customer.order_details?.map((item, index) => {
+                                const finalPrice = calculateFinalPrice(item.price, item.discount);
+                                const itemTotal = finalPrice * item.quantity;
+                                return (
+                                  <tr key={index}>
+                                    <td className="text-center">
+                                      <img
+                                        src={`data:image/jpeg;base64,${item.image_data}`}
+                                        alt={item.book_name}
+                                        className="img-thumbnail"
+                                        style={{ width: "50px", height: "70px", objectFit: "cover" }}
+                                      />
+                                    </td>
+                                    <td>{item.book_name}</td>
+                                    <td>{item.author}</td>
+                                    <td>{item.price?.toLocaleString() || "0"} đ</td>
+                                    <td>{item.discount}%</td>
+                                    <td>{finalPrice?.toLocaleString() || "0"} đ</td>
+                                    <td>{item.quantity}</td>
+                                    <td>{parseInt(itemTotal)?.toLocaleString() || "0"} đ</td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+
+                    </td>
+                  </tr>
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -264,4 +373,3 @@ const Customer = () => {
 };
 
 export default Customer;
-

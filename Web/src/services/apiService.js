@@ -4,6 +4,10 @@ const postLogin = (email, password) => {
     return axios.post('http://localhost:3005/login', { email, password });
 };
 
+const getAccounts = () => {
+    return axios.get('http://localhost:3005/accounts/accounts');
+}
+
 const postPayment = (user_name, total_price, items) => {
     return axios.post('http://localhost:3005/payment', { user_name, total_price, items });
 };
@@ -162,11 +166,14 @@ const updateOrderStatus = async (id_order, status) => {
         throw error;
     }
 };
+
 export {
     postLogin, getImage, postRegister, postAddProduct, postEditProduct,
     getProducts, getProductbyID, getGenre, getInfor, deleteProductbyID,
     getProductbyGenre, postAddress, getAddress, editAddress, deleteAddress,
-    editInfor, addOrderAndOrderDetail, addreview, deleteReview, getBookReviewbyID, sendmail,
-    getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus, getOrderByID, getOrderByAccountID,
-    postPayment, postOrderStatus, getProductsIfExist, getCountUser, getTotalOrders, getTotalSales, getPendingOrders, getAccountbyName, getRecentTransactions
+    editInfor, addOrderAndOrderDetail, addreview, deleteReview, getBookReviewbyID,
+    getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus,
+    getOrderByID, getOrderByAccountID, sendmail, getAccounts, getAccountbyName,
+    postPayment, postOrderStatus, getProductsIfExist, getCountUser, getTotalOrders,
+    getTotalSales, getPendingOrders, getRecentTransactions
 };
