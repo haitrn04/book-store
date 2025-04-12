@@ -98,7 +98,6 @@ const OrderDetailModal = ({ order, onClose }) => {
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
-            {/* Thông tin đơn hàng */}
             <h6 style={{ fontWeight: "bold", marginBottom: "15px" }}>Order information</h6>
             <div style={{ marginBottom: "20px" }}>
               <p style={{ margin: "5px 0" }}>
@@ -300,24 +299,86 @@ const ReviewModal = ({ order, onClose, onSubmit }) => {
 };
 
 // === Component Mitem (Thanh menu lọc đơn hàng) ===
-const Mitem = () => {
+// const Mitem = () => {
+//   return (
+//     <div className="thanh-menu" style={{ display: "flex", width: "100%" }}>
+//       <div className="menu1 tr1" style={{ marginRight: "25px" }}>
+//         <p style={{ fontWeight: "bold", borderBottom: "2px solid black" }}>All</p>
+//       </div>
+//       <div className="menu1 tr2" style={{ marginRight: "25px" }}>
+//         <p style={{ fontWeight: "bold" }}>To ship</p>
+//       </div>
+//       <div className="menu1 tr1" style={{ marginRight: "25px" }}>
+//         <p style={{ fontWeight: "bold" }}>To recelve</p>
+//       </div>
+//       <div className="menu1 tr1" style={{ marginRight: "25px" }}>
+//         <p style={{ fontWeight: "bold" }}>To review</p>
+//       </div>
+//     </div>
+//   );
+// };
+
+
+
+const Mitem = ({ activeTab, setActiveTab }) => {
   return (
     <div className="thanh-menu" style={{ display: "flex", width: "100%" }}>
-      <div className="menu1" style={{ marginRight: "25px" }}>
-        <p style={{ fontWeight: "bold", borderBottom: "2px solid black" }}>All</p>
+      <div 
+        className={`menu1 tr1 ${activeTab === "tr1" ? "active" : ""}`}
+        style={{ marginRight: "25px" }}
+        onClick ={() => setActiveTab("tr1")}
+        >
+        <p 
+          style={{
+            fontWeight: "bold",
+            borderBottom: activeTab === "tr1" ? "2px solid black" : "none",
+          }}
+        >All</p>
       </div>
-      <div className="menu1" style={{ marginRight: "25px" }}>
-        <p style={{ fontWeight: "bold" }}>To ship</p>
+      <div 
+        className={`menu1 tr2 ${activeTab === "tr2" ? "active" : ""}`}
+        style={{ marginRight: "25px" }}
+        onClick ={() => setActiveTab("tr2")}
+        >
+        <p 
+          style={{
+            fontWeight: "bold",
+            borderBottom: activeTab === "tr2" ? "2px solid black" : "none",
+          }}
+        >To Ship</p>
       </div>
-      <div className="menu1" style={{ marginRight: "25px" }}>
-        <p style={{ fontWeight: "bold" }}>To recelve</p>
+      <div 
+        className={`menu1 tr3 ${activeTab === "tr3" ? "active" : ""}`}
+        style={{ marginRight: "25px" }}
+        onClick ={() => setActiveTab("tr3")}
+        >
+        <p 
+          style={{
+            fontWeight: "bold",
+            borderBottom: activeTab === "tr3" ? "2px solid black" : "none",
+          }}
+        >To recelve</p>
       </div>
-      <div className="menu1" style={{ marginRight: "25px" }}>
-        <p style={{ fontWeight: "bold" }}>To review</p>
+      <div 
+        className={`menu1 tr3 ${activeTab === "tr4" ? "active" : ""}`}
+        style={{ marginRight: "25px" }}
+        onClick ={() => setActiveTab("tr4")}
+        >
+        <p 
+          style={{
+            fontWeight: "bold",
+            borderBottom: activeTab === "tr4" ? "2px solid black" : "none",
+          }}
+        >To Cancel</p>
       </div>
     </div>
   );
 };
+
+
+
+
+
 
 // === Component OrderItem (Hiển thị từng đơn hàng) ===
 const OrderItem = ({ order, onView, onReview, onCancel }) => {
@@ -478,7 +539,11 @@ const MyOrder = () => {
   const [reviewOrder, setReviewOrder] = useState(null); // Đơn hàng được chọn để đánh giá
   const [loading, setLoading] = useState(true); // Trạng thái loading
   const [showConfirmCancel, setShowConfirmCancel] = useState(null); // Trạng thái hiển thị modal xác nhận hủy
+<<<<<<< HEAD
+  const [activeTab, setActiveTab] = useState("tr1"); // Tab hiện tại (Tất cả, Đang xử lý, Đã giao, Đã hủy)
+=======
   const [isLoading, setIsLoading] = useState(false);
+>>>>>>> 640178cb32538d409808dc8f930081952da68713
 
   // --- Lấy thông tin người dùng từ sessionStorage ---
   const storedUser = JSON.parse(sessionStorage.getItem("user"))?.data;
@@ -495,14 +560,12 @@ const MyOrder = () => {
       let ordersArray = [];
       if (Array.isArray(response)) {
         ordersArray = response;
-      } else if (response && response.data && Array.isArray(response.data)) {
+      }
+      //  else if (response && response.data && Array.isArray(response.data)) {
+      //   ordersArray = response.data;
+      // }
+      else{
         ordersArray = response.data;
-      } else if (response && Array.isArray(response.orders)) {
-        ordersArray = response.orders;
-      } else if (response && typeof response === "object" && !Array.isArray(response)) {
-        ordersArray = [response];
-      } else {
-        console.error("Dữ liệu API không đúng định dạng mong muốn:", response);
       }
 
       setOrders(ordersArray);
@@ -519,51 +582,41 @@ const MyOrder = () => {
     fetchOrders();
   }, []);
 
-  // --- Hàm xử lý hủy đơn hàng ---
+  
   const handleCancelOrder = (orderId) => {
     if (!orderId) {
-      console.error("Order ID không hợp lệ:", orderId);
       alert("Không thể hủy đơn hàng: ID đơn hàng không hợp lệ.");
       return;
     }
-    setShowConfirmCancel(orderId); // Hiển thị modal xác nhận
+    setShowConfirmCancel(orderId);
   };
-
+  
   const confirmCancelOrder = async (orderId) => {
     if (!orderId) {
       alert("Không thể hủy đơn hàng: ID đơn hàng không hợp lệ.");
       setShowConfirmCancel(null);
       return;
     }
-
+  
     try {
-      const status = { order_status: "cancelled" };
-      const response = await updateOrderStatus(orderId, status);
-      console.log("Phản hồi từ updateOrderStatus:", response);
-
-      // Cập nhật state orders mà không gọi lại API
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
+      await updateOrderStatus(orderId, { order_status: "cancelled" });
+      setOrders((prev) =>
+        prev.map((order) =>
           order.order.id_order === orderId
             ? { ...order, order: { ...order.order, order_status: "cancelled" } }
             : order
         )
       );
     } catch (error) {
-      const errorMessage = error.response?.data?.error || error.message;
-      console.error("Lỗi khi hủy đơn hàng:", errorMessage);
-      alert(`Không thể hủy đơn hàng: ${errorMessage}`);
-
-      // Làm mới danh sách đơn hàng từ server nếu có lỗi
+      alert(`Không thể hủy đơn hàng: ${error.response?.data?.error || error.message}`);
       try {
         const response = await getOrderByAccountID(accountId);
-        console.log("Danh sách đơn hàng từ server sau lỗi:", response);
         setOrders(Array.isArray(response) ? response : response.data || []);
       } catch (refreshError) {
         console.error("Lỗi khi làm mới danh sách đơn hàng:", refreshError);
       }
     } finally {
-      setShowConfirmCancel(null); // Đóng modal sau khi xử lý
+      setShowConfirmCancel(null);
     }
   };
 
@@ -587,6 +640,25 @@ const MyOrder = () => {
 
   // --- Lọc đơn hàng theo từ khóa tìm kiếm ---
   const filteredOrders = Array.isArray(orders)
+<<<<<<< HEAD
+    ? orders
+      .filter((order) => {
+        const lowerQuery = searchQuery.toLowerCase();
+        const firstDetail = order.order_details?.[0] || {};
+        return (
+          "Book Store".toLowerCase().includes(lowerQuery) ||
+          (order.order?.id_order?.toString().toLowerCase() || "").includes(lowerQuery) ||
+          (firstDetail.book_name || "").toLowerCase().includes(lowerQuery)
+        );
+      })
+      .filter((order) => {
+        if (activeTab === "tr1") return true; // Tất cả đơn hàng
+        if (activeTab === "tr2") return order.order.order_status === "shipped"; // Đơn hàng đang xử lý
+        if (activeTab === "tr3") return order.order.order_status === "delivered"; // Đơn hàng đã giao
+        if (activeTab === "tr4") return order.order.order_status === "cancelled"; // Đơn hàng đã giao
+        return true;
+      })
+=======
     ? orders.filter((order) => {
       const lowerQuery = searchQuery.toLowerCase();
       const firstDetail = order.order_details?.[0] || {};
@@ -596,6 +668,7 @@ const MyOrder = () => {
         (firstDetail.book_name || "").toLowerCase().includes(lowerQuery)
       );
     })
+>>>>>>> 640178cb32538d409808dc8f930081952da68713
     : [];
 
   // --- Giao diện chính ---
@@ -867,7 +940,7 @@ const MyOrder = () => {
           <div className="col-md-9">
             <h2 style={{ marginTop: "30px" }}>My Order</h2>
             <br />
-            <Mitem />
+            <Mitem activeTab = {activeTab} setActiveTab = {setActiveTab}/>
             <br />
 
             {/* Thanh tìm kiếm */}
@@ -910,12 +983,20 @@ const MyOrder = () => {
             </div>
 
             {/* Hiển thị danh sách đơn hàng */}
+<<<<<<< HEAD
+            {loading ? (
+              <p style={{
+                marginLeft: "50%",
+                width: "1000%"
+              }}>Loading...</p>
+=======
             {isLoading ? (
               <tr style={{ position: "relative" }}>
                 <td colSpan="8" className="text-center py-4 text-muted">
                   <Loading isLoading={isLoading} />
                 </td>
               </tr>
+>>>>>>> 640178cb32538d409808dc8f930081952da68713
             ) : reviewOrder ? (
               <ReviewModal
                 order={reviewOrder}

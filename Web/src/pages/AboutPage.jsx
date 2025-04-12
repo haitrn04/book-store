@@ -1,5 +1,5 @@
 import React from 'react'
-import { Footer, Navbar } from "../components";
+import { Footer, Navbar, Chat } from "../components";
 const AboutPage = () => {
   const storedUser = JSON.parse(sessionStorage.getItem('user'))?.data;
 
@@ -50,6 +50,8 @@ const AboutPage = () => {
         </div>
       </div>
       <Footer />
+      <Chat/>
+
     </>
   )
 }

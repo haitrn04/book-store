@@ -164,7 +164,7 @@ const ManageMyAccount = () => {
                 )}
               </div>
             </div>
-            <div className="card shadow-sm p-4 mt-4">
+            {/* <div className="card shadow-sm p-4 mt-4">
               <h4>Recent Orders</h4>
               <table className="table table-striped mt-3">
                 <thead className="bg-light">
@@ -176,7 +176,7 @@ const ManageMyAccount = () => {
                   </tr>
                 </thead>
               </table>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
