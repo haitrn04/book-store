@@ -119,7 +119,7 @@ const ManageMyAccount = () => {
       getin4();
       const getaddress = async () => {
         const res = await getAddress(storedUser.id_account);
-        setAddress(res.data[0]);
+        setAddress(res.data.filter(product => product.is_active)[0]);
       }
       getaddress();
     }, [storedUser.id_account]);

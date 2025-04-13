@@ -89,8 +89,8 @@ const AddressBook = () => {
     const getaddress = async () => {
       try {
         const response = await getAddress(storedUser.id_account);
-        setAddress(response.data);
-        console.log("address", response.data);
+        setAddress(response.data.filter(product => product.is_active));
+        console.log("address", response.data.filter(product => product.is_active) );
       } catch (error) {
         console.error("Lỗi lấy thông tin address:", error);
       }
@@ -185,6 +185,7 @@ const AddressBook = () => {
 
     try {
       await deleteAddress(addressId);
+      
       setAddress((prev) => prev.filter((_, i) => i !== index));
     } catch (error) {
       console.error("Failed to delete address:", error);

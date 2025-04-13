@@ -18,7 +18,7 @@ const Checkout = () => {
   useEffect(() => {
     const fetchAddress = async () => {
       const response = await getAddress(storedUser.id_account);
-      setAddress(response.data);
+      setAddress(response.data.filter(product => product.is_active));
       setSelectedAddress(response.data[0]);
     };
     fetchAddress();

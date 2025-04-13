@@ -31,7 +31,7 @@ const addresscon = {
     deleteAddress: async (req, res) => {
         const { address_id } = req.query;
         try {
-            let sql = `DELETE FROM address WHERE address_id=$1;`;
+            let sql = `UPDATE address SET is_active=false WHERE address_id=$1;`;
             await pool.query(sql, [address_id]);
             res.status(200).send({ message: "Address deleted successfully" });
         } catch (err) {
