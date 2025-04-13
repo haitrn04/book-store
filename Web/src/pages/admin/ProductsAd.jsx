@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaUsers, FaBox, FaList, FaUber, FaChartBar, FaSignOutAlt, FaHome } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { getProducts } from "../../services/apiService";
+import { getProducts, getBookAllReviewCount } from "../../services/apiService";
 import { useNavigate } from "react-router-dom";
 import { HeaderAdmin, Loading } from "../../components";
 
@@ -53,17 +53,40 @@ const Sidebar = () => {
 const ProductsAd = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [bookReviews, setBookReviews] = useState({});
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchProducts = async () => {
-      const response = getProducts();
-      const data = (await response).data;
-      setProducts(data);
+      try {
+        const response = await getProducts();
+        const data = response.data;
+        setProducts(data);
 
-      setLoading(false);
+        // Fetch review counts for all products
+        const reviewPromises = data.map(async (product) => {
+          const reviewResponse = await getBookAllReviewCount(product.id_book);
+          return {
+            id_book: product.id_book,
+            review: reviewResponse.data[0] || { rating: 0, count: 0 }
+          };
+        });
+
+        const reviews = await Promise.all(reviewPromises);
+        const reviewsMap = reviews.reduce((acc, { id_book, review }) => ({
+          ...acc,
+          [id_book]: review
+        }), {});
+        setBookReviews(reviewsMap);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchProducts();
   }, []);
+
   const handleEdit = (id_book) => {
     navigate(`/editproducts/?id=${id_book}`);
   };
@@ -71,82 +94,108 @@ const ProductsAd = () => {
   return (
     <div className="d-flex">
       <Sidebar />
-      <div className="flex-grow-1" style={{ marginLeft: "250px" }}>
+      <div className="flex-grow-1" style={{ marginLeft: '250px' }}>
         <HeaderAdmin />
         <div className="container mt-5 py-4">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h2 className="fw-bold">Products</h2>
-            <Link to="/addproduct" className="btn btn-primary">Add Product</Link>
+            <Link to="/addproduct" className="btn btn-primary">
+              Add Product
+            </Link>
           </div>
           <div className="row mt-3">
             {loading ? (
               <Skeleton height={300} count={6} />
             ) : (
               products
-              .filter(product => product.is_active) 
-              .map((product) => (
-                <div key={product.id_book} className="col-md-4 mb-4">
-                  <div className="card shadow-sm border-0 p-3 text-center" style={{ position: "relative" }}>
-                    {/* Hiển thị discount ở góc phải trên nếu có */}
-                    {parseInt(product.discount, 10) > 0 && (
-                      <div
+                .filter((product) => product.is_active)
+                .map((product) => (
+                  <div key={product.id_book} className="col-md-4 mb-4">
+                    <div
+                      className="card shadow-sm border-0 p-3 text-center"
+                      style={{ position: 'relative' }}
+                    >
+                      {parseInt(product.discount, 10) > 0 && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: '10px',
+                            right: '10px',
+                            backgroundColor: '#dc3545',
+                            color: 'white',
+                            padding: '5px 10px',
+                            borderRadius: '12px',
+                            fontSize: '0.9rem',
+                            fontWeight: 'bold',
+                          }}
+                        >
+                          -{parseInt(product.discount, 10)}%
+                        </div>
+                      )}
+
+                      <img
+                        src={`data:image/jpeg;base64,${product.image_data}`}
+                        id="prodimg"
+                        className="card-img-top mx-auto"
+                        alt={product.book_name}
                         style={{
-                          position: "absolute",
-                          top: "10px",
-                          right: "10px",
-                          backgroundColor: "#dc3545",
-                          color: "white",
-                          padding: "5px 10px",
-                          borderRadius: "12px",
-                          fontSize: "0.9rem",
-                          fontWeight: "bold"
+                          height: '300px',
+                          objectFit: 'contain',
+                          maxWidth: '200px',
                         }}
-                      >
-                        -{parseInt(product.discount, 10)}%
-                      </div>
-                    )}
+                      />
 
-                    <img
-                      src={`data:image/jpeg;base64,${product.image_data}`}
-                      id="prodimg"
-                      className="card-img-top mx-auto"
-                      alt={product.book_name}
-                      style={{ height: "300px", objectFit: "contain", maxWidth: "200px" }}
-                    />
+                      <div className="card-body">
+                        <h5 className="card-title text-truncate">
+                          {product.book_name.substring(0, 30)}
+                          {product.book_name.length > 30 ? '...' : ''}
+                        </h5>
+                        <p className="fw-bold text-secondary">
+                          {parseInt(
+                            (parseInt(product.price) *
+                              (100 - parseInt(product.discount))) /
+                              100
+                          ).toLocaleString('vi-VN')}
+                          <sup>₫</sup>
+                          {parseInt(product.discount) > 0 && (
+                            <span
+                              className="text-danger text-decoration-line-through ms-2"
+                              style={{ fontSize: '0.9rem' }}
+                            >
+                              {parseInt(product.price).toLocaleString('vi-VN')}
+                              <sup>₫</sup>
+                            </span>
+                          )}
+                        </p>
 
-                    <div className="card-body">
-                      <h5 className="card-title text-truncate">
-                        {product.book_name.substring(0, 30)}
-                        {product.book_name.length > 30 ? "..." : ""}
-                      </h5>
-                      <p className="fw-bold text-secondary">
-                        {parseInt((parseInt(product.price) * (100 - parseInt(product.discount)) / 100)).toLocaleString("vi-VN")}
-                        <sup>₫</sup>
-                        {parseInt(product.discount) > 0 && (
-                          <span
-                            className="text-danger text-decoration-line-through ms-2"
-                            style={{ fontSize: "0.9rem" }}
-                          >
-                            {parseInt(product.price).toLocaleString("vi-VN")}
-                            <sup>₫</sup>
-                          </span>
+                        {/* Display review count if available */}
+                        {bookReviews[product.id_book] && (
+                          <div className="d-flex justify-content-center align-items-center">
+                            <span className="text-warning me-2">
+                              {'★'.repeat(
+                                Math.round(bookReviews[product.id_book].rating)
+                              )}
+                              {'☆'.repeat(
+                                5 -
+                                  Math.round(bookReviews[product.id_book].rating)
+                              )}
+                            </span>
+                            <small className="text-muted">
+                              ({bookReviews[product.id_book].count})
+                            </small>
+                          </div>
                         )}
-                      </p>
 
-                      {/* <div className="d-flex justify-content-center align-items-center">
-                        <span className="text-warning me-2">★★★★☆</span>
-                        <small className="text-muted">(131)</small>
-                      </div> */}
-                      <button
-                        className="btn btn-outline-primary mt-2"
-                        onClick={() => handleEdit(product.id_book)}
-                      >
-                        Edit Product
-                      </button>
+                        <button
+                          className="btn btn-outline-primary mt-2"
+                          onClick={() => handleEdit(product.id_book)}
+                        >
+                          Edit Product
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                ))
             )}
           </div>
         </div>
@@ -156,3 +205,4 @@ const ProductsAd = () => {
 };
 
 export default ProductsAd;
+

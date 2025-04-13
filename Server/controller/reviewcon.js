@@ -13,7 +13,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 // Multer configuration for memory storage
 const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 250 * 1024 * 1024 }, 
+    limits: { fileSize: 250 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         // Accept only images
         if (!file.mimetype.startsWith('image/')) {
@@ -76,12 +76,30 @@ const reviewcon = {
         }
     ],
     getBookReviewbyID: async (req, res) => {
-        const { id_book } = req.params; 
+        const { id_book } = req.params;
         try {
             if (!id_book) {
                 return res.status(400).json({ error: 'Missing id_book' });
             }
-            const sql = `SELECT id_order, rating, review_text, created_at, id_book, id, encode(image_data, 'base64') AS image_data FROM reviews WHERE id_book = $1`;
+            const sql = `SELECT 
+                            r.id_order, 
+                            r.rating, 
+                            r.review_text, 
+                            r.created_at, 
+                            r.id_book, 
+                            r.id, 
+                            encode(r.image_data, 'base64') AS image_data,
+                            a.full_name AS user_name
+                        FROM 
+                            reviews r
+                        JOIN 
+                            orders o ON r.id_order = o.id_order
+                        JOIN 
+                            accounts acc ON o.id_account = acc.id_account
+                        JOIN 
+                            address a ON acc.id_account = a.id_account
+                        WHERE 
+                            r.id_book = $1`;
             const data = await pool.query(sql, [id_book]);
             res.status(200).json(data.rows);
         } catch (error) {
@@ -90,7 +108,7 @@ const reviewcon = {
         }
     },
     getBookReviewbyIdBookAndIdOrder: async (req, res) => {
-        const { id_book, id_order } = req.params; 
+        const { id_book, id_order } = req.params;
         try {
             if (!id_book) {
                 return res.status(400).json({ error: 'Missing id_book' });
@@ -104,7 +122,7 @@ const reviewcon = {
         }
     },
     getBookAllReviewCount: async (req, res) => {
-        const { id_book } = req.params; 
+        const { id_book } = req.params;
         try {
             if (!id_book) {
                 return res.status(400).json({ error: 'Missing id_book' });
