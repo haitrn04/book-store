@@ -211,17 +211,6 @@ const Product = () => {
   };
 
 
-
-  const renderStars = (rating) => {
-    return Array.from({ length: 5 }).map((_, idx) => (
-      <i
-        key={idx}
-        className={`bi ${idx < rating ? "bi-star-fill" : "bi-star"}`}
-        style={{ color: idx < rating ? "#FFC107" : "#ccc" }}
-      ></i>
-    ));
-  };
-
   const ShowReviews = () => {
     // Hàm để render số sao dựa trên rating
     const renderStars = (rating) => {
@@ -257,9 +246,9 @@ const Product = () => {
             <div className="row g-4">
               <div className="col-md-4 text-center">
                 <div className="rating-summary p-3 rounded bg-light">
-                  <h2 className="display-3 fw-bold text-primary mb-0">{averageRating}</h2>
+                  <h2 className="display-3 fw-bold text-primary mb-3">{averageRating}</h2>
                   <p className="text-muted">trên thang điểm 5</p>
-                  <div className="d-flex justify-content-center mb-3">
+                  <div className="d-flex justify-content-center mb-0">
                     {renderStars(Math.round(averageRating))}
                   </div>
                   <p className="text-muted mb-0 fw-semibold">{review.length} đánh giá</p>
@@ -287,7 +276,7 @@ const Product = () => {
                             aria-valuemax="100">
                           </div>
                         </div>
-                        <div className="count text-muted small" style={{ width: "45px" }}>
+                        <div className="count text-muted small" style={{ width: "100px" }}>
                           {count} đánh giá
                         </div>
                       </div>
