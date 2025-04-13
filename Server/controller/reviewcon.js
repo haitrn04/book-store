@@ -88,7 +88,35 @@ const reviewcon = {
             console.error('Error fetching reviews:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
-    }
+    },
+    getBookReviewbyIdBookAndIdOrder: async (req, res) => {
+        const { id_book, id_order } = req.params; 
+        try {
+            if (!id_book) {
+                return res.status(400).json({ error: 'Missing id_book' });
+            }
+            const sql = `SELECT id_order, rating, review_text, created_at, id_book, id, encode(image_data, 'base64') AS image_data FROM reviews WHERE id_book = $1 and id_order = $2`;
+            const data = await pool.query(sql, [id_book, id_order]);
+            res.status(200).json(data.rows);
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
+    getBookAllReviewCount: async (req, res) => {
+        const { id_book } = req.params; 
+        try {
+            if (!id_book) {
+                return res.status(400).json({ error: 'Missing id_book' });
+            }
+            const sql = `SELECT count(id_book) as count, round(avg(rating),2) as rating FROM reviews WHERE id_book = $1`;
+            const data = await pool.query(sql, [id_book]);
+            res.status(200).json(data.rows);
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
 };
 
 module.exports = reviewcon;

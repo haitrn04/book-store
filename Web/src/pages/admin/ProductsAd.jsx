@@ -133,10 +133,10 @@ const ProductsAd = () => {
                         )}
                       </p>
 
-                      <div className="d-flex justify-content-center align-items-center">
+                      {/* <div className="d-flex justify-content-center align-items-center">
                         <span className="text-warning me-2">★★★★☆</span>
                         <small className="text-muted">(131)</small>
-                      </div>
+                      </div> */}
                       <button
                         className="btn btn-outline-primary mt-2"
                         onClick={() => handleEdit(product.id_book)}

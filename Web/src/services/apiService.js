@@ -173,7 +173,13 @@ const addReview = (formData) => {
 };
 
 const getBookReviewbyID = (id_book) => {
-    return axios.get(`http://localhost:3005/review//getBookReviewbyID/${id_book}`);
+    return axios.get(`http://localhost:3005/review/getBookReviewbyID/${id_book}`);
+};
+const getBookAllReviewCount = (id_book) => {
+    return axios.get(`http://localhost:3005/review/getBookAllReviewCount/${id_book}`);
+};
+const getBookReviewbyIdBookAndIdOrder = (id_book, id_order) => {
+    return axios.get(`http://localhost:3005/review/getBookReviewbyIdBookAndIdOrder/${id_book}/${id_order}`);
 };
 
 export {
@@ -184,5 +190,5 @@ export {
     getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus,
     getOrderByID, getOrderByAccountID, sendmail, getAccounts, getAccountbyName,
     postPayment, postOrderStatus, getProductsIfExist, getCountUser, getTotalOrders,
-    getTotalSales, getPendingOrders, getRecentTransactions, addReview
+    getTotalSales, getPendingOrders, getRecentTransactions, addReview, getBookAllReviewCount, getBookReviewbyIdBookAndIdOrder
 };

@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { addCart } from "../redux/action";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Footer, Navbar } from "../components";
-import { getProductbyID, getProductbyGenre } from "../services/apiService";
+import { getProductbyID, getProductbyGenre, getBookAllReviewCount } from "../services/apiService";
 import fiction from '../assets/images/Fiction.png';
 import education from '../assets/images/Education.png';
 import toast from "react-hot-toast";
@@ -19,6 +19,7 @@ const Product = () => {
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
+  const [thongKe, setThongKe] = useState({rating: 0, count: 0});
 
   const dispatch = useDispatch();
 
@@ -44,21 +45,39 @@ const Product = () => {
   };
 
   useEffect(() => {
-    const getProduct = async () => {
-      setLoading(true);
-      setLoading2(true);
-      const response = getProductbyID(id);
-      const data = (await response).data;
-      setProduct(data[0]);
-      setLoading(false);
-      const response2 = getProductbyGenre(data[0].id_genre);
-      const data2 = (await response2).data;
-      setSimilarProducts(data2);
-      setLoading2(false);
+    const fetchData = async () => {
+      try {
+
+        setLoading(true);
+        setLoading2(true);
+
+        const productResponse = await getProductbyID(id); 
+        const productData = productResponse.data;
+        setProduct(productData[0]);
+  
+
+        const similarResponse = await getProductbyGenre(productData[0].id_genre); 
+        const similarData = similarResponse.data;
+        setSimilarProducts(similarData);
+  
+
+        const reviewResponse = await getBookAllReviewCount(id); 
+        const reviewData = reviewResponse.data;
+        setThongKe(reviewData[0]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        // Reset loading states
+        setLoading(false);
+        setLoading2(false);
+      }
     };
-    getProduct();
+  
+    fetchData();
   }, [id]);
-  console.log("sp ", product, "id ", id)
+
+
+
   const Loading = () => {
     return (
       <>
@@ -108,8 +127,7 @@ const Product = () => {
               <p className="lead fw-bold text-secondary">Author: {product.author}</p>
               <p className="lead fw-bold text-secondary">Stock: {isactive(product.is_active)}</p>
               <p className="lead">
-                {product.rating && product.rating.rate}{" "}
-                <i className="fa fa-star text-warning"></i> 4.5 (10)
+                <i className="fa fa-star text-warning"></i> {thongKe.rating} ({thongKe.count})
               </p>
 
               {/* Price and Discount Section */}
