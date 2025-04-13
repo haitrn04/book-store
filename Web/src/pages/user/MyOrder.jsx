@@ -1005,7 +1005,7 @@ const MyOrder = () => {
               />
             </div>
             {isLoading ? (
-              <div style={{ marginLeft: "50%", width: "1000%", padding: "60px 0" }}>
+              <div style={{ marginLeft: "50%", padding: "60px 0" }}>
                 <tr style={{ position: "relative" }}>
                   <td colSpan="8" className="text-center py-4 text-muted">
                     <div
