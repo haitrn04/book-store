@@ -89,17 +89,16 @@ const reviewcon = {
                             r.id_book, 
                             r.id, 
                             encode(r.image_data, 'base64') AS image_data,
-                            a.full_name AS user_name
+                            acc.full_name AS user_name
                         FROM 
                             reviews r
                         JOIN 
                             orders o ON r.id_order = o.id_order
                         JOIN 
                             accounts acc ON o.id_account = acc.id_account
-                        JOIN 
-                            address a ON acc.id_account = a.id_account
                         WHERE 
-                            r.id_book = $1`;
+                            r.id_book = $1
+                        GROUP BY acc.full_name, r.id_order, r.rating, r.review_text, r.created_at, r.id_book, r.id`;
             const data = await pool.query(sql, [id_book]);
             res.status(200).json(data.rows);
         } catch (error) {

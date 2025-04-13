@@ -7,8 +7,7 @@ import { addCart } from "../redux/action";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Footer, Navbar } from "../components";
 import { getProductbyID, getProductbyGenre, getBookAllReviewCount, getBookReviewbyID } from "../services/apiService";
-import fiction from '../assets/images/Fiction.png';
-import education from '../assets/images/Education.png';
+
 import toast from "react-hot-toast";
 
 const Product = () => {
