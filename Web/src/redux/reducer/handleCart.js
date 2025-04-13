@@ -10,7 +10,6 @@ const handleCart = (state = getInitialCart(), action) => {
 
   switch (action.type) {
     case "ADDITEM":
-      // Check if product already in cart
       const exist = state.find((x) => x.id_book === product.id_book);
       if (exist) {
         if(exist.qty >= product.stock) { 
@@ -43,8 +42,7 @@ const handleCart = (state = getInitialCart(), action) => {
       return updatedCart;
     
       case "CLEAR_CART":
-        return []; // Xóa toàn bộ giỏ hàng
-
+        return [];
     default:
       return state;
   }

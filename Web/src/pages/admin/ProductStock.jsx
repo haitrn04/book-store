@@ -163,27 +163,46 @@ const ProductStock = () => {
               </tr>
             </thead>
             <tbody>
-
               {isLoading ? (
                 <tr style={{ position: "relative" }}>
                   <td colSpan="8" className="text-center py-4 text-muted">
                     <Loading isLoading={isLoading} />
                   </td>
                 </tr>
-              ) : products.map(product => (
-                <tr key={product.id_book}>
-                  <td><img src={`data:image/jpeg;base64,${product.image_data}`} alt={product.book_name} style={{ height: "58px", objectFit: "contain", maxWidth: "200px" }} /></td>
-                  <td>{product.book_name}</td>
-                  <td>{product.genre}</td>
-                  <td>${product.price}</td>
-                  <td>{product.stock}</td>
-                  <td>{product.discount}%</td>
-                  <td>
-                    <button className="btn btn-outline-danger me-2" onClick={() => handleDelete(product)}><FaTrash /></button>
-                    <button className="btn btn-outline-primary" onClick={() => handleEdit(product)}><FaEdit /></button>
-                  </td>
-                </tr>
-              ))}
+              ) : (
+                products
+                  .filter(product => product.is_active) // Filter active products
+                  .map(product => (
+                    <tr key={product.id_book}>
+                      <td>
+                        <img
+                          src={`data:image/jpeg;base64,${product.image_data}`}
+                          alt={product.book_name}
+                          style={{ height: "58px", objectFit: "contain", maxWidth: "200px" }}
+                        />
+                      </td>
+                      <td>{product.book_name}</td>
+                      <td>{product.genre}</td>
+                      <td>{product.price.toLocaleString("vi-VN")}<sup>₫</sup></td>
+                      <td>{product.stock}</td>
+                      <td>{product.discount}%</td>
+                      <td>
+                        <button
+                          className="btn btn-outline-danger me-2"
+                          onClick={() => handleDelete(product)}
+                        >
+                          <FaTrash />
+                        </button>
+                        <button
+                          className="btn btn-outline-primary"
+                          onClick={() => handleEdit(product)}
+                        >
+                          <FaEdit />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+              )}
             </tbody>
           </table>
         </div>

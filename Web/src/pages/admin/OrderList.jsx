@@ -275,6 +275,9 @@ const OrderList = () => {
                                 className="form-select form-select-sm shadow-sm"
                                 value={editingValues.order_status}
                                 onChange={(e) => handleStatusChange("order_status", e.target.value)}
+                                disabled={
+                                  ["cancelled", "delivered"].includes(order.order_status)
+                                }
                               >
                                 {orderStatuses.map((status) => (
                                   <option key={status} value={status}>
@@ -294,6 +297,10 @@ const OrderList = () => {
                                 className="form-select form-select-sm shadow-sm"
                                 value={editingValues.payment_status}
                                 onChange={(e) => handleStatusChange("payment_status", e.target.value)}
+                                disabled={
+                                  
+                                  ["failed", "refunded", "paid"].includes(order.payment_status)
+                                }
                               >
                                 {paymentStatuses.map((status) => (
                                   <option key={status} value={status}>

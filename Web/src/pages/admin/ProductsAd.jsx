@@ -82,7 +82,9 @@ const ProductsAd = () => {
             {loading ? (
               <Skeleton height={300} count={6} />
             ) : (
-              products.map((product) => (
+              products
+              .filter(product => product.is_active) 
+              .map((product) => (
                 <div key={product.id_book} className="col-md-4 mb-4">
                   <div className="card shadow-sm border-0 p-3 text-center" style={{ position: "relative" }}>
                     {/* Hiển thị discount ở góc phải trên nếu có */}

@@ -164,7 +164,7 @@ const productcon = {
     deleteProductbyID: async (req, res) => {
         const { id_book } = req.query;
         try {
-            const sql = `UPDATE books SET is_active=False WHERE id_book=$1;`;
+            const sql = `UPDATE books SET is_active=false WHERE id_book=$1;`;
             await pool.query(sql, [parseInt(id_book)]);
             res.status(200).json({ message: "Book deleted successfully" });
 
