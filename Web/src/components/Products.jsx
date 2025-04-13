@@ -46,6 +46,7 @@ const Products = () => {
       const response = await getProductsIfExist(); 
       if (componentMounted) {
         setData(response.data);  
+        console.log(response.data);
         setFilter(response.data); 
         setLoading(false);
       }

@@ -135,9 +135,6 @@ const addreview = (id_order, rating, review_text, created_at, id_book) => {
 const deleteReview = (id) => {
     return axios.delete(`http://localhost:3005/review/deleteReview/?id=${id}`);
 }
-const getBookReviewbyID = (id_book) => {
-    return axios.get(`http://localhost:3005/review/getBookReviewbyID/?id_book=${id_book}`);
-}
 const getBookReviewbyorderID = (id_order) => {
     return axios.get(`http://localhost:3005/review/getBookReviewbyorderID/?id_order=${id_order}`);
 }
@@ -167,6 +164,18 @@ const updateOrderStatus = async (id_order, status) => {
     }
 };
 
+const addReview = (formData) => {
+    return axios.post('http://localhost:3005/review/addReview', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+};
+
+const getBookReviewbyID = (id_book) => {
+    return axios.get(`http://localhost:3005/review//getBookReviewbyID/${id_book}`);
+};
+
 export {
     postLogin, getImage, postRegister, postAddProduct, postEditProduct,
     getProducts, getProductbyID, getGenre, getInfor, deleteProductbyID,
@@ -175,5 +184,5 @@ export {
     getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus,
     getOrderByID, getOrderByAccountID, sendmail, getAccounts, getAccountbyName,
     postPayment, postOrderStatus, getProductsIfExist, getCountUser, getTotalOrders,
-    getTotalSales, getPendingOrders, getRecentTransactions
+    getTotalSales, getPendingOrders, getRecentTransactions, addReview
 };
