@@ -23,11 +23,11 @@ const Product = () => {
   const dispatch = useDispatch();
 
   const addProduct = (product) => {
-    let cartMsg = localStorage.getItem("cart-msg") || "0"; 
-    cartMsg = parseInt(cartMsg); 
+    let cartMsg = localStorage.getItem("cart-msg") || "0";
+    cartMsg = parseInt(cartMsg);
 
     let exist = state.find((item) => item.id_book === product.id_book);
-    
+
     if (exist) {
       if (exist.qty >= product.stock) {
         cartMsg += 1;
@@ -39,7 +39,7 @@ const Product = () => {
       }
     }
     dispatch(addCart(product));
-    localStorage.setItem("cart-msg", "0"); 
+    localStorage.setItem("cart-msg", "0");
     toast.success("Added to cart");
   };
 
@@ -82,7 +82,7 @@ const Product = () => {
     );
   };
   const isactive = (is_active) => {
-    if (is_active){
+    if (is_active) {
       return product.stock;
     } else {
       return "Out of stock";
@@ -90,70 +90,78 @@ const Product = () => {
   }
   const ShowProduct = () => {
     return (
-<>
-  <div className="container my-5 py-2">
-    <div className="row">
-      <div className="col-md-6 col-sm-12 py-3">
-        <img
-          src={`data:image/jpeg;base64,${product.image_data}`}
-          id="prodimg"
-          className="card-img-top mx-auto d-block"
-          alt={product.book_name}
-          style={{ height: "450px", objectFit: "contain", maxWidth: "450px" }}
-        />
-      </div>
-      <div className="col-md-6 py-5">
-        <h4 className="text-uppercase text-muted">{product.genre}</h4>
-        <h1 className="display-5">{product.book_name}</h1>
-        <p className="lead fw-bold text-secondary">Author: {product.author}</p>
-        <p className="lead fw-bold text-secondary">Stock: {isactive(product.is_active)}</p>
-        <p className="lead">
-          {product.rating && product.rating.rate}{" "}
-          <i className="fa fa-star text-warning"></i> 4.5 (10)
-        </p>
-        
-        {/* Price and Discount Section */}
-        <div className="position-relative mb-4">
-          {/* Discount Badge */}
-          {parseInt(product.discount, 10) > 0 && (
-            <span
-              className="badge bg-danger text-white position-absolute"
-              style={{ top: "-10px", right: "0", fontSize: "0.9rem" }}
-            >
-              -{parseInt(product.discount, 10)}%
-            </span>
-          )}
-          
-          <h3 className="display-6 fw-bold text-secondary">
-            {parseInt((parseInt(product.price) * (100 - parseInt(product.discount || 0)) / 100)).toLocaleString("vi-VN")}
-            <sup>₫</sup>
-            {parseInt(product.discount, 10) > 0 && (
-              <span className="text-danger text-decoration-line-through ms-3" style={{ fontSize: "1.2rem" }}>
-                {parseInt(product.price).toLocaleString("vi-VN")}
-                <sup>₫</sup>
-              </span>
-            )}
-          </h3>
-        </div>
+      <>
+        <div className="container my-5 py-2">
+          <div className="row">
+            <div className="col-md-6 col-sm-12 py-3">
+              <img
+                src={`data:image/jpeg;base64,${product.image_data}`}
+                id="prodimg"
+                className="card-img-top mx-auto d-block"
+                alt={product.book_name}
+                style={{ height: "450px", objectFit: "contain", maxWidth: "450px" }}
+              />
+            </div>
+            <div className="col-md-6 py-5">
+              <h4 className="text-uppercase text-muted">{product.genre}</h4>
+              <h1 className="display-5">{product.book_name}</h1>
+              <p className="lead fw-bold text-secondary">Author: {product.author}</p>
+              <p className="lead fw-bold text-secondary">Stock: {isactive(product.is_active)}</p>
+              <p className="lead">
+                {product.rating && product.rating.rate}{" "}
+                <i className="fa fa-star text-warning"></i> 4.5 (10)
+              </p>
 
-        <p className="lead">{product.description}</p>
-        <button
-          className="btn btn-outline-dark me-3"
-          onClick={() => {if (product.is_active){
-            addProduct(product); 
-          }else {
-            toast.error("Out of stock");
-          }}}
-        >
-          Add to Cart
-        </button>
-        <Link to="/cart" className="btn btn-dark">
-          Go to Cart
-        </Link>
-      </div>
-    </div>
-  </div>
-</>
+              {/* Price and Discount Section */}
+              <div className="position-relative mb-4">
+                {/* Discount Badge */}
+                {parseInt(product.discount, 10) > 0 && (
+                  <span
+                    className="badge bg-danger text-white position-absolute"
+                    style={{ top: "-10px", right: "0", fontSize: "0.9rem" }}
+                  >
+                    -{parseInt(product.discount, 10)}%
+                  </span>
+                )}
+
+                <h3 className="display-6 fw-bold text-secondary">
+                  {parseInt((parseInt(product.price) * (100 - parseInt(product.discount || 0)) / 100)).toLocaleString("vi-VN")}
+                  <sup>₫</sup>
+                  {parseInt(product.discount, 10) > 0 && (
+                    <span className="text-danger text-decoration-line-through ms-3" style={{ fontSize: "1.2rem" }}>
+                      {parseInt(product.price).toLocaleString("vi-VN")}
+                      <sup>₫</sup>
+                    </span>
+                  )}
+                </h3>
+              </div>
+
+              <p className="lead">{product.description}</p>
+              {product.is_active ? (
+                <div>
+                  <button
+                    className="btn btn-outline-dark me-3"
+                    onClick={() => {
+                      if (product.is_active) {
+                        addProduct(product);
+                      } else {
+                        toast.error("Out of stock");
+                      }
+                    }}
+                  >
+                    Add to Cart
+                  </button>
+                  <Link to="/cart" className="btn btn-dark">
+                    Go to Cart
+                  </Link>
+                </div>) : (
+                  <h3>This product has been discontinued.</h3>
+              )}
+
+            </div>
+          </div>
+        </div>
+      </>
     );
   };
 
@@ -180,7 +188,7 @@ const Product = () => {
     );
   };
 
-  
+
   const reviews = [
     {
       user: "m*****o",
@@ -209,7 +217,7 @@ const Product = () => {
         "Seller Page thanks you for supporting our bookstore. We hope to provide you with the best product experience.",
     },
   ];
-  
+
   const renderStars = (rating) => {
     return Array.from({ length: 5 }).map((_, idx) => (
       <i
@@ -219,12 +227,12 @@ const Product = () => {
       ></i>
     ));
   };
-  
+
   const ShowReviews = () => {
     return (
       <div className="my-5">
         <h3 className="fw-bold mb-4">PRODUCT REVIEWS</h3>
-  
+
         <div className="card mb-4 border-warning">
           <div className="card-body">
             <div className="row">
@@ -242,7 +250,7 @@ const Product = () => {
                 </div>
                 <p className="text-muted">337 reviews</p>
               </div>
-  
+
               <div className="col-md-8">
                 <div className="row g-2">
                   <div className="col-12">
@@ -282,7 +290,7 @@ const Product = () => {
             </div>
           </div>
         </div>
-  
+
         {reviews.length === 0 ? (
           <p>No reviews yet.</p>
         ) : (
@@ -303,10 +311,10 @@ const Product = () => {
                   <span>{renderStars(review.rating)}</span>
                 </div>
               </div>
-  
+
               <div className="card-body">
                 <p className="card-text mb-3">{review.comment}</p>
-  
+
                 {review.media.length > 0 && (
                   <div className="d-flex gap-2 mb-3">
                     {review.media.map((media, mediaIdx) => (
@@ -348,7 +356,7 @@ const Product = () => {
                     ))}
                   </div>
                 )}
-  
+
                 {review.sellerReply && (
                   <div className="card bg-light border-0">
                     <div className="card-body py-2">
@@ -361,7 +369,7 @@ const Product = () => {
                   </div>
                 )}
               </div>
-  
+
               <div className="card-footer bg-white text-end border-top-0">
                 <button className="btn btn-outline-secondary btn-sm me-2">
                   <i className="bi bi-hand-thumbs-up me-1"></i>Helpful
@@ -377,8 +385,8 @@ const Product = () => {
     );
   };
 
-  
-  
+
+
 
 
   const ShowSimilarProduct = () => {
@@ -443,7 +451,7 @@ const Product = () => {
             </Marquee>
           </div>
         </div>
-        <ShowReviews/>
+        <ShowReviews />
       </div>
       <Footer />
     </>

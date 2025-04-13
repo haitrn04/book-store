@@ -139,7 +139,9 @@ const Navbar = ({ user }) => {
                                     style={{ zIndex: 1000, maxHeight: '500px', overflowY: 'auto' }}
                                 >
                                     <div className="list-group list-group-flush">
-                                        {data.map(item => (
+                                        {data
+                                        .filter(product => product.is_active) 
+                                        .map(item => (
                                             <Link
                                                 key={item.id_book}
                                                 to={`/product/${item.id_book}`}

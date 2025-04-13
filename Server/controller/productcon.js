@@ -176,9 +176,9 @@ const productcon = {
     findProduct: async (req, res) => {
         const { book_name } = req.query;
         try {
-            const sql = `SELECT id_book, book_name, encode(image_data, 'base64') AS image_data, price, discount, author 
+            const sql = `SELECT id_book, book_name, encode(image_data, 'base64') AS image_data, price, discount, author, is_active
                 FROM books 
-                WHERE book_name ILIKE '%' || $1 || '%' OR author ILIKE '%' || $1 || '%';`;
+                WHERE book_name ILIKE '%' || $1 || '%' OR author ILIKE '%' || $1 || '%' and is_active=true;`;
             const data = await pool.query(sql, [book_name]);
             res.status(200).json(data.rows);
 
