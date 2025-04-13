@@ -8,11 +8,8 @@ export default function OrderConfirmationEmail({ order, orderDetails }) {
     return null;
   }
   let priceSubtotal = 0;
-  let discountedSubtotal = 0;
   orderDetails.forEach(detail => {
     priceSubtotal += detail.price * detail.quantity;
-    const discountedItemTotal = parseInt(detail.price * detail.qty * (1 - detail.discount / 100));
-    discountedSubtotal += discountedItemTotal
   });
 
 
@@ -73,7 +70,7 @@ export default function OrderConfirmationEmail({ order, orderDetails }) {
             </Row>
             <Row>
               <Column style={{ width: "70%" }}><Text><strong>Discount từ Ecoms:</strong></Text></Column>
-              <Column style={{ width: "30%", textAlign: "right" }}><Text>- {formatCurrency(discountedSubtotal)}</Text></Column>
+              <Column style={{ width: "30%", textAlign: "right" }}><Text>- {formatCurrency(priceSubtotal-order.total_price)}</Text></Column>
             </Row>
             <Row>
               <Column style={{ width: "70%" }}><Text><strong>Phí vận chuyển:</strong></Text></Column>
