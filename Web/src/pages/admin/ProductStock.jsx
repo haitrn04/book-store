@@ -42,7 +42,7 @@ const Sidebar = () => {
         <FaHome className="me-2" /> Back to Home
       </Link>
       <Link to="/login" className="nav-link text-danger">
-        <FaSignOutAlt className="me-2" />Login
+        <FaSignOutAlt className="me-2" /> Login
       </Link>
     </div>
   );

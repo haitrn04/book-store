@@ -5,7 +5,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { getProducts } from "../../services/apiService";
 import { useNavigate } from "react-router-dom";
-import { HeaderAdmin } from "../../components";
+import { HeaderAdmin, Loading } from "../../components";
 
 
 const Sidebar = () => {
@@ -44,7 +44,7 @@ const Sidebar = () => {
         <FaHome className="me-2" /> Back to Home
       </Link>
       <Link to="/login" className="nav-link text-danger">
-        <FaSignOutAlt className="me-2" />Login
+        <FaSignOutAlt className="me-2" /> Login
       </Link>
     </div>
   );
