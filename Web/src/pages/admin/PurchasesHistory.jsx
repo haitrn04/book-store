@@ -1,12 +1,22 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaUsers, FaBox, FaUber, FaList, FaChartBar, FaSignOutAlt, FaHome } from "react-icons/fa";
+import {
+  FaUsers,
+  FaBox,
+  FaUber,
+  FaList,
+  FaChartBar,
+  FaSignOutAlt,
+  FaHome,
+} from "react-icons/fa";
 import { HeaderAdmin } from "../../components";
-
 
 const Sidebar = () => {
   return (
-    <div className="d-flex flex-column p-3 bg-white shadow position-fixed" style={{ width: "250px", height: "100vh", top: "0", left: "0" }}>
+    <div
+      className="d-flex flex-column p-3 bg-white shadow position-fixed"
+      style={{ width: "250px", height: "100vh", top: "0", left: "0" }}
+    >
       <h4 className="text-primary text-center">Seller Page</h4>
       <ul className="nav flex-column mt-3">
         <li className="nav-item">
@@ -30,7 +40,10 @@ const Sidebar = () => {
           </Link>
         </li>
         <li className="nav-item">
-          <Link to="/customer" className="nav-link text-white fw-bold bg-primary p-2 rounded">
+          <Link
+            to="/customer"
+            className="nav-link text-white fw-bold bg-primary p-2 rounded"
+          >
             <FaUber className="me-2" /> Customer
           </Link>
         </li>
@@ -40,7 +53,8 @@ const Sidebar = () => {
         <FaHome className="me-2" /> Back to Home
       </Link>
       <Link to="/login" className="nav-link text-danger">
-        <FaSignOutAlt className="me-2" /> Login
+        <FaSignOutAlt className="me-2" />
+        Logout
       </Link>
     </div>
   );
@@ -48,12 +62,54 @@ const Sidebar = () => {
 
 const PurchaseHistory = () => {
   const orders = [
-    { id: "00001", name: "Christine Brooks", address: "089 Kutch Green Apt. 448", date: "2019-05-28", bookId: "Book", status: "Completed" },
-    { id: "00002", name: "Rosie Pearson", address: "979 Immanuel Ferry Suite 526", date: "2019-05-28", bookId: "Book", status: "Processing" },
-    { id: "00003", name: "Darrell Caldwell", address: "8587 Frida Ports", date: "2019-05-28", bookId: "Book", status: "Rejected" },
-    { id: "00004", name: "Gilbert Johnston", address: "768 Destiny Lake Suite 600", date: "2019-05-28", bookId: "Book", status: "Completed" },
-    { id: "00005", name: "Alan Cain", address: "042 Mylene Throughway", date: "2019-05-28", bookId: "Book", status: "Processing" },
-    { id: "00006", name: "Alfred Murray", address: "543 Weimann Mountain", date: "2019-05-28", bookId: "Book", status: "Completed" },
+    {
+      id: "00001",
+      name: "Christine Brooks",
+      address: "089 Kutch Green Apt. 448",
+      date: "2019-05-28",
+      bookId: "Book",
+      status: "Completed",
+    },
+    {
+      id: "00002",
+      name: "Rosie Pearson",
+      address: "979 Immanuel Ferry Suite 526",
+      date: "2019-05-28",
+      bookId: "Book",
+      status: "Processing",
+    },
+    {
+      id: "00003",
+      name: "Darrell Caldwell",
+      address: "8587 Frida Ports",
+      date: "2019-05-28",
+      bookId: "Book",
+      status: "Rejected",
+    },
+    {
+      id: "00004",
+      name: "Gilbert Johnston",
+      address: "768 Destiny Lake Suite 600",
+      date: "2019-05-28",
+      bookId: "Book",
+      status: "Completed",
+    },
+    {
+      id: "00005",
+      name: "Alan Cain",
+      address: "042 Mylene Throughway",
+      date: "2019-05-28",
+      bookId: "Book",
+      status: "Processing",
+    },
+    {
+      id: "00006",
+      name: "Alfred Murray",
+      address: "543 Weimann Mountain",
+      date: "2019-05-28",
+      bookId: "Book",
+      status: "Completed",
+    },
   ];
 
   const getStatusBadge = (status) => {

@@ -1,25 +1,47 @@
 import React, { useState, useEffect } from "react";
 import {
-  FaUsers, FaUber, FaShoppingCart, FaDollarSign, FaBox, FaList,
-  FaChartBar, FaSignOutAlt, FaHome, FaClock
+  FaUsers,
+  FaUber,
+  FaShoppingCart,
+  FaBox,
+  FaList,
+  FaChartBar,
+  FaSignOutAlt,
+  FaHome,
+  FaClock,
 } from "react-icons/fa";
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
 } from "recharts";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 import { HeaderAdmin } from "../../components";
 import {
-  getTotalOrders, getCountUser, getTotalSales,
-  getRecentTransactions, getPendingOrders
+  getTotalOrders,
+  getCountUser,
+  getTotalSales,
+  getRecentTransactions,
+  getPendingOrders,
 } from "../../services/apiService";
 
 const Sidebar = () => (
-  <div className="d-flex flex-column p-3 bg-white shadow position-fixed" style={{ width: "250px", height: "100vh" }}>
+  <div
+    className="d-flex flex-column p-3 bg-white shadow position-fixed"
+    style={{ width: "250px", height: "100vh" }}
+  >
     <h4 className="text-primary text-center">Seller Page</h4>
     <ul className="nav flex-column mt-3">
       <li className="nav-item">
-        <Link to="/dashboard" className="nav-link text-white fw-bold bg-primary p-2 rounded">
+        <Link
+          to="/dashboard"
+          className="nav-link text-white fw-bold bg-primary p-2 rounded"
+        >
           <FaUsers className="me-2" /> Dashboard
         </Link>
       </li>
@@ -49,29 +71,39 @@ const Sidebar = () => (
       <FaHome className="me-2" /> Back to Home
     </Link>
     <Link to="/login" className="nav-link text-danger">
-      <FaSignOutAlt className="me-2" /> Login
+      <FaSignOutAlt className="me-2" /> Logout
     </Link>
   </div>
 );
 
 const Dashboard = () => {
-  const [stats, setStats] = useState({ users: 0, orders: 0, sales: 0, pending: 0 });
+  const [stats, setStats] = useState({
+    users: 0,
+    orders: 0,
+    sales: 0,
+    pending: 0,
+  });
   const [transactionsData, setTransactionsData] = useState([]);
   const [transactionChartData, setTransactionChartData] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [dateFilter, setDateFilter] = useState("allDates");
+
   useEffect(() => {
     fetchDashboardData();
     fetchRecentTransactions();
+  }, []);
+
+  useEffect(() => {
     filterTransactionsByDate();
   }, [dateFilter, transactionsData]);
+
   const fetchDashboardData = async () => {
     try {
       const [ordersRes, usersRes, salesRes, pendingRes] = await Promise.all([
         getTotalOrders(),
         getCountUser(),
         getTotalSales(),
-        getPendingOrders()
+        getPendingOrders(),
       ]);
       setStats({
         users: usersRes?.data?.total_user || 0,
@@ -80,7 +112,7 @@ const Dashboard = () => {
         pending: pendingRes?.data?.total_pending_orders || 0,
       });
     } catch (error) {
-      console.error("Error fetching dashboard data:", error);
+      console.error("Loi:", error);
     }
   };
 
@@ -88,26 +120,18 @@ const Dashboard = () => {
     try {
       const response = await getRecentTransactions();
       const transactions = response.data || [];
-
       setTransactionsData(transactions);
-
-      const chartData = transactions.map((item) => ({
-        name: item.product,
-        price: parseFloat(item.amount),
-      }));
-      setTransactionChartData(chartData);
     } catch (error) {
-      console.error("Error fetching transactions:", error);
+      console.error("loi: ", error);
     }
   };
 
   const filterTransactionsByDate = () => {
-    if (dateFilter === "allDates") {
-      setFilteredTransactions(transactionsData);
-      return;
-    }
+    if (!transactionsData || transactionsData.length === 0) return;
 
-    const startDate = new Date();
+    let startDate = new Date();
+    let endDate = new Date();
+
     switch (dateFilter) {
       case "today":
         startDate.setHours(0, 0, 0, 0);
@@ -115,28 +139,60 @@ const Dashboard = () => {
       case "yesterday":
         startDate.setDate(startDate.getDate() - 1);
         startDate.setHours(0, 0, 0, 0);
+        endDate.setDate(endDate.getDate() - 1);
+        endDate.setHours(23, 59, 59, 999);
         break;
       case "3days":
-        startDate.setDate(startDate.getDate() - 3);
+        startDate.setDate(startDate.getDate() - 2);
+        startDate.setHours(0, 0, 0, 0);
         break;
       case "7days":
-        startDate.setDate(startDate.getDate() - 7);
+        startDate.setDate(startDate.getDate() - 6);
+        startDate.setHours(0, 0, 0, 0);
         break;
       case "thisMonth":
-        startDate.setDate(1);
-        startDate.setHours(0, 0, 0, 0);
+        startDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
         break;
       case "lastMonth":
-        startDate.setMonth(startDate.getMonth() - 1);
-        startDate.setDate(1);
-        startDate.setHours(0, 0, 0, 0);
+        startDate = new Date(
+          startDate.getFullYear(),
+          startDate.getMonth() - 1,
+          1
+        );
+        endDate = new Date(
+          startDate.getFullYear(),
+          startDate.getMonth() + 1,
+          0
+        );
         break;
+      case "allDates":
       default:
-        break;
+        setFilteredTransactions(transactionsData);
+        setTransactionChartData(
+          transactionsData.map((item) => ({
+            name: item.product,
+            price: parseFloat(item.amount),
+            date: item.date,
+          }))
+        );
+        return;
     }
-    const filtered = transactionsData.filter((t) => new Date(t.date) >= startDate);
+
+    const filtered = transactionsData.filter((t) => {
+      const tDate = new Date(t.date);
+      return tDate >= startDate && tDate <= endDate;
+    });
+
     setFilteredTransactions(filtered);
+    setTransactionChartData(
+      filtered.map((item) => ({
+        name: item.product,
+        price: parseFloat(item.amount),
+        date: item.date,
+      }))
+    );
   };
+
   return (
     <div className="d-flex">
       <Sidebar />
@@ -147,15 +203,28 @@ const Dashboard = () => {
           <br />
 
           <div className="row text-center">
-            {[{
-              icon: <FaUsers className="text-primary" size={24} />, label: "Total Users", value: stats.users
-            }, {
-              icon: <FaShoppingCart className="text-warning" size={24} />, label: "Total Orders", value: stats.orders
-            }, {
-              icon: <FaDollarSign className="text-success" size={24} />, label: "Total Sales", value: `$${stats.sales.toFixed(0)}`
-            }, {
-              icon: <FaClock className="text-danger" size={24} />, label: "Pending Orders", value: stats.pending
-            }].map((stat, i) => (
+            {[
+              {
+                icon: <FaUsers className="text-primary" size={24} />,
+                label: "Total Users",
+                value: stats.users,
+              },
+              {
+                icon: <FaShoppingCart className="text-warning" size={24} />,
+                label: "Total Orders",
+                value: stats.orders,
+              },
+              {
+                icon: <span className="text-success fs-4 fw-bold">₫</span>,
+                label: "Total Sales",
+                value: `${Number(stats.sales.toFixed(0)).toLocaleString()} đ`,
+              },
+              {
+                icon: <FaClock className="text-danger" size={24} />,
+                label: "Pending Orders",
+                value: stats.pending,
+              },
+            ].map((stat, i) => (
               <div key={i} className="col-md-3 mb-3">
                 <div className="card shadow-sm p-3">
                   <div className="d-flex align-items-center">
@@ -171,7 +240,11 @@ const Dashboard = () => {
           </div>
 
           <div className="mb-3">
-            <select className="form-select" value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
+            <select
+              className="form-select"
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+            >
               <option value="today">Today</option>
               <option value="yesterday">Yesterday</option>
               <option value="3days">Last 3 Days</option>
@@ -181,22 +254,47 @@ const Dashboard = () => {
               <option value="allDates">All Dates</option>
             </select>
           </div>
+
           <div className="card shadow-sm p-4 mt-4">
             <h4>Sales Details</h4>
             <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={transactionChartData}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="product" tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 9 }} tickFormatter={(value) => `${value}đ`} />
-            <Tooltip
-              formatter={(value) => `${value.toLocaleString()} đồng`}
-              labelFormatter={(_, payload) =>
-              payload?.[0]?.payload?.name? `Sản phẩm: ${payload[0].payload.name}`: ''}
-            />
-            <Line type="monotone" dataKey="price" stroke="#3399ff" strokeWidth={2} dot={false} activeDot={false}/>
-            </LineChart>
+              <LineChart data={transactionChartData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={(label) => `${label}`}
+                  tick={{ fontSize: 11 }}
+                  angle={-45}
+                  textAnchor="end"
+                  height={70}
+                />
+                <YAxis
+                  dataKey="price"
+                  tickFormatter={(value) => `${value.toLocaleString()} đ`}
+                  tick={{ fontSize: 9 }}
+                />
+                <Tooltip
+                  formatter={(value) => `${Number(value).toLocaleString()} đ`}
+                  labelFormatter={(label) => `Ngày: ${label}`}
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const { name, price } = payload[0].payload;
+                      return (
+                        <div className="custom-tooltip">
+                          <p>{`Sản phẩm: ${name}`}</p>
+                          <p>{`Giá: ${price.toLocaleString()} đ`}</p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Line dataKey="price" stroke="#3399ff" dot={false} />
+              </LineChart>
             </ResponsiveContainer>
           </div>
+
           <div className="card shadow-sm p-4 mt-4">
             <h4>Recent Transactions</h4>
             <table className="table table-striped mt-3">
@@ -217,12 +315,17 @@ const Dashboard = () => {
                     <td>{t.location}</td>
                     <td>{t.date}</td>
                     <td>{t.quantity}</td>
-                    <td>{t.amount}</td>
+                    <td>{Number(t.amount).toLocaleString()} đ</td>
                     <td>
-                      <span className={`badge ${
-                        t.status === "paid" ? "bg-success" :
-                        t.status === "failed" ? "bg-danger" : "bg-warning"
-                      }`}>
+                      <span
+                        className={`badge ${
+                          t.status === "paid"
+                            ? "bg-success"
+                            : t.status === "failed"
+                            ? "bg-danger"
+                            : "bg-warning"
+                        }`}
+                      >
                         {t.status}
                       </span>
                     </td>

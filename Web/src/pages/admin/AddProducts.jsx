@@ -1,15 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaUber, FaHome } from "react-icons/fa";
+import {
+  FaUsers,
+  FaBox,
+  FaList,
+  FaChartBar,
+  FaSignOutAlt,
+  FaUber,
+  FaHome,
+} from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { postAddProduct, getGenre } from "../../services/apiService";
 import { toast, ToastContainer } from "react-toastify"; // Import react-toastify
-import 'react-toastify/dist/ReactToastify.css'; // Import the default styles for toast
+import "react-toastify/dist/ReactToastify.css"; // Import the default styles for toast
 import { HeaderAdmin } from "../../components";
 // Sidebar component
 const Sidebar = () => {
   return (
-    <div className="d-flex flex-column p-3 bg-white shadow position-fixed" style={{ width: "250px", height: "100vh", top: "0", left: "0" }}>
+    <div
+      className="d-flex flex-column p-3 bg-white shadow position-fixed"
+      style={{ width: "250px", height: "100vh", top: "0", left: "0" }}
+    >
       <h4 className="text-primary text-center">Seller Page</h4>
       <ul className="nav flex-column mt-3">
         <li className="nav-item">
@@ -18,7 +29,10 @@ const Sidebar = () => {
           </Link>
         </li>
         <li className="nav-item">
-          <Link to="/productsad" className="nav-link text-white fw-bold bg-primary p-2 rounded">
+          <Link
+            to="/productsad"
+            className="nav-link text-white fw-bold bg-primary p-2 rounded"
+          >
             <FaBox className="me-2" /> Products
           </Link>
         </li>
@@ -44,12 +58,12 @@ const Sidebar = () => {
       </Link>
 
       <Link to="/login" className="nav-link text-danger">
-        <FaSignOutAlt className="me-2" /> Login
+        <FaSignOutAlt className="me-2" />
+        Logout
       </Link>
     </div>
   );
 };
-
 
 // AddProductForm component
 const AddProductForm = () => {
@@ -148,13 +162,22 @@ const AddProductForm = () => {
               <div className="row">
                 <div className="col-md-12 mb-3">
                   <label className="form-label">Book Name</label>
-                  <input type="text" className="form-control" value={book_name} onChange={(e) => setBookName(e.target.value)} />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={book_name}
+                    onChange={(e) => setBookName(e.target.value)}
+                  />
                 </div>
               </div>
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label className="form-label">Genres</label>
-                  <select className="form-select" onChange={(e) => setIdGenre(e.target.value)} value={id_genre}>
+                  <select
+                    className="form-select"
+                    onChange={(e) => setIdGenre(e.target.value)}
+                    value={id_genre}
+                  >
                     {genre.map((e, index) => (
                       <option key={index} value={e.id_genre}>
                         {e.genre}
@@ -165,40 +188,73 @@ const AddProductForm = () => {
 
                 <div className="col-md-6 mb-3">
                   <label className="form-label">Stock</label>
-                  <input type="number" className="form-control" value={stock} onChange={(e) => setStock(e.target.value)} />
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={stock}
+                    onChange={(e) => setStock(e.target.value)}
+                  />
                 </div>
               </div>
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label className="form-label">Author</label>
-                  <input type="text" className="form-control" value={author} onChange={(e) => setAuthor(e.target.value)} />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={author}
+                    onChange={(e) => setAuthor(e.target.value)}
+                  />
                 </div>
                 <div className="col-md-6 mb-3">
                   <label className="form-label">Publisher</label>
-                  <input type="text" className="form-control" value={publisher} onChange={(e) => setPublisher(e.target.value)} />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={publisher}
+                    onChange={(e) => setPublisher(e.target.value)}
+                  />
                 </div>
               </div>
 
               <div className="row">
                 <div className="col-md-4 mb-3">
                   <label className="form-label">Year of Publication</label>
-                  <input type="date" className="form-control" value={yopublication} onChange={(e) => setYoPublication(e.target.value)} />
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={yopublication}
+                    onChange={(e) => setYoPublication(e.target.value)}
+                  />
                 </div>
                 <div className="col-md-4 mb-3">
                   <label className="form-label">Price</label>
-                  <input type="number" className="form-control" value={price} onChange={(e) => setPrice(e.target.value)} />
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                  />
                 </div>
                 <div className="col-md-4 mb-3">
                   <label className="form-label">Discount %</label>
-                  <input type="number" className="form-control" value={discount} onChange={(e) => setDiscount(e.target.value)} />
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={discount}
+                    onChange={(e) => setDiscount(e.target.value)}
+                  />
                 </div>
               </div>
 
-
-
               <div className="mb-3">
                 <label className="form-label">Description</label>
-                <textarea className="form-control" rows="5" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
+                <textarea
+                  className="form-control"
+                  rows="5"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                ></textarea>
               </div>
             </div>
 
@@ -212,7 +268,10 @@ const AddProductForm = () => {
                   id="prod"
                   onChange={(e) => previewFile(e.target.files[0])}
                 />
-                <div className="d-flex flex-column align-items-center justify-content-center" style={{ minHeight: "300px" }}>
+                <div
+                  className="d-flex flex-column align-items-center justify-content-center"
+                  style={{ minHeight: "300px" }}
+                >
                   {imagePreview ? (
                     <img
                       src={imagePreview}
@@ -222,9 +281,16 @@ const AddProductForm = () => {
                     />
                   ) : (
                     <div className="text-center p-4">
-                      <i className="bi bi-image" style={{ fontSize: "3rem", color: "#adb5bd" }}></i>
-                      <h5 className="mt-3 text-secondary">Please select an image</h5>
-                      <p className="text-muted">Upload a cover image for your book</p>
+                      <i
+                        className="bi bi-image"
+                        style={{ fontSize: "3rem", color: "#adb5bd" }}
+                      ></i>
+                      <h5 className="mt-3 text-secondary">
+                        Please select an image
+                      </h5>
+                      <p className="text-muted">
+                        Upload a cover image for your book
+                      </p>
                     </div>
                   )}
                 </div>
@@ -234,9 +300,15 @@ const AddProductForm = () => {
 
           <div className="d-flex justify-content-between mt-4">
             <Link to="/productsad">
-              <button type="button" className="btn btn-secondary">Cancel</button>
+              <button type="button" className="btn btn-secondary">
+                Cancel
+              </button>
             </Link>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={loading}
+            >
               {loading ? "Adding..." : "Add Now"}
             </button>
           </div>

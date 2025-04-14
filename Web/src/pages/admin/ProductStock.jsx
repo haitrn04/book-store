@@ -1,14 +1,32 @@
-import { FaUsers, FaBox, FaList, FaChartBar, FaSignOutAlt, FaTrash, FaEdit, FaUber, FaHome } from "react-icons/fa";
+import {
+  FaUsers,
+  FaBox,
+  FaList,
+  FaChartBar,
+  FaSignOutAlt,
+  FaTrash,
+  FaEdit,
+  FaUber,
+  FaHome,
+} from "react-icons/fa";
 import { HeaderAdmin, Loading } from "../../components";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getProducts, deleteProductbyID, postEditProduct, getProductbyID } from "../../services/apiService";
+import {
+  getProducts,
+  deleteProductbyID,
+  postEditProduct,
+  getProductbyID,
+} from "../../services/apiService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Sidebar = () => {
   return (
-    <div className="d-flex flex-column p-3 bg-white shadow position-fixed" style={{ width: "250px", height: "100vh", top: "0", left: "0" }}>
+    <div
+      className="d-flex flex-column p-3 bg-white shadow position-fixed"
+      style={{ width: "250px", height: "100vh", top: "0", left: "0" }}
+    >
       <h4 className="text-primary text-center">Seller Page</h4>
       <ul className="nav flex-column mt-3">
         <li className="nav-item">
@@ -27,7 +45,10 @@ const Sidebar = () => {
           </Link>
         </li>
         <li className="nav-item">
-          <Link to="" className="nav-link text-white fw-bold bg-primary p-2 rounded">
+          <Link
+            to=""
+            className="nav-link text-white fw-bold bg-primary p-2 rounded"
+          >
             <FaChartBar className="me-2" /> Product Stock
           </Link>
         </li>
@@ -42,7 +63,8 @@ const Sidebar = () => {
         <FaHome className="me-2" /> Back to Home
       </Link>
       <Link to="/login" className="nav-link text-danger">
-        <FaSignOutAlt className="me-2" /> Login
+        <FaSignOutAlt className="me-2" />
+        Logout
       </Link>
     </div>
   );
@@ -64,10 +86,15 @@ const ProductStock = () => {
     try {
       setIsLoading(true); // Bật loading khi bắt đầu fetch
       const response = await getProducts();
-      const productsWithGenre = await Promise.all(response.data.map(async (product) => {
-        const genreResponse = await getProductbyID(product.id_book);
-        return { ...product, genre: genreResponse.data[0]?.genre || "Unknown" };
-      }));
+      const productsWithGenre = await Promise.all(
+        response.data.map(async (product) => {
+          const genreResponse = await getProductbyID(product.id_book);
+          return {
+            ...product,
+            genre: genreResponse.data[0]?.genre || "Unknown",
+          };
+        })
+      );
       setProducts(productsWithGenre);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -76,8 +103,6 @@ const ProductStock = () => {
       setIsLoading(false); // Tắt loading sau khi fetch xong
     }
   };
-
-
 
   const handleEdit = (product) => {
     setSelectedProduct(product);
@@ -100,11 +125,16 @@ const ProductStock = () => {
 
       console.log("API Response:", response);
 
-      if (response.status === 200 && response.data.message === "Book edited successfully") {
+      if (
+        response.status === 200 &&
+        response.data.message === "Book edited successfully"
+      ) {
         toast.success("Stock updated successfully!");
-        setProducts(prevProducts =>
-          prevProducts.map(p =>
-            p.id_book === selectedProduct.id_book ? { ...p, stock: Number(newStock) } : p
+        setProducts((prevProducts) =>
+          prevProducts.map((p) =>
+            p.id_book === selectedProduct.id_book
+              ? { ...p, stock: Number(newStock) }
+              : p
           )
         );
       } else {
@@ -118,9 +148,6 @@ const ProductStock = () => {
     setShowEditModal(false);
   };
 
-
-
-
   const handleDelete = (product) => {
     setSelectedProduct(product);
     setShowDeleteModal(true);
@@ -131,7 +158,9 @@ const ProductStock = () => {
       const response = await deleteProductbyID(selectedProduct.id_book);
 
       if (response.status === 200) {
-        setProducts(products.filter(p => p.id_book !== selectedProduct.id_book));
+        setProducts(
+          products.filter((p) => p.id_book !== selectedProduct.id_book)
+        );
         toast.success("Product deleted successfully!");
       } else {
         toast.error("Failed to delete product! Please try again.");
@@ -171,19 +200,26 @@ const ProductStock = () => {
                 </tr>
               ) : (
                 products
-                  .filter(product => product.is_active) // Filter active products
-                  .map(product => (
+                  .filter((product) => product.is_active) // Filter active products
+                  .map((product) => (
                     <tr key={product.id_book}>
                       <td>
                         <img
                           src={`data:image/jpeg;base64,${product.image_data}`}
                           alt={product.book_name}
-                          style={{ height: "58px", objectFit: "contain", maxWidth: "200px" }}
+                          style={{
+                            height: "58px",
+                            objectFit: "contain",
+                            maxWidth: "200px",
+                          }}
                         />
                       </td>
                       <td>{product.book_name}</td>
                       <td>{product.genre}</td>
-                      <td>{product.price.toLocaleString("vi-VN")}<sup>₫</sup></td>
+                      <td>
+                        {product.price.toLocaleString("vi-VN")}
+                        <sup>₫</sup>
+                      </td>
                       <td>{product.stock}</td>
                       <td>{product.discount}%</td>
                       <td>
@@ -212,10 +248,20 @@ const ProductStock = () => {
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content p-3">
               <h4 className="fw-bold text-danger">Confirm Delete</h4>
-              <p>Are you sure you want to delete this product: <strong>{selectedProduct?.book_name}</strong>?</p>
+              <p>
+                Are you sure you want to delete this product:{" "}
+                <strong>{selectedProduct?.book_name}</strong>?
+              </p>
               <div className="d-flex justify-content-end mt-3">
-                <button className="btn btn-secondary me-2" onClick={() => setShowDeleteModal(false)}>Cancel</button>
-                <button className="btn btn-danger" onClick={confirmDelete}>Delete</button>
+                <button
+                  className="btn btn-secondary me-2"
+                  onClick={() => setShowDeleteModal(false)}
+                >
+                  Cancel
+                </button>
+                <button className="btn btn-danger" onClick={confirmDelete}>
+                  Delete
+                </button>
               </div>
             </div>
           </div>
@@ -226,7 +272,9 @@ const ProductStock = () => {
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content p-3">
               <h4 className="fw-bold text-primary">Edit Stock</h4>
-              <p><strong>Product:</strong> {selectedProduct?.book_name}</p>
+              <p>
+                <strong>Product:</strong> {selectedProduct?.book_name}
+              </p>
               <label className="form-label fw-bold">New Stock Value:</label>
               <input
                 type="number"
@@ -236,8 +284,15 @@ const ProductStock = () => {
                 onChange={(e) => setNewStock(e.target.value)}
               />
               <div className="d-flex justify-content-end mt-3">
-                <button className="btn btn-secondary me-2" onClick={() => setShowEditModal(false)}>Cancel</button>
-                <button className="btn btn-primary" onClick={confirmEdit}>Update</button>
+                <button
+                  className="btn btn-secondary me-2"
+                  onClick={() => setShowEditModal(false)}
+                >
+                  Cancel
+                </button>
+                <button className="btn btn-primary" onClick={confirmEdit}>
+                  Update
+                </button>
               </div>
             </div>
           </div>
@@ -248,6 +303,5 @@ const ProductStock = () => {
     </div>
   );
 };
-
 
 export default ProductStock;
