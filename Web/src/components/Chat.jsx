@@ -4,8 +4,15 @@ import { BsIncognito } from "react-icons/bs";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 
-let api_url = "http://localhost:1234/";
-api_url = "https://4da6-14-238-1-138.ngrok-free.app/";
+// Local API URLs
+let api_url_lmstudio = "http://localhost:1234/";
+let api_url_database = "http://localhost:3005/";
+let api_url_gemini = "http://localhost:3005/";
+
+// Ngrok API URLs 
+// api_url_lmstudio = "https://....ngrok-free.app/";
+// api_url_database = "";
+// api_url_gemini = "https://....ngrok-free.app/";
 
 const Chat = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -91,7 +98,7 @@ const Chat = () => {
 
     let dbInfo = "";
     try {
-      const res = await fetch(`http://localhost:3005/api/book-info?message=${encodeURIComponent(messageText)}`);
+      const res = await fetch(`${api_url_database}api/book-info?message=${encodeURIComponent(messageText)}`);
       const data = await res.json();
       if (data.success) {
         dbInfo = data.dbInfo;
@@ -99,10 +106,6 @@ const Chat = () => {
     } catch (err) {
       console.warn("Không lấy được dữ liệu từ DB:", err);
     }
-
-    const chatHistory = messages.map(msg =>
-      `${msg.sender === "user" ? "Người dùng" : "Bot"}: ${msg.text}`
-    ).join("\n");
 
     let prompt = `
       Bạn là một trợ lý bán sách thông minh, nhiệt tình và trung thực cho cửa hàng sách tại ${storeAddress}. 
@@ -132,7 +135,7 @@ const Chat = () => {
     }
 
     try {
-      const response = await axios.post("https://1c41-14-238-1-138.ngrok-free.app/api/gemini", {
+      const response = await axios.post(`${api_url_gemini}api/gemini`, {
         prompt: prompt,
       });
 
@@ -174,7 +177,7 @@ const Chat = () => {
 
     // 🔍 Gọi backend để lấy dữ liệu liên quan từ PostgreSQL
     try {
-      const res = await fetch(`http://localhost:3005/api/book-info?message=${encodeURIComponent(messageText)}`);
+      const res = await fetch(`${api_url_database}api/book-info?message=${encodeURIComponent(messageText)}`);
       const data = await res.json();
       if (data.success) {
         dbInfo = data.dbInfo;
@@ -224,7 +227,7 @@ const Chat = () => {
     };
 
     try {
-      const response = await fetch(`${api_url}v1/chat/completions`, {
+      const response = await fetch(`${api_url_lmstudio}v1/chat/completions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

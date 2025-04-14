@@ -19,6 +19,7 @@ const axios = require('axios').default; // npm install axios
 const CryptoJS = require('crypto-js'); // npm install crypto-js
 const moment = require('moment'); // npm install moment
 const qs = require('qs');
+const { log } = require('console');
 
 //routes
 app.use(express.json({ limit: '50mb' }));
@@ -64,31 +65,33 @@ app.get("/api/book-info", async (req, res) => {
         try {
             const result = await pool.query(
                 `
-        SELECT 
-          book_name, author, publisher, price, discount, stock, description
-        FROM 
-          books
-        WHERE 
-          LOWER(book_name) LIKE LOWER($1) AND is_active = true
-        `,
+                SELECT 
+                book_name, author, publisher, price, discount, stock, description
+                FROM 
+                books
+                WHERE 
+                LOWER(book_name) LIKE LOWER($1) AND is_active = true
+                `,
                 [`%${keyword}%`]
             );
 
             if (result.rows.length > 0) {
                 dbInfo = result.rows.map((b) => {
+                    console.log("Đã tìm thấy:\"", b.book_name, "\"");
                     const discounted = b.discount ? `${b.discount}%` : "0%";
                     return `**${b.book_name}**  
                         - Tác giả: *${b.author}*  
                         - Nhà xuất bản: *${b.publisher}*  
                         - Giá gốc: ${b.price} VNĐ  
-                        - Giảm giá: ${discounted}  
-                        - Còn trong kho: ${b.stock}  
+                        - Giảm giá: ${discounted}
+                        - Giá sau giảm: ${b.price - (b.price * (b.discount / 100))} VNĐ
+                        - Còn trong kho: ${b.stock} 
                         - Mô tả: ${b.description?.slice(0, 200)}...`;
                 }).join("\n\n");
             } else {
                 dbInfo = "Không tìm thấy sách nào trong cơ sở dữ liệu phù hợp với yêu cầu.";
+                console.log("Không tìm thấy!");
             }
-
             return res.json({ success: true, dbInfo });
         } catch (err) {
             console.error("DB error:", err);
@@ -188,6 +191,7 @@ app.post('/payment', async (req, res) => {
         res.status(500);
     }
 });
+
 app.post("/order-status/:app_trans_id", async (req, res) => {
     const app_trans_id = req.params.app_trans_id;
     let postData = {
@@ -215,42 +219,6 @@ app.post("/order-status/:app_trans_id", async (req, res) => {
     }
 });
 
-// API để tải ảnh lên
-// app.post('/upload', upload.single('image'), (req, res) => {
-//     if (!req.file) {
-//         return res.status(400).send('No file uploaded');
-//     }
-
-//     const file = req.file;
-//     const imageData = fs.readFileSync(file.path);
-//     const imageName = file.originalname;
-
-//     pool.query(
-//         'INSERT INTO images (image_name, image_data) VALUES ($1, $2) RETURNING id',
-//         [imageName, imageData],
-//         (err, result) => {
-//             if (err) {
-//                 console.error('Database error:', err);
-//                 return res.status(500).send('Error saving image');
-//             }
-//             res.send({ id: result.rows[0].id });
-//         }
-//     );
-// });
-
-// API để lấy ảnh
-// app.get('/image/:id', (req, res) => {
-//     const { id } = req.params;
-//     pool.query('SELECT image_data FROM images WHERE id = $1', [id], (err, result) => {
-//         if (err || result.rows.length === 0) {
-//             return res.status(404).send('Image not found');
-//         }
-//         res.contentType('image/jpeg');
-//         res.send(result.rows[0].image_data);
-//     });
-// });
-
-
 // API để gọi Gemini API
 app.post('/api/gemini', async (req, res) => {
     try {
@@ -268,7 +236,6 @@ app.post('/api/gemini', async (req, res) => {
                 },
             ],
         };
-
         const response = await axios({
             method: "POST",
             url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent`,
@@ -280,7 +247,6 @@ app.post('/api/gemini', async (req, res) => {
             },
             data: data,
         });
-
         res.json(response.data);
     } catch (error) {
         console.error("Lỗi khi gọi Gemini API:", error);
@@ -288,10 +254,4 @@ app.post('/api/gemini', async (req, res) => {
     }
 });
 
-
-
 server.listen(port, () => console.log(`Server has started on port: ${port}`));
-
-
-
-
