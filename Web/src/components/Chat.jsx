@@ -5,7 +5,7 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 
 let api_url = "http://localhost:1234/";
-// api_url = "https://1d65-27-73-197-220.ngrok-free.app/";
+api_url = "https://fc7e-14-224-129-188.ngrok-free.app/";
 
 const Chat = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);

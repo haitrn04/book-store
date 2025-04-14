@@ -47,6 +47,59 @@ const config = {
 
 /////////////////////// GET
 
+// API lấy thông tin sách từ message người dùng
+app.get("/api/book-info", async (req, res) => {
+    const message = req.query.message;
+
+    if (!message) {
+        return res.status(400).json({ success: false, error: "Thiếu message" });
+    }
+
+    const keywordMatch = message.match(/['"]([^'"]+)['"]/);
+    const keyword = keywordMatch ? keywordMatch[1].toLowerCase() : null;
+
+    let dbInfo = "";
+
+    if (keyword) {
+        try {
+            const result = await pool.query(
+                `
+        SELECT 
+          book_name, author, publisher, price, discount, stock, description
+        FROM 
+          books
+        WHERE 
+          LOWER(book_name) LIKE LOWER($1) AND is_active = true
+        `,
+                [`%${keyword}%`]
+            );
+
+            if (result.rows.length > 0) {
+                dbInfo = result.rows.map((b) => {
+                    const discounted = b.discount ? `${b.discount}%` : "0%";
+                    return `**${b.book_name}**  
+                        - Tác giả: *${b.author}*  
+                        - Nhà xuất bản: *${b.publisher}*  
+                        - Giá gốc: ${b.price} VNĐ  
+                        - Giảm giá: ${discounted}  
+                        - Còn trong kho: ${b.stock}  
+                        - Mô tả: ${b.description?.slice(0, 200)}...`;
+                }).join("\n\n");
+            } else {
+                dbInfo = "Không tìm thấy sách nào trong cơ sở dữ liệu phù hợp với yêu cầu.";
+            }
+
+            return res.json({ success: true, dbInfo });
+        } catch (err) {
+            console.error("DB error:", err);
+            return res.status(500).json({ success: false, error: "Lỗi truy vấn database." });
+        }
+    } else {
+        return res.json({ success: true, dbInfo: "" });
+    }
+});
+
+
 app.use('/accounts', userRouter);
 app.use('/address', addressRouter);
 app.use('/order', orderRouter);
@@ -74,14 +127,14 @@ app.post('/login', async (req, res) => {
     }
 });
 // admin
-app.post('/sendmail', async(req,res)=> {
-    const { emailadd,subject, htmlcontent } = req.body;
+app.post('/sendmail', async (req, res) => {
+    const { emailadd, subject, htmlcontent } = req.body;
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
             user: process.env.Email_User,
             pass: process.env.Email_Password
-        
+
         }
     })
     const mailOptions = {
@@ -91,10 +144,10 @@ app.post('/sendmail', async(req,res)=> {
         html: htmlcontent,
     }
     transporter.sendMail(mailOptions, (err, result) => {
-        if (err){
-        console.log(err)
+        if (err) {
+            console.log(err)
             res.json('Opps error occured')
-        } else{
+        } else {
             res.json('thanks for e-mailing me');
         }
     })
