@@ -8,6 +8,14 @@ const getAccounts = () => {
     return axios.get('http://localhost:3005/accounts/accounts');
 }
 
+const getApiBookInfo = (messageText) => {
+    return axios.get(`http://localhost:3005/api/book-info?message=${encodeURIComponent(messageText)}`);
+}
+
+const postAPIGemini = () => {
+    return axios.post('"http://localhost:3005/api/gemini"');
+}
+
 const postPayment = (user_name, total_price, items) => {
     return axios.post('http://localhost:3005/payment', { user_name, total_price, items });
 };
@@ -190,5 +198,6 @@ export {
     getBookReviewbyorderID, findProduct, changePass, getOrders, updateOrderStatus,
     getOrderByID, getOrderByAccountID, sendmail, getAccounts, getAccountbyName,
     postPayment, postOrderStatus, getProductsIfExist, getCountUser, getTotalOrders,
-    getTotalSales, getPendingOrders, getRecentTransactions, addReview, getBookAllReviewCount, getBookReviewbyIdBookAndIdOrder
+    getTotalSales, getPendingOrders, getRecentTransactions, addReview, getBookAllReviewCount,
+    getBookReviewbyIdBookAndIdOrder, getApiBookInfo, postAPIGemini,
 };

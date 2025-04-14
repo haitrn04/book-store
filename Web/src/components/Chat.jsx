@@ -9,14 +9,7 @@ api_url = "https://fc7e-14-224-129-188.ngrok-free.app/";
 
 const Chat = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
-  // isChatOpen là giá trị boolean để xác định xem cửa sổ chat có đang mở hay không
-  // Nếu isChatOpen là true, cửa sổ chat sẽ hiển thị, ngược lại sẽ ẩn đi.
-  // setIsChatOpen là hàm để cập nhật giá trị của isChatOpen
-  // Khi người dùng nhấp vào nút chat, isChatOpen sẽ được đặt thành true, và cửa sổ chat sẽ mở ra.
   const [isAnonymousChat, setIsAnonymousChat] = useState(false);
-  // isAnonymousChat là giá trị boolean để xác định xem người dùng có muốn chat ẩn danh hay không
-  // Nếu isAnonymousChat là true, người dùng sẽ chat ẩn danh, ngược lại sẽ không
-  // setIsAnonymousChat là hàm để cập nhật giá trị của isAnonymousChat
   const [randomQuestions, setRandomQuestions] = useState([]);
   const [clicked, setClicked] = useState(false); // State để theo dõi click
 
@@ -27,19 +20,10 @@ const Chat = () => {
       sender: "bot",
     },
   ]);
-  // messages là một mảng chứa các tin nhắn trong cuộc hội thoại
-  // Mỗi tin nhắn là một đối tượng với các thuộc tính id, text và sender
-  // setMessages là hàm để cập nhật giá trị của messages
 
   const [newMessage, setNewMessage] = useState("");
-  // newMessage là giá trị của ô nhập tin nhắn
-  // Khi người dùng nhập tin nhắn vào ô nhập, giá trị của newMessage sẽ được cập nhật
-  // setNewMessage là hàm để cập nhật giá trị của newMessage
 
   const [isLoading, setIsLoading] = useState(false);
-  // isLoading là giá trị boolean để xác định xem có đang xử lý yêu cầu hay không
-  // Nếu isLoading là true, có nghĩa là đang chờ phản hồi từ API
-
 
   // Thông tin cửa hàng
   const storeAddress = "136 Đ. Xuân Thủy, Dịch Vọng Hậu, Cầu Giấy, Hà Nội";
@@ -63,8 +47,6 @@ const Chat = () => {
     "Cửa hàng mở cửa đến mấy giờ?",
   ];
 
-  // useEffect này sẽ được gọi khi component được render lần đầu tiên
-  // và khi giá trị của clicked hoặc suggestedQuestions thay đổi
   useEffect(() => {
     if (clicked && suggestedQuestions && suggestedQuestions.length > 0) {
       const shuffled = [...suggestedQuestions];
@@ -83,7 +65,6 @@ const Chat = () => {
     setClicked(true); // Đánh dấu là đã click
   };
 
-  // Hàm này sẽ xóa tất cả các tin nhắn trong cuộc hội thoại và đặt lại trạng thái ban đầu
   const restartChat = () => {
     setMessages([
       {
@@ -94,10 +75,8 @@ const Chat = () => {
     ]);
     setNewMessage("");
     setIsLoading(false);
-    // Đặt lại trạng thái của các biến liên quan đến cuộc hội thoại về giá trị ban đầu
   };
 
-  // Hàm gửi tin nhắn đến backend và nhận phản hồi từ Gemini API
   const sendMessageToGemini = async (messageText) => {
     const userMessage = {
       id: messages.length + 1,
@@ -110,7 +89,6 @@ const Chat = () => {
 
     const lowerCaseMessage = messageText.toLowerCase();
 
-    // 👉 Truy vấn thông tin sách từ backend (PostgreSQL)
     let dbInfo = "";
     try {
       const res = await fetch(`http://localhost:3005/api/book-info?message=${encodeURIComponent(messageText)}`);
@@ -122,12 +100,10 @@ const Chat = () => {
       console.warn("Không lấy được dữ liệu từ DB:", err);
     }
 
-    // 👉 Tạo lịch sử hội thoại
     const chatHistory = messages.map(msg =>
       `${msg.sender === "user" ? "Người dùng" : "Bot"}: ${msg.text}`
     ).join("\n");
 
-    // 👉 Prompt chính
     let prompt = `
       Bạn là một trợ lý bán sách thông minh, nhiệt tình và trung thực cho cửa hàng sách tại ${storeAddress}. 
       Số điện thoại liên hệ: ${storePhoneNumber}.
@@ -149,7 +125,6 @@ const Chat = () => {
       Sử dụng định dạng Markdown để làm nổi bật thông tin như **in đậm**, *in nghiêng*, hoặc danh sách.
     `;
 
-    // 👉 Nếu là câu hỏi đặc biệt
     if (lowerCaseMessage.includes("địa chỉ")) {
       prompt = `Người dùng hỏi về địa chỉ của cửa hàng. Địa chỉ là: ${storeAddress}.`;
     } else if (lowerCaseMessage.includes("số điện thoại")) {
@@ -184,7 +159,6 @@ const Chat = () => {
     }
   };
 
-  // Hàm gửi tin nhắn đến backend và nhận phản hồi từ LM Studio localchat API
   const sendMessageToLocalDBChat = async (messageText) => {
     const userMessage = {
       id: messages.length + 1,
@@ -314,34 +288,25 @@ const Chat = () => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    // e.preventDefault() ngăn chặn hành vi mặc định của form khi gửi tin nhắn
-    // Để tránh việc trang web tự động tải lại khi gửi form
     if (newMessage.trim() === "") return;
-    // Nếu ô nhập tin nhắn rỗng, không làm gì cả
     if (isAnonymousChat) {
       await sendMessageToLocalDBChat(newMessage);
     } else {
       await sendMessageToGemini(newMessage);
     }
 
-    // Gọi hàm sendMessageToGemini để gửi tin nhắn đến API và nhận phản hồi từ Gemini API
-    // Sau khi gửi tin nhắn, chúng ta sẽ gọi hàm sendMessageToGemini để gửi tin nhắn đến API và nhận phản hồi từ Gemini API
   };
 
-  // Xử lý khi người dùng nhấp vào câu hỏi gợi ý
   const handleSuggestedQuestionClick = async (question) => {
     if (isAnonymousChat) {
       await sendMessageToLocalDBChat(question);
     } else {
       await sendMessageToGemini(question);
     }
-    // Khi người dùng nhấp vào câu hỏi gợi ý, chúng ta sẽ gọi hàm sendMessageToGemini với câu hỏi gợi ý đó
   };
 
-  // Kiểm tra tin nhắn cuối cùng có phải là của bot không
   const lastMessage = messages[messages.length - 1];
   const showSuggestions = lastMessage?.sender === "bot" && !isLoading;
-  // Mục đích để hiển thị các câu hỏi gợi ý ở dưới các câu trả lời của bot
 
   return (
     <>
