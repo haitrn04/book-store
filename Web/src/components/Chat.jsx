@@ -5,7 +5,7 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 
 let api_url = "http://localhost:1234/";
-api_url = "https://fc7e-14-224-129-188.ngrok-free.app/";
+api_url = "https://4da6-14-238-1-138.ngrok-free.app/";
 
 const Chat = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -132,7 +132,7 @@ const Chat = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:3005/api/gemini", {
+      const response = await axios.post("https://1c41-14-238-1-138.ngrok-free.app/api/gemini", {
         prompt: prompt,
       });
 
