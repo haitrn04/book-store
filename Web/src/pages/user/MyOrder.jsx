@@ -220,7 +220,7 @@ const ReviewModal = ({ order, onClose, onSubmit }) => {
 
   const handleSubmit = async () => {
     if (selectedProductIndex === -1) {
-      alert('Vui lòng chọn sản phẩm để đánh giá.');
+      alert('Please select a product to review.');
       return;
     }
 
@@ -252,11 +252,11 @@ const ReviewModal = ({ order, onClose, onSubmit }) => {
         comment,
         media,
       });
-      alert('Đánh giá đã được gửi thành công!');
+      alert('Review submitted successfully!');
       onClose();
     } catch (error) {
       console.error('Error submitting review:', error);
-      alert('Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại.');
+      alert('An error occurred while submitting the review. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -272,20 +272,20 @@ const ReviewModal = ({ order, onClose, onSubmit }) => {
       <div className="modal-dialog" role="document">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Đánh giá đơn hàng #{order.order.id_order}</h5>
+            <h5 className="modal-title">Review the order #{order.order.id_order}</h5>
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
             {order.order_details.length > 1 && (
               <div className="mb-3">
-                <label>Chọn sản phẩm:</label>
+                <label>Select product:</label>
                 <select
                   className="form-control"
                   value={selectedProductIndex}
                   onChange={(e) => setSelectedProductIndex(Number(e.target.value))}
                   disabled={isSubmitting}
                 >
-                  <option value={-1}>-- Chọn sản phẩm --</option>
+                  <option value={-1}>-- Select product --</option>
                   {order.order_details.map((item, index) => (
                     <option key={index} value={index}>
                       {item.book_name}
@@ -312,9 +312,9 @@ const ReviewModal = ({ order, onClose, onSubmit }) => {
             {selectedProductIndex !== -1 && existingReview ? (
               // Display existing review if it exists
               <div>
-                <h6>Đánh giá hiện tại:</h6>
+                <h6>Current Review:</h6>
                 <div>
-                  <label>Điểm đánh giá:</label>
+                  <label>Rating:</label>
                   <div>
                     {[1, 2, 3, 4, 5].map((star) => (
                       <FaStar
@@ -327,13 +327,13 @@ const ReviewModal = ({ order, onClose, onSubmit }) => {
                 </div>
                 {existingReview.review_text && (
                   <div className="mt-3">
-                    <label>Nội dung đánh giá:</label>
+                    <label>Review Content:</label>
                     <p>{existingReview.review_text}</p>
                   </div>
                 )}
                 {existingReview.image_data && (
                   <div className="mt-3">
-                    <label>Hình ảnh:</label>
+                    <label>Image:</label>
                     <div>
                       <img
                         src={`data:image/jpeg;base64,${existingReview.image_data}`}
@@ -344,7 +344,7 @@ const ReviewModal = ({ order, onClose, onSubmit }) => {
                   </div>
                 )}
                 <p className="text-muted">
-                  Được đánh giá vào: {new Date(existingReview.created_at).toLocaleDateString()}
+                  Reviewed on: {new Date(existingReview.created_at).toLocaleDateString()}
                 </p>
               </div>
             ) : (
@@ -352,7 +352,7 @@ const ReviewModal = ({ order, onClose, onSubmit }) => {
               selectedProductIndex !== -1 && (
                 <>
                   <div>
-                    <label>Đánh giá sản phẩm:</label>
+                    <label>Product Rating:</label>
                     <div>
                       {[1, 2, 3, 4, 5].map((star) => (
                         <FaStar
@@ -365,7 +365,7 @@ const ReviewModal = ({ order, onClose, onSubmit }) => {
                     </div>
                   </div>
                   <div className="mt-3">
-                    <label>Hình ảnh:</label>
+                    <label>Image:</label>
                     <div>
                       <FaCamera style={{ cursor: 'pointer', marginRight: '10px' }} />
                       <input
@@ -387,7 +387,7 @@ const ReviewModal = ({ order, onClose, onSubmit }) => {
                     </div>
                   </div>
                   <div className="mt-3">
-                    <label>Viết đánh giá:</label>
+                    <label>Write a Review:</label>
                     <textarea
                       className="form-control"
                       rows="3"
@@ -407,7 +407,7 @@ const ReviewModal = ({ order, onClose, onSubmit }) => {
               onClick={onClose}
               disabled={isSubmitting}
             >
-              Đóng
+              Close
             </button>
             {!existingReview && selectedProductIndex !== -1 && (
               <button
@@ -663,7 +663,7 @@ const MyOrder = () => {
 
   const handleCancelOrder = (orderId) => {
     if (!orderId) {
-      alert("Không thể hủy đơn hàng: ID đơn hàng không hợp lệ.");
+      alert("Cannot cancel order: Invalid order ID.");
       return;
     }
     setShowConfirmCancel(orderId);
@@ -671,7 +671,7 @@ const MyOrder = () => {
 
   const confirmCancelOrder = async (orderId) => {
     if (!orderId) {
-      alert("Không thể hủy đơn hàng: ID đơn hàng không hợp lệ.");
+      alert("Cannot cancel order: Invalid order ID.");
       setShowConfirmCancel(null);
       return;
     }
@@ -686,7 +686,7 @@ const MyOrder = () => {
         )
       );
     } catch (error) {
-      alert(`Không thể hủy đơn hàng: ${error.response?.data?.error || error.message}`);
+      alert(`Cannot cancel order: ${error.response?.data?.error || error.message}`);
       try {
         const response = await getOrderByAccountID(accountId);
         setOrders(Array.isArray(response) ? response : response.data || []);
